@@ -115,9 +115,9 @@
             "width": "fill",
             "custom_width": 100,
             "inherit_color_scheme": true,
+            "color_scheme": "",
             "heading": "",
             "heading_preset": "h3",
-            "color_scheme": "",
             "border_style": "all",
             "border_width": 1,
             "border_radius": 100,
@@ -139,6 +139,7 @@
         "group_H6VpwJ",
         "email_signup_crihX7"
       ],
+      "disabled": true,
       "name": "t:names.footer",
       "settings": {
         "section_width": "page-width",
@@ -193,6 +194,7 @@
         "footer_policy_list_VCdnpa",
         "social_links_Ew63Kq"
       ],
+      "disabled": true,
       "name": "t:names.utilities",
       "settings": {
         "section_width": "page-width",
