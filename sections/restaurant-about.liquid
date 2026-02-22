@@ -253,7 +253,7 @@
     pointer-events: none;
   }
 
-  /* Curvy footer tab on cards — Z-shaped notch with inverted radius */
+  /* Curvy footer tab on cards */
   .ra__card-footer {
     position: absolute;
     bottom: 0;
@@ -264,7 +264,7 @@
     padding: 10px 14px 12px 26px;
     z-index: 1;
     background: var(--restaurant-dark, #0D0D0D);
-    border-top-left-radius: 22px;
+    border-top-left-radius: 20px;
   }
 
   .ra__card-footer::before {
@@ -272,19 +272,9 @@
     position: absolute;
     bottom: 100%;
     left: 0;
-    width: 22px;
-    height: 22px;
-    background: radial-gradient(circle at 100% 100%, transparent 21px, var(--restaurant-dark, #0D0D0D) 22px);
-  }
-
-  .ra__card-footer::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 100%;
-    width: 22px;
-    height: 22px;
-    background: radial-gradient(circle at 100% 100%, transparent 21px, var(--restaurant-dark, #0D0D0D) 22px);
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 100% 100%, transparent 19.5px, var(--restaurant-dark, #0D0D0D) 20px);
   }
 
   .ra__card-label {
