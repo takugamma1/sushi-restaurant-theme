@@ -1,135 +1,76 @@
-class RestaurantHeroCarousel extends HTMLElement {
-  #current = 0;
+class RestaurantHero extends HTMLElement {
+  #idx = 0;
   #timer = null;
-  #abortController = null;
-
-  get slides() {
-    return this.querySelectorAll('[data-slide-index]:not([data-slide-empty])');
-  }
-
-  get allSlides() {
-    return this.querySelectorAll('[data-slide-index]');
-  }
-
-  get dots() {
-    return this.querySelectorAll('[data-dot-index]');
-  }
-
-  get count() {
-    return this.slides.length;
-  }
-
-  get autoplay() {
-    return this.dataset.autoplay === 'true';
-  }
-
-  get interval() {
-    return (parseInt(this.dataset.interval, 10) || 6) * 1000;
-  }
+  #ac = null;
 
   connectedCallback() {
-    // #region agent log
-    console.log('[HERO-DEBUG] connectedCallback', {count: this.count, allSlides: this.allSlides.length, dots: this.dots.length, autoplay: this.autoplay});
-    // #endregion
-    if (this.count <= 1) {
-      // #region agent log
-      console.warn('[HERO-DEBUG] EARLY EXIT: count <= 1, no carousel needed. count=', this.count);
-      // #endregion
-      return;
-    }
+    const n = this.querySelectorAll('.rh__slide').length;
+    if (n <= 1) return;
 
-    this.#abortController = new AbortController();
+    this.#ac = new AbortController();
+    const sig = this.#ac.signal;
 
-    this.addEventListener('click', this.#handleDotClick, {
-      signal: this.#abortController.signal,
-    });
+    this.addEventListener('click', this.#onDot, { signal: sig });
+    this.addEventListener('mouseenter', () => this.#stop(), { signal: sig });
+    this.addEventListener('mouseleave', () => this.#play(), { signal: sig });
 
-    document.addEventListener('shopify:section:load', this.#onSectionLoad, {
-      signal: this.#abortController.signal,
-    });
+    document.addEventListener('shopify:section:load', (e) => {
+      if (this.closest('.shopify-section') === e.target) {
+        this.#ac?.abort();
+        this.#idx = 0;
+        this.connectedCallback();
+      }
+    }, { signal: sig });
 
-    if (this.autoplay) this.#startAutoplay();
-
-    this.addEventListener('mouseenter', this.#pauseAutoplay, {
-      signal: this.#abortController.signal,
-    });
-    this.addEventListener('mouseleave', this.#resumeAutoplay, {
-      signal: this.#abortController.signal,
-    });
-    // #region agent log
-    console.log('[HERO-DEBUG] Carousel initialized. Autoplay:', this.autoplay, 'Interval:', this.interval);
-    // #endregion
+    this.#play();
   }
 
   disconnectedCallback() {
-    this.#stopAutoplay();
-    this.#abortController?.abort();
-    this.#abortController = null;
+    this.#stop();
+    this.#ac?.abort();
+    this.#ac = null;
   }
 
-  #onSectionLoad = (event) => {
-    if (this.closest('.shopify-section') === event.target) {
-      this.#abortController?.abort();
-      this.#current = 0;
-      this.connectedCallback();
-    }
+  #onDot = (e) => {
+    const d = e.target.closest('[data-dot]');
+    if (!d) return;
+    const i = +d.dataset.dot;
+    if (i === this.#idx) return;
+    this.#go(i);
+    this.#stop();
+    this.#play();
   };
 
-  #handleDotClick = (event) => {
-    const dot = event.target.closest('[data-dot-index]');
-    if (!dot) return;
-    const index = parseInt(dot.dataset.dotIndex, 10);
-    if (index === this.#current) return;
-    this.#goTo(index);
-    this.#restartAutoplay();
-  };
-
-  #goTo(index) {
-    const slides = this.slides;
-    const dots = this.dots;
-
+  #go(i) {
+    const slides = this.querySelectorAll('.rh__slide');
+    const dots = this.querySelectorAll('.rh__dot');
     if (!slides.length) return;
 
-    slides[this.#current]?.classList.remove('restaurant-hero__slide--active');
-    dots[this.#current]?.classList.remove('restaurant-hero__dot--active');
+    slides[this.#idx]?.classList.remove('is-active');
+    dots[this.#idx]?.classList.remove('is-active');
 
-    this.#current = index % slides.length;
+    this.#idx = i % slides.length;
 
-    slides[this.#current]?.classList.add('restaurant-hero__slide--active');
-    dots[this.#current]?.classList.add('restaurant-hero__dot--active');
+    slides[this.#idx]?.classList.add('is-active');
+    dots[this.#idx]?.classList.add('is-active');
   }
 
-  #next = () => {
-    this.#goTo((this.#current + 1) % this.count);
-  };
-
-  #startAutoplay() {
-    if (!this.autoplay || this.count <= 1) return;
-    this.#timer = setInterval(this.#next, this.interval);
+  #play() {
+    if (this.#timer) return;
+    const sec = this.dataset.autoplay;
+    if (!sec) return;
+    this.#timer = setInterval(() => {
+      const n = this.querySelectorAll('.rh__slide').length;
+      this.#go((this.#idx + 1) % n);
+    }, +sec * 1000);
   }
 
-  #stopAutoplay() {
-    if (this.#timer) {
-      clearInterval(this.#timer);
-      this.#timer = null;
-    }
-  }
-
-  #pauseAutoplay = () => this.#stopAutoplay();
-
-  #resumeAutoplay = () => {
-    if (this.autoplay) this.#startAutoplay();
-  };
-
-  #restartAutoplay() {
-    this.#stopAutoplay();
-    this.#resumeAutoplay();
+  #stop() {
+    clearInterval(this.#timer);
+    this.#timer = null;
   }
 }
 
-// #region agent log
-console.log('[HERO-DEBUG] Script loaded');
-// #endregion
-if (!customElements.get('restaurant-hero-carousel')) {
-  customElements.define('restaurant-hero-carousel', RestaurantHeroCarousel);
+if (!customElements.get('restaurant-hero')) {
+  customElements.define('restaurant-hero', RestaurantHero);
 }
