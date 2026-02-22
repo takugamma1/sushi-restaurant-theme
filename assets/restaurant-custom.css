@@ -13,6 +13,7 @@
 .shopify-section:has(.restaurant-contact-section),
 .shopify-section:has(.restaurant-about-section),
 .shopify-section:has(.restaurant-preview-section),
+.shopify-section:has(.restaurant-categories-section),
 .shopify-section:has(.hero-wrapper) {
   margin: 0 !important;
   padding: 0 !important;
@@ -22,7 +23,8 @@
 .restaurant-menu-section,
 .restaurant-contact-section,
 .restaurant-about-section,
-.restaurant-preview-section {
+.restaurant-preview-section,
+.restaurant-categories-section {
   margin: 0 !important;
   padding: 0 !important;
   background: var(--restaurant-dark);
@@ -38,7 +40,8 @@
 .restaurant-menu-section .section-background,
 .restaurant-contact-section .section-background,
 .restaurant-about-section .section-background,
-.restaurant-preview-section .section-background {
+.restaurant-preview-section .section-background,
+.restaurant-categories-section .section-background {
   display: none;
 }
 

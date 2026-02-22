@@ -1,0 +1,377 @@
+<div class="restaurant-categories color-{{ section.settings.color_scheme }}">
+  <div class="restaurant-categories__wrapper" style="
+    --rc-card-radius: {{ section.settings.card_radius }}px;
+    --rc-card-gap: {{ section.settings.card_gap }}px;
+    --rc-heading-size: {{ section.settings.heading_size }}px;
+    --rc-title-size: {{ section.settings.title_size }}px;
+  ">
+    {%- comment -%} Section Heading {%- endcomment -%}
+    {%- if section.settings.heading != blank -%}
+      <div class="restaurant-categories__header">
+        <div class="restaurant-categories__heading-wrap">
+          <span class="restaurant-categories__heading-line"></span>
+          <span class="restaurant-categories__heading-diamond">&#9671;</span>
+          <h2 class="restaurant-categories__heading">{{ section.settings.heading }}</h2>
+          <span class="restaurant-categories__heading-diamond">&#9671;</span>
+          <span class="restaurant-categories__heading-line"></span>
+        </div>
+        {%- if section.settings.subheading != blank -%}
+          <p class="restaurant-categories__subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Collection Cards Grid {%- endcomment -%}
+    <div class="restaurant-categories__grid">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'collection_card' -%}
+          {%- assign collection = block.settings.collection -%}
+          <a
+            href="{{ collection.url | default: '#' }}"
+            class="restaurant-categories__card"
+            {{ block.shopify_attributes }}
+          >
+            <div class="restaurant-categories__card-media">
+              {%- if block.settings.image != blank -%}
+                <img
+                  src="{{ block.settings.image | image_url: width: 800 }}"
+                  alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+                  loading="lazy"
+                  class="restaurant-categories__card-img"
+                >
+              {%- elsif collection.featured_image != blank -%}
+                <img
+                  src="{{ collection.featured_image | image_url: width: 800 }}"
+                  alt="{{ collection.featured_image.alt | default: collection.title | escape }}"
+                  loading="lazy"
+                  class="restaurant-categories__card-img"
+                >
+              {%- else -%}
+                <div class="restaurant-categories__card-img restaurant-categories__card-img--placeholder"></div>
+              {%- endif -%}
+              <div class="restaurant-categories__card-overlay"></div>
+            </div>
+            <div class="restaurant-categories__card-content">
+              <h3 class="restaurant-categories__card-title">
+                {{ block.settings.title | default: collection.title | default: 'Collection' }}
+              </h3>
+              {%- if section.settings.show_product_count and collection != blank -%}
+                <span class="restaurant-categories__card-count">{{ collection.products_count }} {{ collection.products_count | pluralize: 'product', 'products' }}</span>
+              {%- endif -%}
+            </div>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .restaurant-categories {
+    background: var(--restaurant-dark, #0D0D0D);
+    color: #fff;
+    padding: clamp(3rem, 8vw, 6rem) 0;
+  }
+
+  .restaurant-categories__wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 clamp(1.5rem, 4vw, 3rem);
+  }
+
+  /* Header */
+  .restaurant-categories__header {
+    text-align: center;
+    margin-bottom: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .restaurant-categories__heading-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75em;
+    margin-bottom: 1rem;
+  }
+
+  .restaurant-categories__heading {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    font-size: var(--rc-heading-size, 42px);
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+    color: #fff;
+  }
+
+  .restaurant-categories__heading-line {
+    display: inline-block;
+    width: clamp(20px, 5vw, 50px);
+    height: 1px;
+    background: var(--restaurant-accent, #F98760);
+    flex-shrink: 0;
+  }
+
+  .restaurant-categories__heading-diamond {
+    font-size: 0.4em;
+    color: var(--restaurant-accent, #F98760);
+    flex-shrink: 0;
+  }
+
+  .restaurant-categories__subheading {
+    font-family: var(--font-body--family);
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+    margin: 0;
+  }
+
+  /* Grid */
+  .restaurant-categories__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--rc-card-gap, 16px);
+  }
+
+  @media screen and (min-width: 750px) {
+    .restaurant-categories__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 479px) {
+    .restaurant-categories__grid {
+      grid-template-columns: 1fr;
+      gap: var(--rc-card-gap, 12px);
+    }
+  }
+
+  /* Card */
+  .restaurant-categories__card {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 5;
+    border-radius: var(--rc-card-radius, 16px);
+    overflow: hidden;
+    text-decoration: none;
+    color: #fff;
+  }
+
+  @media screen and (min-width: 750px) {
+    .restaurant-categories__card {
+      aspect-ratio: 3 / 4.5;
+    }
+  }
+
+  .restaurant-categories__card-media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .restaurant-categories__card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .restaurant-categories__card:hover .restaurant-categories__card-img {
+    transform: scale(1.06);
+  }
+
+  .restaurant-categories__card-img--placeholder {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  }
+
+  .restaurant-categories__card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.4) 35%,
+      rgba(0, 0, 0, 0.1) 60%,
+      transparent 100%
+    );
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .restaurant-categories__card:hover .restaurant-categories__card-overlay {
+    opacity: 0.9;
+  }
+
+  /* Card Content */
+  .restaurant-categories__card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    z-index: 1;
+  }
+
+  .restaurant-categories__card-title {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    font-size: var(--rc-title-size, 16px);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0;
+    line-height: 1.2;
+    transition: color 0.35s ease;
+  }
+
+  .restaurant-categories__card:hover .restaurant-categories__card-title {
+    color: var(--restaurant-accent, #F98760);
+  }
+
+  .restaurant-categories__card-count {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 0.5em;
+    letter-spacing: 0.05em;
+  }
+
+  /* Elegant border on hover */
+  .restaurant-categories__card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--rc-card-radius, 16px);
+    border: 1px solid transparent;
+    transition: border-color 0.4s ease;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .restaurant-categories__card:hover::before {
+    border-color: var(--restaurant-accent, #F98760);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collection Categories",
+  "tag": "section",
+  "class": "restaurant-categories-section",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "НАШИТЕ КАТЕГОРИИ"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Открийте нашето разнообразие"
+    },
+    {
+      "type": "header",
+      "content": "Card settings"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card roundness",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Spacing between cards",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "Show product count",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Section heading size",
+      "min": 24,
+      "max": 72,
+      "step": 2,
+      "default": 42,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Card title size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-5"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_card",
+      "name": "Collection Card",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Custom title",
+          "info": "Leave blank to use collection title"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom image",
+          "info": "Leave blank to use collection featured image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Categories",
+      "category": "t:categories.commerce",
+      "blocks": [
+        { "type": "collection_card", "settings": { "title": "СУШИ" } },
+        { "type": "collection_card", "settings": { "title": "САШИМИ" } },
+        { "type": "collection_card", "settings": { "title": "РАМЕН" } },
+        { "type": "collection_card", "settings": { "title": "НАПИТКИ" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
