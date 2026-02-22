@@ -8,6 +8,33 @@
   --restaurant-sale: #F98760;
 }
 
+/* Kill default section spacing on restaurant sections */
+.shopify-section:has(.restaurant-menu-section),
+.shopify-section:has(.restaurant-contact-section),
+.shopify-section:has(.restaurant-about-section),
+.shopify-section:has(.restaurant-preview-section),
+.shopify-section:has(.hero-wrapper) {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: var(--restaurant-dark) !important;
+}
+
+.restaurant-menu-section,
+.restaurant-contact-section,
+.restaurant-about-section,
+.restaurant-preview-section {
+  margin: 0;
+  padding: 0;
+  background: var(--restaurant-dark);
+}
+
+.restaurant-menu-section .section-background,
+.restaurant-contact-section .section-background,
+.restaurant-about-section .section-background,
+.restaurant-preview-section .section-background {
+  display: none;
+}
+
 /* ================================
  * Restaurant Header Nav
  * ================================ */
