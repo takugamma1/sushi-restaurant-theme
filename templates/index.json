@@ -147,6 +147,7 @@
           "type": "category",
           "settings": {
             "title": "НОВО",
+            "tab_label": "",
             "collection": "test",
             "max_products": 14,
             "sale_badge_text": "Най-продаван"
@@ -156,6 +157,7 @@
           "type": "category",
           "settings": {
             "title": "МАНГО МЕНЮ",
+            "tab_label": "",
             "collection": "test",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
@@ -171,8 +173,16 @@
         "hero_image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.32.png",
         "hero_heading": "НАШЕТО МЕНЮ",
         "hero_subheading": "Най-доброто суши в града",
+        "cta_label": "ПОРЪЧАЙ ЗА ВКЪЩИ",
+        "cta_link": "",
+        "category_border_radius": 16,
+        "category_border_width": 2,
         "heading_size": 80,
         "subheading_size": 20,
+        "tab_size": 11,
+        "item_title_size": 22,
+        "item_desc_size": 18,
+        "price_size": 22,
         "color_scheme": ""
       }
     },
