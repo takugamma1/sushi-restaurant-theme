@@ -221,19 +221,27 @@
       "blocks": {
         "instagram_image_dURXHz": {
           "type": "instagram_image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png"
+          }
         },
         "instagram_image_E4WGGt": {
           "type": "instagram_image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.32.png"
+          }
         },
         "instagram_image_gWg3tn": {
           "type": "instagram_image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.40.png"
+          }
         },
         "instagram_image_nJp7fe": {
           "type": "instagram_image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.50.png"
+          }
         },
         "footer_link_rMiEzU": {
           "type": "footer_link",
