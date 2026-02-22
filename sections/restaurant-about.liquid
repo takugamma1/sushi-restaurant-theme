@@ -253,7 +253,7 @@
     pointer-events: none;
   }
 
-  /* Curvy footer tab on cards */
+  /* Footer tab on cards */
   .ra__card-footer {
     position: absolute;
     bottom: 0;
@@ -261,20 +261,10 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 14px 12px 26px;
+    padding: 10px 16px 12px 24px;
     z-index: 1;
     background: var(--restaurant-dark, #0D0D0D);
     border-top-left-radius: 20px;
-  }
-
-  .ra__card-footer::before {
-    content: '';
-    position: absolute;
-    bottom: 100%;
-    left: 0;
-    width: 20px;
-    height: 20px;
-    background: radial-gradient(circle at 100% 100%, transparent 19.5px, var(--restaurant-dark, #0D0D0D) 20px);
   }
 
   .ra__card-label {
