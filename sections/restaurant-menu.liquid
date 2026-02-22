@@ -1,0 +1,180 @@
+<restaurant-menu-component class="restaurant-menu color-{{ section.settings.color_scheme }}">
+  <div class="restaurant-menu__hero">
+    {%- if section.settings.hero_image != blank -%}
+      <img
+        class="restaurant-menu__hero-image"
+        src="{{ section.settings.hero_image | image_url: width: 1200 }}"
+        alt="{{ section.settings.hero_image.alt | escape }}"
+        width="{{ section.settings.hero_image.width }}"
+        height="{{ section.settings.hero_image.height }}"
+        loading="eager"
+      >
+    {%- else -%}
+      <div class="restaurant-menu__hero-image" style="background: #1a1a1a;"></div>
+    {%- endif -%}
+    <div class="restaurant-menu__hero-overlay">
+      <p class="restaurant-menu__hero-sub">{{ section.settings.hero_subheading }}</p>
+      <h1 class="restaurant-menu__hero-title">{{ section.settings.hero_heading }}</h1>
+    </div>
+  </div>
+
+  <div class="restaurant-menu__content">
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'category' -%}
+          {%- assign collection = block.settings.collection -%}
+          {%- if collection != blank -%}
+            <div class="restaurant-menu-section" {{ block.shopify_attributes }}>
+              <div class="restaurant-menu-section__heading">
+                <span class="restaurant-menu-section__heading-line"></span>
+                <span class="restaurant-menu-section__heading-diamond">◇</span>
+                <span>{{ block.settings.title | default: collection.title | upcase }}</span>
+                <span class="restaurant-menu-section__heading-diamond">◇</span>
+                <span class="restaurant-menu-section__heading-line"></span>
+              </div>
+
+              {%- for product in collection.products limit: block.settings.max_products -%}
+                <div
+                  class="restaurant-menu-item{% if product.compare_at_price > product.price %} restaurant-menu-item--highlighted{% endif %}"
+                  data-restaurant-add-to-cart
+                  data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                >
+                  {%- if product.featured_image != blank -%}
+                    <img
+                      class="restaurant-menu-item__image"
+                      src="{{ product.featured_image | image_url: width: 120, height: 120, crop: 'center' }}"
+                      alt="{{ product.featured_image.alt | escape }}"
+                      width="50"
+                      height="50"
+                      loading="lazy"
+                    >
+                  {%- else -%}
+                    <div class="restaurant-menu-item__image" style="background: #2a2a2a;"></div>
+                  {%- endif -%}
+
+                  <div class="restaurant-menu-item__info">
+                    <div class="restaurant-menu-item__name">
+                      {{ product.title }}
+                      {%- if product.metafields.custom.spicy -%}
+                        <span aria-label="Spicy">🌶️</span>
+                      {%- endif -%}
+                    </div>
+                    <div class="restaurant-menu-item__desc">
+                      {{ product.description | strip_html | truncate: 80 }}
+                    </div>
+                  </div>
+
+                  <div class="restaurant-menu-item__price-area">
+                    {%- if product.compare_at_price > product.price -%}
+                      <span class="restaurant-menu-item__price--compare">
+                        {{ product.compare_at_price | money }}
+                      </span>
+                    {%- endif -%}
+                    <span class="restaurant-menu-item__price">
+                      {{ product.price | money }}
+                    </span>
+                    {%- if product.compare_at_price > product.price -%}
+                      <span class="restaurant-menu-item__badge">
+                        {{ block.settings.sale_badge_text | default: 'Най-продаван' }}
+                      </span>
+                    {%- endif -%}
+                  </div>
+                </div>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+      {%- endcase -%}
+    {%- endfor -%}
+  </div>
+</restaurant-menu-component>
+
+<script
+  src="{{ 'restaurant-menu.js' | asset_url }}"
+  type="module"
+></script>
+
+{% schema %}
+{
+  "name": "Restaurant Menu",
+  "tag": "section",
+  "class": "restaurant-menu-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image"
+    },
+    {
+      "type": "text",
+      "id": "hero_heading",
+      "label": "Hero Heading",
+      "default": "НАШЕТО МЕНЮ"
+    },
+    {
+      "type": "text",
+      "id": "hero_subheading",
+      "label": "Hero Subheading",
+      "default": "Най-доброто суши в града"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-5"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Menu Category",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Category Title"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "range",
+          "id": "max_products",
+          "label": "Max products",
+          "min": 1,
+          "max": 20,
+          "step": 1,
+          "default": 10
+        },
+        {
+          "type": "text",
+          "id": "sale_badge_text",
+          "label": "Sale badge text",
+          "default": "Най-продаван"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Restaurant Menu",
+      "category": "Custom",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "title": "НОВО"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "МАНГО МЕНЮ"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

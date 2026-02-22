@@ -1,0 +1,37 @@
+{
+  "sections": {
+    "main": {
+      "type": "restaurant-menu",
+      "blocks": {
+        "category_new": {
+          "type": "category",
+          "settings": {
+            "title": "НОВО",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
+        "category_mango": {
+          "type": "category",
+          "settings": {
+            "title": "МАНГО МЕНЮ",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        }
+      },
+      "block_order": [
+        "category_new",
+        "category_mango"
+      ],
+      "settings": {
+        "hero_heading": "НАШЕТО МЕНЮ",
+        "hero_subheading": "Най-доброто суши в града",
+        "color_scheme": "scheme-5"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

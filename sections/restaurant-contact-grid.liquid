@@ -1,0 +1,321 @@
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div class="restaurant-bento color-{{ section.settings.color_scheme }}">
+
+  {%- comment -%} Column 1: Hero image with "ПОСЛЕДВАЙТЕ НИ" {%- endcomment -%}
+  <div class="restaurant-bento__cell restaurant-bento__cell--hero">
+    {%- if section.settings.hero_image != blank -%}
+      <img
+        src="{{ section.settings.hero_image | image_url: width: 800 }}"
+        alt="{{ section.settings.hero_image.alt | escape }}"
+        loading="lazy"
+      >
+    {%- endif -%}
+    <div class="restaurant-bento__cell--hero-overlay">
+      <h2 class="restaurant-follow-heading">{{ section.settings.follow_heading | default: 'ПОСЛЕДВАЙТЕ НИ' }}</h2>
+    </div>
+  </div>
+
+  {%- comment -%} Column 2 top: Working Hours {%- endcomment -%}
+  <div class="restaurant-bento__cell">
+    <div class="restaurant-hours__title">
+      <div class="restaurant-menu-section__heading">
+        <span class="restaurant-menu-section__heading-line"></span>
+        <span class="restaurant-menu-section__heading-diamond">◇</span>
+        <span>{{ section.settings.hours_title | default: 'РАБОТНО ВРЕМЕ' }}</span>
+        <span class="restaurant-menu-section__heading-diamond">◇</span>
+        <span class="restaurant-menu-section__heading-line"></span>
+      </div>
+    </div>
+
+    {%- assign days = 'Понеделник,Вторник,Сряда,Четвъртък,Петък,Събота и Неделя' | split: ',' -%}
+    {%- assign day_keys = 'mon,tue,wed,thu,fri,weekend' | split: ',' -%}
+    {%- for i in (0..5) -%}
+      {%- assign time_key = 'hours_' | append: day_keys[i] -%}
+      {%- assign time_value = section.settings[time_key] | default: '16:00 - 22:30' -%}
+      <div class="restaurant-hours__row">
+        <span class="restaurant-hours__day">{{ days[i] }}</span>
+        <span class="restaurant-hours__dots"></span>
+        <span class="restaurant-hours__time">{{ time_value }}</span>
+      </div>
+    {%- endfor -%}
+  </div>
+
+  {%- comment -%} Column 3 top: Instagram grid {%- endcomment -%}
+  <div class="restaurant-bento__cell restaurant-bento__cell--instagram">
+    <span class="restaurant-bento__ig-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+    </span>
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'instagram_image' and block.settings.image != blank -%}
+        <img
+          src="{{ block.settings.image | image_url: width: 300, height: 300, crop: 'center' }}"
+          alt="{{ block.settings.image.alt | default: 'Instagram' | escape }}"
+          loading="lazy"
+          {{ block.shopify_attributes }}
+        >
+      {%- else -%}
+        <div style="background: #1a1a1a;" {{ block.shopify_attributes }}></div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  {%- comment -%} Column 2 bottom: Map {%- endcomment -%}
+  <div class="restaurant-bento__cell restaurant-bento__map">
+    {%- if section.settings.map_address != blank -%}
+      <iframe
+        src="https://maps.google.com/maps?q={{ section.settings.map_address | url_encode }}&t=&z=14&ie=UTF8&iwloc=&output=embed"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Map"
+      ></iframe>
+    {%- else -%}
+      <div style="background: #1a1a1a; width: 100%; min-height: 250px;"></div>
+    {%- endif -%}
+    {%- if section.settings.map_link != blank -%}
+      <a href="{{ section.settings.map_link }}" class="restaurant-bento__map-link" target="_blank" rel="noopener">
+        ВИЖ В ГУГЪЛ МАПС →
+      </a>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Column 3 bottom: Contact Info {%- endcomment -%}
+  <div class="restaurant-bento__cell">
+    <div class="restaurant-contact__title">
+      <div class="restaurant-menu-section__heading">
+        <span class="restaurant-menu-section__heading-line"></span>
+        <span class="restaurant-menu-section__heading-diamond">◇</span>
+        <span>НАШИТЕ КОРДИНАТИ</span>
+        <span class="restaurant-menu-section__heading-diamond">◇</span>
+        <span class="restaurant-menu-section__heading-line"></span>
+      </div>
+    </div>
+
+    <div class="restaurant-contact__row">
+      <span class="restaurant-contact__label">ADDRESS</span>
+      <span class="restaurant-contact__value">{{ section.settings.address | default: '23 Greenfield Avenue, Prague 120 00' }}</span>
+    </div>
+    <div class="restaurant-contact__row">
+      <span class="restaurant-contact__label">PHONE</span>
+      <span class="restaurant-contact__value">
+        <a href="tel:{{ section.settings.phone }}" style="color: inherit; text-decoration: none;">{{ section.settings.phone | default: '+49 1234 567890' }}</a>
+      </span>
+    </div>
+    <div class="restaurant-contact__row">
+      <span class="restaurant-contact__label">EMAIL</span>
+      <span class="restaurant-contact__value">
+        <a href="mailto:{{ section.settings.email }}" style="color: inherit; text-decoration: none;">{{ section.settings.email | default: 'email@example.com' }}</a>
+      </span>
+    </div>
+    <div class="restaurant-contact__row">
+      <span class="restaurant-contact__label">FOLLOW</span>
+      <span class="restaurant-contact__social">
+        {%- if section.settings.social_facebook != blank -%}
+          <a href="{{ section.settings.social_facebook }}" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+        {%- endif -%}
+        {%- if section.settings.social_instagram != blank -%}
+          <a href="{{ section.settings.social_instagram }}" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+        {%- endif -%}
+        {%- if section.settings.social_twitter != blank -%}
+          <a href="{{ section.settings.social_twitter }}" target="_blank" rel="noopener" aria-label="Twitter">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+          </a>
+        {%- endif -%}
+      </span>
+    </div>
+  </div>
+</div>
+
+{%- comment -%} Footer nav {%- endcomment -%}
+<div class="color-{{ section.settings.color_scheme }}" style="background: var(--color-background);">
+  <div class="restaurant-footer-nav">
+    <span>НАВИГАЦИЯ</span>
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'footer_link' -%}
+        <span class="restaurant-footer-nav__sep">◇</span>
+        <a href="{{ block.settings.link }}" {{ block.shopify_attributes }}>{{ block.settings.label }}</a>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact Grid & Footer",
+  "tag": "section",
+  "class": "restaurant-contact-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero image (left column)"
+    },
+    {
+      "type": "text",
+      "id": "follow_heading",
+      "label": "Follow heading",
+      "default": "ПОСЛЕДВАЙТЕ НИ"
+    },
+    {
+      "type": "header",
+      "content": "Working Hours"
+    },
+    {
+      "type": "text",
+      "id": "hours_title",
+      "label": "Hours title",
+      "default": "РАБОТНО ВРЕМЕ"
+    },
+    {
+      "type": "text",
+      "id": "hours_mon",
+      "label": "Monday",
+      "default": "16:00 - 22:30"
+    },
+    {
+      "type": "text",
+      "id": "hours_tue",
+      "label": "Tuesday",
+      "default": "16:00 - 22:30"
+    },
+    {
+      "type": "text",
+      "id": "hours_wed",
+      "label": "Wednesday",
+      "default": "16:00 - 22:30"
+    },
+    {
+      "type": "text",
+      "id": "hours_thu",
+      "label": "Thursday",
+      "default": "16:00 - 22:30"
+    },
+    {
+      "type": "text",
+      "id": "hours_fri",
+      "label": "Friday",
+      "default": "16:00 - 22:30"
+    },
+    {
+      "type": "text",
+      "id": "hours_weekend",
+      "label": "Sat & Sun",
+      "default": "16:00 - 22:30"
+    },
+    {
+      "type": "header",
+      "content": "Map"
+    },
+    {
+      "type": "text",
+      "id": "map_address",
+      "label": "Map address",
+      "default": "23 Greenfield Avenue, Prague"
+    },
+    {
+      "type": "url",
+      "id": "map_link",
+      "label": "Google Maps link"
+    },
+    {
+      "type": "header",
+      "content": "Contact Info"
+    },
+    {
+      "type": "text",
+      "id": "address",
+      "label": "Address",
+      "default": "23 Greenfield Avenue, Prague 120 00"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone",
+      "default": "+49 1234 567890"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email",
+      "default": "email@example.com"
+    },
+    {
+      "type": "header",
+      "content": "Social"
+    },
+    {
+      "type": "url",
+      "id": "social_facebook",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "url",
+      "id": "social_instagram",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "social_twitter",
+      "label": "Twitter URL"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-5"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "instagram_image",
+      "name": "Instagram Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    },
+    {
+      "type": "footer_link",
+      "name": "Footer Link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Link"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact Grid & Footer",
+      "category": "Custom",
+      "blocks": [
+        { "type": "instagram_image" },
+        { "type": "instagram_image" },
+        { "type": "instagram_image" },
+        { "type": "instagram_image" },
+        { "type": "footer_link", "settings": { "label": "Licensing" } },
+        { "type": "footer_link", "settings": { "label": "Styleguide" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

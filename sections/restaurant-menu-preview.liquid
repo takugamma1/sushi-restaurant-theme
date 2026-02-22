@@ -1,0 +1,87 @@
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div class="restaurant-preview color-{{ section.settings.color_scheme }}">
+  <div class="restaurant-preview__image-panel">
+    {%- if section.settings.main_image != blank -%}
+      <img
+        src="{{ section.settings.main_image | image_url: width: 800 }}"
+        alt="{{ section.settings.main_image.alt | escape }}"
+        loading="lazy"
+      >
+    {%- endif -%}
+    <div class="restaurant-preview__image-overlay">
+      <h2 class="restaurant-menu__hero-title">{{ section.settings.heading | default: 'МЕНЮ' }}</h2>
+    </div>
+  </div>
+  <div class="restaurant-preview__side">
+    {%- for block in section.blocks -%}
+      {%- if block.settings.image != blank -%}
+        <img
+          src="{{ block.settings.image | image_url: width: 500 }}"
+          alt="{{ block.settings.image.alt | escape }}"
+          loading="lazy"
+          {{ block.shopify_attributes }}
+        >
+      {%- else -%}
+        <div style="background: #1a1a1a; aspect-ratio: 1;" {{ block.shopify_attributes }}></div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Menu Preview",
+  "tag": "section",
+  "class": "restaurant-preview-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "main_image",
+      "label": "Main Image"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "МЕНЮ"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "default": "/pages/menu"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-5"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Menu Preview",
+      "category": "Custom",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}

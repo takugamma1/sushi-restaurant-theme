@@ -63,6 +63,10 @@
     render 'header-actions', customer_account_menu: section.settings.customer_account_menu, display_style: section.settings.actions_display_style, section: section
   endcapture
 
+  capture restaurant_nav
+    render 'header-restaurant-nav'
+  endcapture
+
   if shop.customer_accounts_enabled
     assign search_class = 'search-action--hidden-on-drawer'
   endif
@@ -148,7 +152,11 @@
     assign collapse_header_paddings_class = 'header--collapse-row-paddings'
   endif
 
-  assign class = 'header'
+  assign class = 'header restaurant-mode'
+
+  if template.suffix == 'menu'
+    assign class = class | append: ' restaurant-mode--menu-page'
+  endif
 
   if transparent_color_scheme
     assign class = class | append: ' ' | append: transparent_color_scheme
@@ -368,7 +376,8 @@
         actions: actions,
         localization: localization_markup,
         search: search,
-        drawer_search: drawer_search
+        drawer_search: drawer_search,
+        restaurant_nav: restaurant_nav
       %}
     {% endcapture %}
 
