@@ -146,28 +146,28 @@
         "collection_card_TR6DLz": {
           "type": "collection_card",
           "settings": {
-            "collection": "",
+            "collection": "test",
             "title": "СУШИ"
           }
         },
         "collection_card_eFaVYX": {
           "type": "collection_card",
           "settings": {
-            "collection": "",
+            "collection": "test",
             "title": "САШИМИ"
           }
         },
         "collection_card_KF63HC": {
           "type": "collection_card",
           "settings": {
-            "collection": "",
+            "collection": "test",
             "title": "РАМЕН"
           }
         },
         "collection_card_QRjdCy": {
           "type": "collection_card",
           "settings": {
-            "collection": "",
+            "collection": "test",
             "title": "НАПИТКИ"
           }
         }
@@ -180,12 +180,12 @@
       ],
       "name": "Collection Categories",
       "settings": {
-        "heading": "НАШИТЕ КАТЕГОРИИ",
+        "heading": "СТИЛОВЕ",
         "subheading": "Открийте нашето разнообразие",
-        "card_radius": 16,
-        "card_gap": 16,
+        "card_radius": 10,
+        "card_gap": 8,
         "show_product_count": false,
-        "heading_size": 42,
+        "heading_size": 50,
         "title_size": 16,
         "color_scheme": ""
       }
