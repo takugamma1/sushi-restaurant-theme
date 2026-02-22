@@ -1,4 +1,14 @@
-<restaurant-menu-component class="restaurant-menu color-{{ section.settings.color_scheme }}">
+<restaurant-menu-component
+  class="restaurant-menu color-{{ section.settings.color_scheme }}"
+  style="
+    --rm-heading-size: {{ section.settings.heading_size }}px;
+    --rm-subheading-size: {{ section.settings.subheading_size }}px;
+    --rm-item-title-size: {{ section.settings.item_title_size }}px;
+    --rm-item-desc-size: {{ section.settings.item_desc_size }}px;
+    --rm-price-size: {{ section.settings.price_size }}px;
+    --rm-tab-size: {{ section.settings.tab_size }}px;
+  "
+>
   <div class="restaurant-menu__hero">
     {%- if section.settings.hero_image != blank -%}
       <img
@@ -13,92 +23,413 @@
       <div class="restaurant-menu__hero-image" style="background: #1a1a1a;"></div>
     {%- endif -%}
     <div class="restaurant-menu__hero-overlay">
-      <p class="restaurant-menu__hero-sub" style="font-size:{{ section.settings.subheading_size }}px;">{{ section.settings.hero_subheading }}</p>
-      <h1 class="restaurant-menu__hero-title" style="font-size:{{ section.settings.heading_size }}px;">{{ section.settings.hero_heading }}</h1>
+      <p class="restaurant-menu__hero-sub">{{ section.settings.hero_subheading }}</p>
+      <h1 class="restaurant-menu__hero-title">{{ section.settings.hero_heading }}</h1>
     </div>
   </div>
 
   <div class="restaurant-menu__content">
-    {%- for block in section.blocks -%}
-      {%- case block.type -%}
-        {%- when 'category' -%}
-          {%- assign collection = block.settings.collection -%}
-          {%- if collection != blank -%}
-            <div class="restaurant-menu-section" {{ block.shopify_attributes }}>
-              <div class="restaurant-menu-section__heading" style="font-size:{{ block.settings.title_size }}px;">
-                <span class="restaurant-menu-section__heading-line"></span>
-                <span class="restaurant-menu-section__heading-diamond">◇</span>
-                <span>{{ block.settings.title | default: collection.title | upcase }}</span>
-                <span class="restaurant-menu-section__heading-diamond">◇</span>
-                <span class="restaurant-menu-section__heading-line"></span>
-              </div>
+    {%- comment -%} Category tabs {%- endcomment -%}
+    {%- if section.blocks.size > 1 -%}
+      <div class="rm-tabs" ref="tabs">
+        {%- assign tab_idx = 0 -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'category' -%}
+            <button
+              class="rm-tab{% if tab_idx == 0 %} rm-tab--active{% endif %}"
+              data-tab="{{ tab_idx }}"
+              type="button"
+            >{{ block.settings.tab_label | default: block.settings.title }}</button>
+            {%- assign tab_idx = tab_idx | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
 
-              {%- for product in collection.products limit: block.settings.max_products -%}
-                <div
-                  class="restaurant-menu-item{% if product.compare_at_price > product.price %} restaurant-menu-item--highlighted{% endif %}"
-                  data-restaurant-add-to-cart
-                  data-variant-id="{{ product.selected_or_first_available_variant.id }}"
-                >
+    {%- comment -%} Category panels {%- endcomment -%}
+    {%- assign panel_idx = 0 -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'category' -%}
+        {%- assign collection = block.settings.collection -%}
+        <div
+          class="rm-panel{% if panel_idx == 0 %} rm-panel--active{% endif %}"
+          data-panel="{{ panel_idx }}"
+          {{ block.shopify_attributes }}
+        >
+          {%- if collection != blank -%}
+            {%- comment -%} Decorated category heading {%- endcomment -%}
+            <div class="rm-cat-heading">
+              <span class="rm-cat-heading__line"></span>
+              <span class="rm-cat-heading__diamond">◇</span>
+              <span class="rm-cat-heading__text">{{ block.settings.title | default: collection.title | upcase }}</span>
+              <span class="rm-cat-heading__diamond">◇</span>
+              <span class="rm-cat-heading__line"></span>
+            </div>
+
+            {%- comment -%} Product items {%- endcomment -%}
+            {%- for product in collection.products limit: block.settings.max_products -%}
+              <div
+                class="rm-item{% if product.compare_at_price > product.price %} rm-item--sale{% endif %}"
+                data-restaurant-add-to-cart
+                data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+              >
+                <div class="rm-item__thumb">
                   {%- if product.featured_image != blank -%}
                     <img
-                      class="restaurant-menu-item__image"
                       src="{{ product.featured_image | image_url: width: 120, height: 120, crop: 'center' }}"
                       alt="{{ product.featured_image.alt | escape }}"
-                      width="50"
-                      height="50"
+                      width="56"
+                      height="56"
                       loading="lazy"
                     >
                   {%- else -%}
-                    <div class="restaurant-menu-item__image" style="background: #2a2a2a;"></div>
+                    <div class="rm-item__thumb-placeholder"></div>
                   {%- endif -%}
+                </div>
 
-                  <div class="restaurant-menu-item__info">
-                    <div class="restaurant-menu-item__name">
-                      {{ product.title }}
-                      {%- if product.metafields.custom.spicy -%}
-                        <span aria-label="Spicy">🌶️</span>
-                      {%- endif -%}
-                    </div>
-                    <div class="restaurant-menu-item__desc">
-                      {{ product.description | strip_html | truncate: 80 }}
-                    </div>
+                <div class="rm-item__info">
+                  <div class="rm-item__name">
+                    {{ product.title }}
+                    {%- if product.metafields.custom.spicy -%}
+                      <span class="rm-item__icon" aria-label="Spicy">🌶️</span>
+                    {%- endif -%}
+                    {%- if product.metafields.custom.vegan -%}
+                      <span class="rm-item__icon" aria-label="Vegan">🌿</span>
+                    {%- endif -%}
                   </div>
-
-                  <div class="restaurant-menu-item__price-area">
-                    {%- if product.compare_at_price > product.price -%}
-                      <span class="restaurant-menu-item__price--compare">
-                        {{ product.compare_at_price | money }}
-                      </span>
-                    {%- endif -%}
-                    <span class="restaurant-menu-item__price">
-                      {{ product.price | money }}
-                    </span>
-                    {%- if product.compare_at_price > product.price -%}
-                      <span class="restaurant-menu-item__badge">
-                        {{ block.settings.sale_badge_text | default: 'Най-продаван' }}
-                      </span>
-                    {%- endif -%}
+                  <div class="rm-item__desc">
+                    {{ product.description | strip_html | truncate: 100 }}
                   </div>
                 </div>
-              {%- endfor -%}
-            </div>
+
+                <div class="rm-item__price-col">
+                  {%- if product.compare_at_price > product.price -%}
+                    <span class="rm-item__price--old">{{ product.compare_at_price | money }}</span>
+                  {%- endif -%}
+                  <span class="rm-item__price">{{ product.price | money }}</span>
+                  {%- if product.compare_at_price > product.price -%}
+                    <span class="rm-item__badge">{{ block.settings.sale_badge_text | default: 'Най-продаван' }}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endfor -%}
           {%- endif -%}
-      {%- endcase -%}
+        </div>
+        {%- assign panel_idx = panel_idx | plus: 1 -%}
+      {%- endif -%}
     {%- endfor -%}
+
+    {%- comment -%} Bottom CTA button {%- endcomment -%}
+    {%- if section.settings.cta_label != blank -%}
+      <div class="rm-cta-wrap">
+        <a href="{{ section.settings.cta_link | default: '#' }}" class="rm-cta">
+          {{ section.settings.cta_label }}
+        </a>
+      </div>
+    {%- endif -%}
   </div>
 </restaurant-menu-component>
 
-<script
-  src="{{ 'restaurant-menu.js' | asset_url }}"
-  type="module"
-></script>
+<script src="{{ 'restaurant-menu.js' | asset_url }}" type="module"></script>
+
+{% stylesheet %}
+  restaurant-menu-component {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 100vh;
+    background: var(--restaurant-dark, #0D0D0D);
+    color: #fff;
+  }
+
+  @media (min-width: 750px) {
+    restaurant-menu-component {
+      grid-template-columns: 42% 1fr;
+    }
+  }
+
+  .restaurant-menu__hero {
+    position: relative;
+    overflow: hidden;
+    min-height: 40vh;
+  }
+
+  @media (min-width: 750px) {
+    .restaurant-menu__hero {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+  }
+
+  .restaurant-menu__hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+  }
+
+  .restaurant-menu__hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.15) 50%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem;
+  }
+
+  .restaurant-menu__hero-sub {
+    font-family: var(--font-body--family);
+    font-style: italic;
+    font-size: var(--rm-subheading-size, 16px);
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 0.25em;
+  }
+
+  .restaurant-menu__hero-title {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    font-size: var(--rm-heading-size, 48px);
+    line-height: 1.05;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  .restaurant-menu__content {
+    padding: 2rem 2.5rem;
+    overflow-y: auto;
+  }
+
+  /* Category tabs */
+  .rm-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .rm-tab {
+    font-size: var(--rm-tab-size, 11px);
+    font-family: var(--font-body--family);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .rm-tab:hover {
+    color: rgba(255,255,255,0.8);
+    border-color: rgba(255,255,255,0.3);
+  }
+
+  .rm-tab--active {
+    color: var(--restaurant-accent, #F98760);
+    border-color: var(--restaurant-accent, #F98760);
+    background: rgba(249, 135, 96, 0.08);
+  }
+
+  /* Panels */
+  .rm-panel {
+    display: none;
+  }
+
+  .rm-panel--active {
+    display: block;
+  }
+
+  /* Category heading */
+  .rm-cat-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    margin-bottom: 1.5rem;
+  }
+
+  .rm-cat-heading__text {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    font-size: var(--rm-item-title-size, 14px);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--restaurant-accent, #F98760);
+    white-space: nowrap;
+  }
+
+  .rm-cat-heading__line {
+    display: inline-block;
+    width: 30px;
+    height: 1px;
+    background: var(--restaurant-accent, #F98760);
+    flex-shrink: 0;
+  }
+
+  .rm-cat-heading__diamond {
+    font-size: 0.5em;
+    color: var(--restaurant-accent, #F98760);
+    flex-shrink: 0;
+  }
+
+  /* Menu item row */
+  .rm-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+    transition: background 0.25s ease;
+    border-radius: 8px;
+  }
+
+  .rm-item:last-child {
+    border-bottom: none;
+  }
+
+  .rm-item:hover {
+    background: rgba(255,255,255,0.03);
+  }
+
+  .rm-item--sale {
+    background: rgba(249, 135, 96, 0.06);
+    border: 1px solid rgba(249, 135, 96, 0.15);
+    padding: 0.75rem 0.75rem;
+    margin-bottom: 4px;
+  }
+
+  /* Rounded thumbnail */
+  .rm-item__thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .rm-item__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 12px;
+  }
+
+  .rm-item__thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #2a2a2a;
+    border-radius: 12px;
+  }
+
+  /* Item info */
+  .rm-item__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .rm-item__name {
+    font-family: var(--font-body--family);
+    font-size: var(--rm-item-title-size, 14px);
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .rm-item__icon {
+    font-size: 0.85em;
+    flex-shrink: 0;
+  }
+
+  .rm-item__desc {
+    font-size: var(--rm-item-desc-size, 12px);
+    color: rgba(255,255,255,0.45);
+    line-height: 1.4;
+  }
+
+  /* Price column */
+  .rm-item__price-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+
+  .rm-item__price {
+    font-size: var(--rm-price-size, 14px);
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .rm-item__price--old {
+    font-size: calc(var(--rm-price-size, 14px) - 2px);
+    text-decoration: line-through;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .rm-item__badge {
+    background: var(--restaurant-accent, #F98760);
+    color: #fff;
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  /* Bottom CTA */
+  .rm-cta-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+  }
+
+  .rm-cta {
+    display: inline-block;
+    color: var(--restaurant-accent, #F98760);
+    border: 1px solid var(--restaurant-accent, #F98760);
+    background: transparent;
+    padding: 0.7em 2.5em;
+    font-family: var(--font-body--family);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.35s ease, color 0.35s ease;
+  }
+
+  .rm-cta:hover {
+    background: var(--restaurant-accent, #F98760);
+    color: #fff;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "Restaurant Menu",
   "tag": "section",
   "class": "restaurant-menu-section",
+  "disabled_on": { "groups": ["header", "footer"] },
   "settings": [
+    {
+      "type": "header",
+      "content": "Hero"
+    },
     {
       "type": "image_picker",
       "id": "hero_image",
@@ -111,9 +442,34 @@
       "default": "НАШЕТО МЕНЮ"
     },
     {
+      "type": "text",
+      "id": "hero_subheading",
+      "label": "Hero Subheading",
+      "default": "Най-доброто суши в града"
+    },
+    {
+      "type": "header",
+      "content": "Bottom button"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button label",
+      "default": "ПОРЪЧАЙ ЗА ВКЪЩИ"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
       "type": "range",
       "id": "heading_size",
-      "label": "Heading size",
+      "label": "Hero heading size",
       "min": 24,
       "max": 80,
       "step": 2,
@@ -121,19 +477,53 @@
       "unit": "px"
     },
     {
-      "type": "text",
-      "id": "hero_subheading",
-      "label": "Hero Subheading",
-      "default": "Най-доброто суши в града"
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Hero subheading size",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
     },
     {
       "type": "range",
-      "id": "subheading_size",
-      "label": "Subheading size",
-      "min": 10,
-      "max": 32,
+      "id": "tab_size",
+      "label": "Tab label size",
+      "min": 8,
+      "max": 16,
       "step": 1,
-      "default": 16,
+      "default": 11,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "item_title_size",
+      "label": "Item title size",
+      "min": 10,
+      "max": 22,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "item_desc_size",
+      "label": "Item description size",
+      "min": 9,
+      "max": 18,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "price_size",
+      "label": "Price size",
+      "min": 10,
+      "max": 22,
+      "step": 1,
+      "default": 14,
       "unit": "px"
     },
     {
@@ -151,17 +541,14 @@
         {
           "type": "text",
           "id": "title",
-          "label": "Category Title"
+          "label": "Category Title",
+          "default": "НОВО"
         },
         {
-          "type": "range",
-          "id": "title_size",
-          "label": "Title size",
-          "min": 10,
-          "max": 24,
-          "step": 1,
-          "default": 13,
-          "unit": "px"
+          "type": "text",
+          "id": "tab_label",
+          "label": "Tab label (short)",
+          "info": "Short name shown in the tab bar. Defaults to title if empty."
         },
         {
           "type": "collection",
@@ -191,18 +578,9 @@
       "name": "Restaurant Menu",
       "category": "t:categories.commerce",
       "blocks": [
-        {
-          "type": "category",
-          "settings": {
-            "title": "НОВО"
-          }
-        },
-        {
-          "type": "category",
-          "settings": {
-            "title": "МАНГО МЕНЮ"
-          }
-        }
+        { "type": "category", "settings": { "title": "МАНГО МЕНЮ / ПРОМОЦИИ", "tab_label": "MAKI" } },
+        { "type": "category", "settings": { "title": "УРАМАКИ", "tab_label": "URAMAKI" } },
+        { "type": "category", "settings": { "title": "СПЕЦИАЛНИ РУЛЦА", "tab_label": "SPECIAL ROLLS" } }
       ]
     }
   ]
