@@ -128,6 +128,9 @@
         "heading": "СУШИ БАР МАНГО",
         "cta_label": "ПОРЪЧАЙ СЕГА",
         "cta_link": "",
+        "heading_size": 56,
+        "subheading_size": 16,
+        "cta_size": 13,
         "autoplay": true,
         "autoplay_interval": 6,
         "height": "full",
@@ -144,8 +147,9 @@
           "type": "category",
           "settings": {
             "title": "НОВО",
+            "title_size": 24,
             "collection": "test",
-            "max_products": 10,
+            "max_products": 14,
             "sale_badge_text": "Най-продаван"
           }
         },
@@ -153,6 +157,7 @@
           "type": "category",
           "settings": {
             "title": "МАНГО МЕНЮ",
+            "title_size": 24,
             "collection": "test",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
@@ -167,7 +172,9 @@
       "settings": {
         "hero_image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.32.png",
         "hero_heading": "НАШЕТО МЕНЮ",
+        "heading_size": 52,
         "hero_subheading": "Най-доброто суши в града",
+        "subheading_size": 20,
         "color_scheme": ""
       }
     },
@@ -262,7 +269,8 @@
             "media_type": "image",
             "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
             "link": "",
-            "open_new_tab": false
+            "open_new_tab": false,
+            "label_size": 11
           }
         },
         "feature_card_7ACnHB": {
@@ -272,7 +280,8 @@
             "media_type": "image",
             "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.50.png",
             "link": "",
-            "open_new_tab": false
+            "open_new_tab": false,
+            "label_size": 11
           }
         },
         "feature_card_fpwQ8k": {
@@ -282,7 +291,8 @@
             "media_type": "image",
             "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
             "link": "",
-            "open_new_tab": false
+            "open_new_tab": false,
+            "label_size": 11
           }
         }
       },
@@ -298,6 +308,9 @@
         "heading": "ЗА НАС",
         "text": "<p>Добре дошли в Суши Бар Манго — място, където свежестта и вкусът се срещат.</p>",
         "button_label": "Разбери повече",
+        "heading_size": 48,
+        "desc_size": 14,
+        "cta_size": 12,
         "button_link": "",
         "color_scheme": ""
       }
