@@ -184,7 +184,7 @@
         "subheading": "Открийте нашето разнообразие",
         "card_radius": 10,
         "card_gap": 8,
-        "show_product_count": false,
+        "show_product_count": true,
         "heading_size": 50,
         "title_size": 16,
         "color_scheme": ""
