@@ -15,7 +15,8 @@
 .restaurant-nav {
   display: flex;
   align-items: center;
-  gap: var(--gap-xl);
+  justify-content: center;
+  gap: clamp(2rem, 8vw, 10rem);
 }
 
 .restaurant-nav__link {
@@ -24,12 +25,24 @@
   font-family: var(--font-body--family);
   font-size: 0.875rem;
   font-weight: 400;
-  letter-spacing: 0.02em;
-  transition: opacity var(--animation-speed) var(--animation-easing);
+  letter-spacing: 0.04em;
+  position: relative;
+  padding-bottom: 2px;
 }
 
-.restaurant-nav__link:hover {
-  opacity: 0.7;
+.restaurant-nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 1px;
+  background: var(--color-foreground);
+  transition: width 0.45s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.restaurant-nav__link:hover::after {
+  width: 100%;
 }
 
 .restaurant-nav__cta {
@@ -69,6 +82,15 @@
 /* Show cart on menu page only */
 .restaurant-mode--menu-page header-actions {
   display: flex !important;
+}
+
+/* Center column takes available space for restaurant nav */
+.restaurant-mode .header__column--center {
+  flex: 1;
+}
+
+.restaurant-mode .header__column--center .restaurant-nav {
+  width: 100%;
 }
 
 /* ================================

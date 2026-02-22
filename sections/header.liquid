@@ -67,6 +67,10 @@
     render 'header-restaurant-nav'
   endcapture
 
+  capture restaurant_cta
+    render 'header-restaurant-cta'
+  endcapture
+
   if shop.customer_accounts_enabled
     assign search_class = 'search-action--hidden-on-drawer'
   endif
@@ -377,7 +381,8 @@
         localization: localization_markup,
         search: search,
         drawer_search: drawer_search,
-        restaurant_nav: restaurant_nav
+        restaurant_nav: restaurant_nav,
+        restaurant_cta: restaurant_cta
       %}
     {% endcapture %}
 

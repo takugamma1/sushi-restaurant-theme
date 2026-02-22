@@ -77,6 +77,7 @@
             {% when 'logo' %}
               {{ logo }}
             {% when 'menu' %}
+              {{ restaurant_nav }}
               {{ menu }}
             {% when 'localization' %}
               {{ localization }}
@@ -85,7 +86,7 @@
             {% when 'drawer_search' %}
               {{ drawer_search }}
             {% when 'actions' %}
-              {{ restaurant_nav }}
+              {{ restaurant_cta }}
               {{ actions }}
           {% endcase %}
         {% endunless %}
