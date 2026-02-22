@@ -260,13 +260,11 @@
     right: 0;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 16px 12px 24px;
+    gap: 10px;
+    padding: 10px 14px 10px 22px;
     z-index: 1;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-top-left-radius: 20px;
+    background: var(--restaurant-dark, #0D0D0D);
+    border-top-left-radius: 22px;
   }
 
   .ra__card-label {
@@ -274,14 +272,14 @@
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.85);
   }
 
   .ra__card-arrow {
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -291,13 +289,13 @@
 
   .ra__card:hover .ra__card-arrow {
     border-color: #fff;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
     transform: translateX(2px);
   }
 
   .ra__card-arrow svg {
-    width: 11px;
-    height: 11px;
+    width: 12px;
+    height: 12px;
   }
 {% endstylesheet %}
 
