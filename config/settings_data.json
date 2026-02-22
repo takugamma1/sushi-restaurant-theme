@@ -253,7 +253,7 @@
           "primary_button_hover_text": "#ffffff",
           "primary_button_hover_border": "#e0764f",
           "secondary_button_background": "rgba(0,0,0,0)",
-          "secondary_button_text": "#f98760",
+          "secondary_button_text": "#ffffff",
           "secondary_button_border": "#f98760",
           "secondary_button_hover_background": "#f9876014",
           "secondary_button_hover_text": "#f98760",
