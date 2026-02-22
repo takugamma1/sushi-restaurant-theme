@@ -253,7 +253,7 @@
     pointer-events: none;
   }
 
-  /* Curvy footer tab on cards */
+  /* Curvy footer tab on cards — Z-shaped notch with inverted radius */
   .ra__card-footer {
     position: absolute;
     bottom: 0;
@@ -261,10 +261,30 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 14px 12px 22px;
+    padding: 10px 14px 12px 26px;
     z-index: 1;
     background: var(--restaurant-dark, #0D0D0D);
     border-top-left-radius: 22px;
+  }
+
+  .ra__card-footer::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 22px;
+    height: 22px;
+    background: radial-gradient(circle at 100% 100%, transparent 21px, var(--restaurant-dark, #0D0D0D) 22px);
+  }
+
+  .ra__card-footer::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 100%;
+    width: 22px;
+    height: 22px;
+    background: radial-gradient(circle at 100% 100%, transparent 21px, var(--restaurant-dark, #0D0D0D) 22px);
   }
 
   .ra__card-label {
