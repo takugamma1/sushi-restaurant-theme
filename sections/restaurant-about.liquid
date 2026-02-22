@@ -27,16 +27,16 @@
       <div class="ra__text-group">
         <div class="ra__left">
           {%- if section.settings.heading != blank -%}
-            <h2 class="ra__heading">{{ section.settings.heading }}</h2>
+            <h2 class="ra__heading" style="font-size:{{ section.settings.heading_size }}px;">{{ section.settings.heading }}</h2>
           {%- endif -%}
           {%- if section.settings.button_label != blank -%}
-            <a href="{{ section.settings.button_link }}" class="ra__cta">
+            <a href="{{ section.settings.button_link }}" class="ra__cta" style="font-size:{{ section.settings.cta_size }}px;">
               {{ section.settings.button_label }}
             </a>
           {%- endif -%}
         </div>
         {%- if section.settings.text != blank -%}
-          <div class="ra__desc">{{ section.settings.text }}</div>
+          <div class="ra__desc" style="font-size:{{ section.settings.desc_size }}px;">{{ section.settings.text }}</div>
         {%- endif -%}
       </div>
     </div>
@@ -74,7 +74,7 @@
             <div class="ra__card-overlay"></div>
           </div>
           <div class="ra__card-footer">
-            <span class="ra__card-label">{{ block.settings.label }}</span>
+            <span class="ra__card-label" style="font-size:{{ block.settings.label_size }}px;">{{ block.settings.label }}</span>
             <span class="ra__card-arrow">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </span>
@@ -355,6 +355,40 @@
       "default": "ПРОЧЕТИ ПОВЕЧЕ"
     },
     {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "desc_size",
+      "label": "Description size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "cta_size",
+      "label": "Button text size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    },
+    {
       "type": "url",
       "id": "button_link",
       "label": "Button link"
@@ -409,6 +443,16 @@
           "id": "open_new_tab",
           "label": "Open in new tab",
           "default": false
+        },
+        {
+          "type": "range",
+          "id": "label_size",
+          "label": "Label size",
+          "min": 8,
+          "max": 18,
+          "step": 1,
+          "default": 11,
+          "unit": "px"
         }
       ]
     }

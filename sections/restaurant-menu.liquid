@@ -13,8 +13,8 @@
       <div class="restaurant-menu__hero-image" style="background: #1a1a1a;"></div>
     {%- endif -%}
     <div class="restaurant-menu__hero-overlay">
-      <p class="restaurant-menu__hero-sub">{{ section.settings.hero_subheading }}</p>
-      <h1 class="restaurant-menu__hero-title">{{ section.settings.hero_heading }}</h1>
+      <p class="restaurant-menu__hero-sub" style="font-size:{{ section.settings.subheading_size }}px;">{{ section.settings.hero_subheading }}</p>
+      <h1 class="restaurant-menu__hero-title" style="font-size:{{ section.settings.heading_size }}px;">{{ section.settings.hero_heading }}</h1>
     </div>
   </div>
 
@@ -25,7 +25,7 @@
           {%- assign collection = block.settings.collection -%}
           {%- if collection != blank -%}
             <div class="restaurant-menu-section" {{ block.shopify_attributes }}>
-              <div class="restaurant-menu-section__heading">
+              <div class="restaurant-menu-section__heading" style="font-size:{{ block.settings.title_size }}px;">
                 <span class="restaurant-menu-section__heading-line"></span>
                 <span class="restaurant-menu-section__heading-diamond">◇</span>
                 <span>{{ block.settings.title | default: collection.title | upcase }}</span>
@@ -111,10 +111,30 @@
       "default": "НАШЕТО МЕНЮ"
     },
     {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "default": 48,
+      "unit": "px"
+    },
+    {
       "type": "text",
       "id": "hero_subheading",
       "label": "Hero Subheading",
       "default": "Най-доброто суши в града"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading size",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
     },
     {
       "type": "color_scheme",
@@ -132,6 +152,16 @@
           "type": "text",
           "id": "title",
           "label": "Category Title"
+        },
+        {
+          "type": "range",
+          "id": "title_size",
+          "label": "Title size",
+          "min": 10,
+          "max": 24,
+          "step": 1,
+          "default": 13,
+          "unit": "px"
         },
         {
           "type": "collection",

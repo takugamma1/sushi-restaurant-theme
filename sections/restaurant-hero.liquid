@@ -81,13 +81,13 @@
 
   <div class="rh__content">
     {%- if section.settings.subheading != blank -%}
-      <p class="rh__sub">{{ section.settings.subheading }}</p>
+      <p class="rh__sub" style="font-size:{{ section.settings.subheading_size }}px;">{{ section.settings.subheading }}</p>
     {%- endif -%}
     {%- if section.settings.heading != blank -%}
-      <h1 class="rh__heading">{{ section.settings.heading }}</h1>
+      <h1 class="rh__heading" style="font-size:{{ section.settings.heading_size }}px;">{{ section.settings.heading }}</h1>
     {%- endif -%}
     {%- if section.settings.cta_label != blank -%}
-      <a href="{{ section.settings.cta_link | default: '#' }}" class="rh__cta">
+      <a href="{{ section.settings.cta_link | default: '#' }}" class="rh__cta" style="font-size:{{ section.settings.cta_size }}px;">
         {{ section.settings.cta_label }}
       </a>
     {%- endif -%}
@@ -286,6 +286,40 @@
       "type": "url",
       "id": "cta_link",
       "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 24,
+      "max": 100,
+      "step": 2,
+      "default": 56,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading size",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "cta_size",
+      "label": "Button text size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "default": 13,
+      "unit": "px"
     },
     {
       "type": "header",
