@@ -140,6 +140,56 @@
         "overlay_color": "#00000054"
       }
     },
+    "restaurant_categories_AYhaMJ": {
+      "type": "restaurant-categories",
+      "blocks": {
+        "collection_card_TR6DLz": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "title": "СУШИ"
+          }
+        },
+        "collection_card_eFaVYX": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "title": "САШИМИ"
+          }
+        },
+        "collection_card_KF63HC": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "title": "РАМЕН"
+          }
+        },
+        "collection_card_QRjdCy": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "title": "НАПИТКИ"
+          }
+        }
+      },
+      "block_order": [
+        "collection_card_TR6DLz",
+        "collection_card_eFaVYX",
+        "collection_card_KF63HC",
+        "collection_card_QRjdCy"
+      ],
+      "name": "Collection Categories",
+      "settings": {
+        "heading": "НАШИТЕ КАТЕГОРИИ",
+        "subheading": "Открийте нашето разнообразие",
+        "card_radius": 16,
+        "card_gap": 16,
+        "show_product_count": false,
+        "heading_size": 42,
+        "title_size": 16,
+        "color_scheme": ""
+      }
+    },
     "restaurant_menu_WUY7XF": {
       "type": "restaurant-menu",
       "blocks": {
@@ -480,6 +530,7 @@
   "order": [
     "hero_jVaWmY",
     "restaurant_hero_XrfbF3",
+    "restaurant_categories_AYhaMJ",
     "restaurant_menu_WUY7XF",
     "hero_YxkURn",
     "restaurant_about_rmxaYP",
