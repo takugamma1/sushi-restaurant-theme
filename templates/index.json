@@ -1,48 +1,31 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
-    "hero_main": {
+    "hero_jVaWmY": {
       "type": "hero",
       "blocks": {
-        "text_sub": {
+        "text_YLPk4p": {
           "type": "text",
-          "name": "Subheading",
+          "name": "t:names.heading",
           "settings": {
-            "text": "<p>Най-доброто суши в града</p>",
+            "text": "<p>Browse our latest products</p>",
             "width": "fit-content",
             "max_width": "normal",
-            "alignment": "center",
-            "type_preset": "custom",
+            "alignment": "left",
+            "type_preset": "h2",
             "font": "var(--font-body--family)",
             "font_size": "1rem",
             "line_height": "normal",
             "letter_spacing": "normal",
             "case": "none",
-            "wrap": "pretty",
-            "color": "var(--color-foreground)",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "text_heading": {
-          "type": "text",
-          "name": "Heading",
-          "settings": {
-            "text": "<h1>СУШИ БАР МАНГО</h1>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "center",
-            "type_preset": "h1",
-            "font": "var(--font-heading--family)",
-            "font_size": "",
-            "line_height": "tight",
-            "letter_spacing": "tight",
-            "case": "uppercase",
             "wrap": "pretty",
             "color": "var(--color-foreground-heading)",
             "background": false,
@@ -55,12 +38,12 @@
           },
           "blocks": {}
         },
-        "button_cta": {
+        "button_H9gpTf": {
           "type": "button",
-          "name": "CTA Button",
+          "name": "t:names.button",
           "settings": {
-            "label": "ПОРЪЧАЙ СЕГА",
-            "link": "/pages/menu",
+            "label": "Shop all",
+            "link": "shopify://collections/all",
             "open_in_new_tab": false,
             "style_class": "button-secondary",
             "width": "fit-content",
@@ -72,159 +55,78 @@
         }
       },
       "block_order": [
-        "text_sub",
-        "text_heading",
-        "button_cta"
+        "text_YLPk4p",
+        "button_H9gpTf"
       ],
+      "name": "t:names.hero",
       "settings": {
+        "media_type_1": "image",
+        "media_type_2": "image",
         "stack_media_on_mobile": false,
         "custom_mobile_media": false,
+        "media_type_1_mobile": "image",
+        "media_type_2_mobile": "image",
+        "link": "",
         "open_in_new_tab": false,
         "content_direction": "column",
         "vertical_on_mobile": true,
-        "horizontal_alignment": "center",
-        "vertical_alignment": "center",
+        "horizontal_alignment": "space-between",
+        "vertical_alignment": "flex-end",
+        "align_baseline": true,
         "horizontal_alignment_flex_direction_column": "center",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 16,
-        "section_width": "full-width",
-        "section_height": "large",
-        "section_height_custom": 100,
+        "vertical_alignment_flex_direction_column": "flex-end",
+        "gap": 24,
+        "section_width": "page-width",
+        "section_height": "medium",
+        "section_height_custom": 50,
         "color_scheme": "scheme-6",
         "toggle_overlay": true,
-        "overlay_color": "#00000066",
+        "overlay_color": "#12121266",
         "overlay_style": "solid",
         "gradient_direction": "to bottom",
         "blurred_reflection": false,
         "reflection_opacity": 75,
         "padding-block-start": 100,
-        "padding-block-end": 100
+        "padding-block-end": 72
       }
     },
-    "collection_styles": {
-      "type": "collection-list",
-      "blocks": {},
-      "settings": {
-        "section_width": "page-width",
-        "color_scheme": "scheme-5",
-        "padding-block-start": 48,
-        "padding-block-end": 48
-      }
-    },
-    "menu_preview": {
-      "type": "restaurant-menu-preview",
+    "restaurant_menu_WUY7XF": {
+      "type": "restaurant-menu",
       "blocks": {
-        "img1": { "type": "image" },
-        "img2": { "type": "image" },
-        "img3": { "type": "image" },
-        "img4": { "type": "image" }
-      },
-      "block_order": ["img1", "img2", "img3", "img4"],
-      "settings": {
-        "heading": "МЕНЮ",
-        "link": "/pages/menu",
-        "color_scheme": "scheme-5"
-      }
-    },
-    "marquee_1": {
-      "type": "marquee",
-      "blocks": {
-        "text_marquee": {
-          "type": "text",
+        "category_BEp7bV": {
+          "type": "category",
           "settings": {
-            "text": "MANGO",
-            "type_preset": "custom",
-            "font": "var(--font-heading--family)",
-            "font_size": "var(--font-size--h3)",
-            "line_height": "tight",
-            "letter_spacing": "wide",
-            "case": "uppercase",
-            "wrap": "nowrap",
-            "width": "fit-content",
-            "color": "#F98760"
+            "title": "НОВО",
+            "collection": "",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
+        "category_aqNKHa": {
+          "type": "category",
+          "settings": {
+            "title": "МАНГО МЕНЮ",
+            "collection": "",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
           }
         }
       },
-      "block_order": ["text_marquee"],
+      "block_order": [
+        "category_BEp7bV",
+        "category_aqNKHa"
+      ],
+      "name": "Restaurant Menu",
       "settings": {
-        "movement_direction": "normal",
-        "color_scheme": "scheme-5",
-        "padding-block-start": 16,
-        "padding-block-end": 16,
-        "gap_between_elements": 48
-      }
-    },
-    "about_section": {
-      "type": "restaurant-about",
-      "settings": {
-        "heading": "ЗА НАС",
-        "text": "<p>Добре дошли в Суши Бар Манго — място, където свежестта и вкусът се срещат. Нашите суши майстори създават всяко ястие с любов и внимание към детайла.</p>",
-        "color_scheme": "scheme-5"
-      }
-    },
-    "marquee_2": {
-      "type": "marquee",
-      "blocks": {
-        "text_marquee2": {
-          "type": "text",
-          "settings": {
-            "text": "MANGO",
-            "type_preset": "custom",
-            "font": "var(--font-heading--family)",
-            "font_size": "var(--font-size--h3)",
-            "line_height": "tight",
-            "letter_spacing": "wide",
-            "case": "uppercase",
-            "wrap": "nowrap",
-            "width": "fit-content",
-            "color": "#F98760"
-          }
-        }
-      },
-      "block_order": ["text_marquee2"],
-      "settings": {
-        "movement_direction": "reverse",
-        "color_scheme": "scheme-5",
-        "padding-block-start": 16,
-        "padding-block-end": 16,
-        "gap_between_elements": 48
-      }
-    },
-    "contact_grid": {
-      "type": "restaurant-contact-grid",
-      "blocks": {
-        "ig1": { "type": "instagram_image" },
-        "ig2": { "type": "instagram_image" },
-        "ig3": { "type": "instagram_image" },
-        "ig4": { "type": "instagram_image" },
-        "footer_1": { "type": "footer_link", "settings": { "label": "Licensing" } },
-        "footer_2": { "type": "footer_link", "settings": { "label": "Styleguide" } }
-      },
-      "block_order": ["ig1", "ig2", "ig3", "ig4", "footer_1", "footer_2"],
-      "settings": {
-        "follow_heading": "ПОСЛЕДВАЙТЕ НИ",
-        "hours_title": "РАБОТНО ВРЕМЕ",
-        "hours_mon": "16:00 - 22:30",
-        "hours_tue": "16:00 - 22:30",
-        "hours_wed": "16:00 - 22:30",
-        "hours_thu": "16:00 - 22:30",
-        "hours_fri": "16:00 - 22:30",
-        "hours_weekend": "16:00 - 22:30",
-        "map_address": "23 Greenfield Avenue, Prague",
-        "address": "23 Greenfield Avenue, Prague 120 00",
-        "phone": "+49 1234 567890",
-        "email": "email@example.com",
-        "color_scheme": "scheme-5"
+        "hero_image": "shopify://shop_images/2056JQrRbEpSJqYQApLO5L3O6XakXiUy2QIMHaD.jpg",
+        "hero_heading": "НАШЕТО МЕНЮ",
+        "hero_subheading": "Най-доброто суши в града",
+        "color_scheme": ""
       }
     }
   },
   "order": [
-    "hero_main",
-    "collection_styles",
-    "menu_preview",
-    "marquee_1",
-    "about_section",
-    "marquee_2",
-    "contact_grid"
+    "hero_jVaWmY",
+    "restaurant_menu_WUY7XF"
   ]
 }
