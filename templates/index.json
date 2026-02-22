@@ -204,11 +204,87 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
+    },
+    "restaurant_about_rmxaYP": {
+      "type": "restaurant-about",
+      "name": "About Section",
+      "settings": {
+        "heading": "ЗА НАС",
+        "text": "<p>Добре дошли в Суши Бар Манго — място, където свежестта и вкусът се срещат.</p>",
+        "button_label": "Разбери повече",
+        "button_link": "",
+        "color_scheme": ""
+      }
+    },
+    "restaurant_contact_grid_7pX3je": {
+      "type": "restaurant-contact-grid",
+      "blocks": {
+        "instagram_image_dURXHz": {
+          "type": "instagram_image",
+          "settings": {}
+        },
+        "instagram_image_E4WGGt": {
+          "type": "instagram_image",
+          "settings": {}
+        },
+        "instagram_image_gWg3tn": {
+          "type": "instagram_image",
+          "settings": {}
+        },
+        "instagram_image_nJp7fe": {
+          "type": "instagram_image",
+          "settings": {}
+        },
+        "footer_link_rMiEzU": {
+          "type": "footer_link",
+          "settings": {
+            "label": "Licensing",
+            "link": ""
+          }
+        },
+        "footer_link_UCHxCx": {
+          "type": "footer_link",
+          "settings": {
+            "label": "Styleguide",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "instagram_image_dURXHz",
+        "instagram_image_E4WGGt",
+        "instagram_image_gWg3tn",
+        "instagram_image_nJp7fe",
+        "footer_link_rMiEzU",
+        "footer_link_UCHxCx"
+      ],
+      "name": "Contact Grid & Footer",
+      "settings": {
+        "follow_heading": "ПОСЛЕДВАЙТЕ НИ",
+        "hours_title": "РАБОТНО ВРЕМЕ",
+        "hours_mon": "16:00 - 22:30",
+        "hours_tue": "16:00 - 22:30",
+        "hours_wed": "16:00 - 22:30",
+        "hours_thu": "16:00 - 22:30",
+        "hours_fri": "16:00 - 22:30",
+        "hours_weekend": "16:00 - 22:30",
+        "map_address": "g.k. BrizPrimorski, ul. \"Doctor Nikolay Kolarov 1, 9010 Varna",
+        "map_link": "https://maps.app.goo.gl/3HaperFWjvsfHCJy8",
+        "address": "g.k. BrizPrimorski, ul. \"Doctor Nikolay Kolarov 1, 9010 Varna",
+        "phone": "+359 878861022",
+        "email": "",
+        "social_facebook": "",
+        "social_instagram": "https://www.instagram.com/sushibar_mango/",
+        "social_twitter": "",
+        "color_scheme": ""
+      }
     }
   },
   "order": [
     "hero_jVaWmY",
     "restaurant_menu_WUY7XF",
-    "hero_YxkURn"
+    "hero_YxkURn",
+    "restaurant_about_rmxaYP",
+    "restaurant_contact_grid_7pX3je"
   ]
 }
