@@ -1,8 +1,18 @@
 {% liquid
   assign slide_count = 0
+  assign slide_count_with_media = 0
   for block in section.blocks
     if block.type == 'slide'
       assign slide_count = slide_count | plus: 1
+      assign has_media = false
+      if block.settings.media_type == 'video' and block.settings.video != blank
+        assign has_media = true
+      elsif block.settings.image != blank
+        assign has_media = true
+      endif
+      if has_media
+        assign slide_count_with_media = slide_count_with_media | plus: 1
+      endif
     endif
   endfor
 
@@ -27,40 +37,50 @@
   {%- comment -%} Slides {%- endcomment -%}
   <div class="restaurant-hero__slides" ref="slides">
     {%- assign slide_index = 0 -%}
+    {%- assign media_slide_index = 0 -%}
     {%- for block in section.blocks -%}
       {%- if block.type == 'slide' -%}
-        <div
-          class="restaurant-hero__slide{% if slide_index == 0 %} restaurant-hero__slide--active{% endif %}"
-          data-slide-index="{{ slide_index }}"
-          {{ block.shopify_attributes }}
-        >
-          {%- if block.settings.media_type == 'video' and block.settings.video != blank -%}
-            {{ block.settings.video
-              | video_tag:
-                poster: nil,
-                autoplay: true,
-                loop: true,
-                controls: false,
-                muted: true,
-                class: 'restaurant-hero__media'
-            }}
-          {%- elsif block.settings.image != blank -%}
-            {{
-              block.settings.image
-              | image_url: width: 3840
-              | image_tag:
-                width: block.settings.image.width,
-                widths: '832, 1200, 1600, 1920, 2560, 3840',
-                height: block.settings.image.height,
-                alt: block.settings.image.alt,
-                class: 'restaurant-hero__media',
-                sizes: '100vw',
-                fetchpriority: fetch_priority
-            }}
-          {%- else -%}
-            {{ 'hero-apparel-1' | placeholder_svg_tag: 'restaurant-hero__media' }}
-          {%- endif -%}
-        </div>
+        {%- liquid
+          assign slide_has_media = false
+          if block.settings.media_type == 'video' and block.settings.video != blank
+            assign slide_has_media = true
+          elsif block.settings.image != blank
+            assign slide_has_media = true
+          endif
+        -%}
+        {%- if slide_has_media -%}
+          <div
+            class="restaurant-hero__slide{% if media_slide_index == 0 %} restaurant-hero__slide--active{% endif %}"
+            data-slide-index="{{ media_slide_index }}"
+            {{ block.shopify_attributes }}
+          >
+            {%- if block.settings.media_type == 'video' and block.settings.video != blank -%}
+              {{ block.settings.video
+                | video_tag:
+                  poster: nil,
+                  autoplay: true,
+                  loop: true,
+                  controls: false,
+                  muted: true,
+                  class: 'restaurant-hero__media'
+              }}
+            {%- elsif block.settings.image != blank -%}
+              {{
+                block.settings.image
+                | image_url: width: 3840
+                | image_tag:
+                  width: block.settings.image.width,
+                  widths: '832, 1200, 1600, 1920, 2560, 3840',
+                  height: block.settings.image.height,
+                  alt: block.settings.image.alt,
+                  class: 'restaurant-hero__media',
+                  sizes: '100vw',
+                  fetchpriority: fetch_priority
+              }}
+            {%- endif -%}
+          </div>
+          {%- assign media_slide_index = media_slide_index | plus: 1 -%}
+        {%- endif -%}
         {%- assign slide_index = slide_index | plus: 1 -%}
       {%- endif -%}
     {%- endfor -%}
@@ -90,10 +110,10 @@
   </div>
 
   {%- comment -%} Vertical dot navigation {%- endcomment -%}
-  {%- if slide_count > 1 -%}
+  {%- if slide_count_with_media > 1 -%}
     <nav class="restaurant-hero__dots" ref="dots" aria-label="Slide navigation">
-      {%- for i in (0..slide_count) -%}
-        {%- if i < slide_count -%}
+      {%- for i in (0..slide_count_with_media) -%}
+        {%- if i < slide_count_with_media -%}
           <button
             class="restaurant-hero__dot{% if i == 0 %} restaurant-hero__dot--active{% endif %}"
             data-dot-index="{{ i }}"
