@@ -10,112 +10,45 @@
 {
   "sections": {
     "hero_jVaWmY": {
-      "type": "hero",
+      "type": "restaurant-hero",
       "blocks": {
-        "text_jMdYMV": {
-          "type": "text",
-          "name": "t:names.text",
+        "slide_1": {
+          "type": "slide",
           "settings": {
-            "text": "<p>Най-доброто суши в града</p>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h5",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "var(--color-foreground)",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "media_type": "image",
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.40.png"
+          }
         },
-        "text_YLPk4p": {
-          "type": "text",
-          "name": "t:names.heading",
+        "slide_2": {
+          "type": "slide",
           "settings": {
-            "text": "<p>СУШИ БАР МАНГО  </p>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h2",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "var(--color-foreground-heading)",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "media_type": "image"
+          }
         },
-        "button_H9gpTf": {
-          "type": "button",
-          "name": "t:names.button",
+        "slide_3": {
+          "type": "slide",
           "settings": {
-            "label": "ПОРЪЧАЙ СЕГА",
-            "link": "shopify://collections/all",
-            "open_in_new_tab": false,
-            "style_class": "button-secondary",
-            "width": "fit-content",
-            "custom_width": 100,
-            "width_mobile": "fit-content",
-            "custom_width_mobile": 100
-          },
-          "blocks": {}
+            "media_type": "image"
+          }
         }
       },
       "block_order": [
-        "text_jMdYMV",
-        "text_YLPk4p",
-        "button_H9gpTf"
+        "slide_1",
+        "slide_2",
+        "slide_3"
       ],
-      "name": "t:names.hero",
+      "name": "Restaurant Hero",
       "settings": {
-        "media_type_1": "image",
-        "image_1": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.40.png",
-        "media_type_2": "image",
-        "stack_media_on_mobile": false,
-        "custom_mobile_media": false,
-        "media_type_1_mobile": "image",
-        "media_type_2_mobile": "image",
-        "link": "",
-        "open_in_new_tab": false,
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "space-between",
-        "vertical_alignment": "flex-end",
-        "align_baseline": true,
-        "horizontal_alignment_flex_direction_column": "center",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 10,
-        "section_width": "page-width",
-        "section_height": "medium",
-        "section_height_custom": 50,
+        "subheading": "Най-доброто суши в града",
+        "heading": "СУШИ БАР МАНГО",
+        "button_label": "ПОРЪЧАЙ СЕГА",
+        "button_link": "/pages/menu",
+        "autoplay": true,
+        "autoplay_interval": 6,
+        "section_height": "full-screen",
         "color_scheme": "scheme-5",
         "toggle_overlay": true,
-        "overlay_color": "#12121266",
-        "overlay_style": "solid",
-        "gradient_direction": "to bottom",
-        "blurred_reflection": false,
-        "reflection_opacity": 75,
-        "padding-block-start": 100,
-        "padding-block-end": 72
+        "overlay_color": "#00000050"
       }
     },
     "restaurant_menu_WUY7XF": {
