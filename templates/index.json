@@ -58,6 +58,7 @@
         "text_YLPk4p",
         "button_H9gpTf"
       ],
+      "disabled": true,
       "name": "t:names.hero",
       "settings": {
         "media_type_1": "image",
@@ -67,6 +68,7 @@
         "custom_mobile_media": false,
         "media_type_1_mobile": "image",
         "media_type_2_mobile": "image",
+        "link": "",
         "open_in_new_tab": false,
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -88,6 +90,51 @@
         "reflection_opacity": 75,
         "padding-block-start": 100,
         "padding-block-end": 72
+      }
+    },
+    "restaurant_hero_XrfbF3": {
+      "type": "restaurant-hero",
+      "blocks": {
+        "slide_pfFa6x": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png"
+          }
+        },
+        "slide_4wRHPd": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png"
+          }
+        },
+        "slide_D6V9KH": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png"
+          }
+        }
+      },
+      "block_order": [
+        "slide_pfFa6x",
+        "slide_4wRHPd",
+        "slide_D6V9KH"
+      ],
+      "name": "Restaurant Hero",
+      "settings": {
+        "subheading": "Най-доброто суши в града",
+        "heading": "СУШИ БАР МАНГО",
+        "cta_label": "ПОРЪЧАЙ СЕГА",
+        "cta_link": "",
+        "autoplay": true,
+        "autoplay_interval": 6,
+        "height": "full",
+        "height_custom": 80,
+        "color_scheme": "",
+        "overlay": true,
+        "overlay_color": "#00000055"
       }
     },
     "restaurant_menu_WUY7XF": {
@@ -372,6 +419,7 @@
   },
   "order": [
     "hero_jVaWmY",
+    "restaurant_hero_XrfbF3",
     "restaurant_menu_WUY7XF",
     "hero_YxkURn",
     "restaurant_about_rmxaYP",
