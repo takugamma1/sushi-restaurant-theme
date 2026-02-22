@@ -256,7 +256,7 @@
           "secondary_button_text": "#ffffff",
           "secondary_button_border": "#f98760",
           "secondary_button_hover_background": "#f9876014",
-          "secondary_button_hover_text": "#f98760",
+          "secondary_button_hover_text": "#ffffff",
           "secondary_button_hover_border": "#f98760",
           "input_background": "#1a1a1a",
           "input_text_color": "#ffffffed",
