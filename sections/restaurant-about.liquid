@@ -1,36 +1,327 @@
-<div class="section-background color-{{ section.settings.color_scheme }}"></div>
-<div class="restaurant-about color-{{ section.settings.color_scheme }}">
-  <div class="restaurant-about__bg">
-    {%- if section.settings.image != blank -%}
-      <img
-        src="{{ section.settings.image | image_url: width: 1600 }}"
-        alt="{{ section.settings.image.alt | escape }}"
-        loading="lazy"
-      >
-    {%- endif -%}
+<div class="ra color-{{ section.settings.color_scheme }}">
+  {%- comment -%} Left: Main media + content overlay {%- endcomment -%}
+  <div class="ra__main">
+    <div class="ra__media-wrap">
+      {%- if section.settings.media_type == 'video' and section.settings.video != blank -%}
+        {{ section.settings.video
+          | video_tag:
+            autoplay: true, loop: true, controls: false, muted: true,
+            class: 'ra__media'
+        }}
+      {%- elsif section.settings.image != blank -%}
+        {{ section.settings.image
+          | image_url: width: 2400
+          | image_tag:
+            class: 'ra__media',
+            sizes: '(min-width: 750px) 65vw, 100vw',
+            widths: '600,900,1200,1800,2400',
+            loading: 'lazy'
+        }}
+      {%- else -%}
+        <div class="ra__media ra__media--placeholder"></div>
+      {%- endif -%}
+      <div class="ra__media-overlay"></div>
+    </div>
+
+    <div class="ra__content">
+      <div class="ra__text-group">
+        <div class="ra__left">
+          {%- if section.settings.heading != blank -%}
+            <h2 class="ra__heading">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+          {%- if section.settings.button_label != blank -%}
+            <a href="{{ section.settings.button_link }}" class="ra__cta">
+              {{ section.settings.button_label }}
+            </a>
+          {%- endif -%}
+        </div>
+        {%- if section.settings.text != blank -%}
+          <div class="ra__desc">{{ section.settings.text }}</div>
+        {%- endif -%}
+      </div>
+    </div>
   </div>
-  <div class="restaurant-about__overlay"></div>
-  <div class="restaurant-about__content">
-    <h2 class="restaurant-about__title">{{ section.settings.heading | default: 'ЗА НАС' }}</h2>
-    <div class="restaurant-about__text">{{ section.settings.text }}</div>
-    {%- if section.settings.button_label != blank -%}
-      <a href="{{ section.settings.button_link }}" class="restaurant-nav__cta" style="margin-top: var(--margin-lg); display: inline-block;">
-        {{ section.settings.button_label }}
-      </a>
-    {%- endif -%}
+
+  {%- comment -%} Right: 3 stacked feature cards {%- endcomment -%}
+  <div class="ra__cards">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'feature_card' -%}
+        <a
+          href="{{ block.settings.link | default: '#' }}"
+          class="ra__card"
+          {{ block.shopify_attributes }}
+          {% if block.settings.open_new_tab %}target="_blank" rel="noopener"{% endif %}
+        >
+          <div class="ra__card-media">
+            {%- if block.settings.media_type == 'video' and block.settings.video != blank -%}
+              {{ block.settings.video
+                | video_tag:
+                  autoplay: true, loop: true, controls: false, muted: true,
+                  class: 'ra__card-img'
+              }}
+            {%- elsif block.settings.image != blank -%}
+              {{ block.settings.image
+                | image_url: width: 800
+                | image_tag:
+                  class: 'ra__card-img',
+                  sizes: '(min-width: 750px) 25vw, 100vw',
+                  widths: '400,600,800',
+                  loading: 'lazy'
+              }}
+            {%- else -%}
+              <div class="ra__card-img ra__card-img--placeholder"></div>
+            {%- endif -%}
+            <div class="ra__card-overlay"></div>
+          </div>
+          <div class="ra__card-footer">
+            <span class="ra__card-label">{{ block.settings.label }}</span>
+            <span class="ra__card-arrow">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </div>
+        </a>
+      {%- endif -%}
+    {%- endfor -%}
   </div>
 </div>
+
+{% stylesheet %}
+  .ra {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4px;
+    background: var(--restaurant-dark, #0D0D0D);
+    color: #fff;
+  }
+
+  @media (min-width: 750px) {
+    .ra {
+      grid-template-columns: 1fr minmax(280px, 0.55fr);
+      min-height: 600px;
+    }
+  }
+
+  .ra__main {
+    position: relative;
+    min-height: 400px;
+    overflow: hidden;
+  }
+
+  .ra__media-wrap {
+    position: absolute;
+    inset: 0;
+  }
+
+  .ra__media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ra__media--placeholder {
+    background: #1a1a1a;
+  }
+
+  .ra__media-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.15) 50%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .ra__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .ra__text-group {
+    display: flex;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: flex-end;
+  }
+
+  @media (max-width: 749px) {
+    .ra__text-group {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  .ra__left {
+    flex-shrink: 0;
+  }
+
+  .ra__heading {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin: 0 0 0.5em 0;
+    font-style: italic;
+  }
+
+  .ra__cta {
+    display: inline-block;
+    color: var(--restaurant-accent, #F98760);
+    border: 1px solid var(--restaurant-accent, #F98760);
+    background: transparent;
+    padding: 0.55em 1.4em;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.35s ease, color 0.35s ease;
+  }
+
+  .ra__cta:hover {
+    background: var(--restaurant-accent, #F98760);
+    color: #fff;
+  }
+
+  .ra__desc {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.7);
+    max-width: 380px;
+  }
+
+  .ra__desc p { margin: 0; }
+
+  /* Right cards column */
+  .ra__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .ra__card {
+    position: relative;
+    flex: 1;
+    min-height: 160px;
+    overflow: hidden;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #fff;
+    display: block;
+  }
+
+  .ra__card-media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .ra__card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .ra__card:hover .ra__card-img {
+    transform: scale(1.05);
+  }
+
+  .ra__card-img--placeholder {
+    background: #1a1a1a;
+  }
+
+  .ra__card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .ra__card-footer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5em;
+    padding: 0.75rem 1rem;
+    z-index: 1;
+  }
+
+  .ra__card-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.9;
+  }
+
+  .ra__card-arrow {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.3s ease, background 0.3s ease;
+  }
+
+  .ra__card:hover .ra__card-arrow {
+    border-color: #fff;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .ra__card-arrow svg {
+    width: 12px;
+    height: 12px;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "About Section",
   "tag": "section",
   "class": "restaurant-about-section",
+  "disabled_on": { "groups": ["header", "footer"] },
   "settings": [
+    {
+      "type": "header",
+      "content": "Main media"
+    },
+    {
+      "type": "select",
+      "id": "media_type",
+      "label": "Type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
     {
       "type": "image_picker",
       "id": "image",
-      "label": "Background Image"
+      "label": "Image",
+      "visible_if": "{{ section.settings.media_type == 'image' }}"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video",
+      "visible_if": "{{ section.settings.media_type == 'video' }}"
+    },
+    {
+      "type": "header",
+      "content": "Content"
     },
     {
       "type": "text",
@@ -41,13 +332,14 @@
     {
       "type": "richtext",
       "id": "text",
-      "label": "Text",
-      "default": "<p>Добре дошли в Суши Бар Манго — място, където свежестта и вкусът се срещат.</p>"
+      "label": "Description",
+      "default": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>"
     },
     {
       "type": "text",
       "id": "button_label",
-      "label": "Button label"
+      "label": "Button label",
+      "default": "ПРОЧЕТИ ПОВЕЧЕ"
     },
     {
       "type": "url",
@@ -61,10 +353,62 @@
       "default": "scheme-5"
     }
   ],
+  "blocks": [
+    {
+      "type": "feature_card",
+      "name": "Feature Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "МЕНЮ"
+        },
+        {
+          "type": "select",
+          "id": "media_type",
+          "label": "Type",
+          "options": [
+            { "value": "image", "label": "Image" },
+            { "value": "video", "label": "Video" }
+          ],
+          "default": "image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "visible_if": "{{ block.settings.media_type == 'image' }}"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video",
+          "visible_if": "{{ block.settings.media_type == 'video' }}"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_new_tab",
+          "label": "Open in new tab",
+          "default": false
+        }
+      ]
+    }
+  ],
   "presets": [
     {
       "name": "About Section",
-      "category": "t:categories.storytelling"
+      "category": "t:categories.storytelling",
+      "blocks": [
+        { "type": "feature_card", "settings": { "label": "МЕНЮ" } },
+        { "type": "feature_card", "settings": { "label": "ОФЕРТИ НА СЕДМИЦАТА" } },
+        { "type": "feature_card", "settings": { "label": "НАШАТА МИСИЯ" } }
+      ]
     }
   ]
 }
