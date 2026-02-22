@@ -270,7 +270,7 @@
             "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
             "link": "",
             "open_new_tab": false,
-            "label_size": 11
+            "label_size": 13
           }
         },
         "feature_card_7ACnHB": {
@@ -281,7 +281,7 @@
             "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.50.png",
             "link": "",
             "open_new_tab": false,
-            "label_size": 11
+            "label_size": 13
           }
         },
         "feature_card_fpwQ8k": {
@@ -292,7 +292,7 @@
             "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
             "link": "",
             "open_new_tab": false,
-            "label_size": 11
+            "label_size": 13
           }
         }
       },
@@ -308,9 +308,9 @@
         "heading": "ЗА НАС",
         "text": "<p>Добре дошли в Суши Бар Манго — място, където свежестта и вкусът се срещат.</p>",
         "button_label": "Разбери повече",
-        "heading_size": 48,
-        "desc_size": 14,
-        "cta_size": 12,
+        "heading_size": 80,
+        "desc_size": 15,
+        "cta_size": 13,
         "button_link": "",
         "color_scheme": ""
       }
