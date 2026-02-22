@@ -24,7 +24,15 @@ class RestaurantHeroCarousel extends HTMLElement {
   }
 
   connectedCallback() {
-    if (this.count <= 1) return;
+    // #region agent log
+    console.log('[HERO-DEBUG] connectedCallback', {count: this.count, slides: this.slides.length, dots: this.dots.length, autoplay: this.autoplay, interval: this.interval, children: this.children.length});
+    // #endregion
+    if (this.count <= 1) {
+      // #region agent log
+      console.warn('[HERO-DEBUG] EARLY EXIT: count <= 1, carousel will NOT initialize. count=', this.count);
+      // #endregion
+      return;
+    }
 
     this.#abortController = new AbortController();
 
@@ -44,6 +52,9 @@ class RestaurantHeroCarousel extends HTMLElement {
     this.addEventListener('mouseleave', this.#resumeAutoplay, {
       signal: this.#abortController.signal,
     });
+    // #region agent log
+    console.log('[HERO-DEBUG] Carousel initialized successfully. Autoplay:', this.autoplay);
+    // #endregion
   }
 
   disconnectedCallback() {
@@ -65,6 +76,9 @@ class RestaurantHeroCarousel extends HTMLElement {
     if (!dot) return;
     const index = parseInt(dot.dataset.dotIndex, 10);
     if (index === this.#current) return;
+    // #region agent log
+    console.log('[HERO-DEBUG] Dot clicked, going to slide', index);
+    // #endregion
     this.#goTo(index);
     this.#restartAutoplay();
   };
@@ -72,6 +86,9 @@ class RestaurantHeroCarousel extends HTMLElement {
   #goTo(index) {
     const slides = this.slides;
     const dots = this.dots;
+    // #region agent log
+    console.log('[HERO-DEBUG] goTo', {from: this.#current, to: index, slidesLen: slides.length, dotsLen: dots.length});
+    // #endregion
 
     slides[this.#current]?.classList.remove('restaurant-hero__slide--active');
     dots[this.#current]?.classList.remove('restaurant-hero__dot--active');
@@ -88,6 +105,9 @@ class RestaurantHeroCarousel extends HTMLElement {
 
   #startAutoplay() {
     if (!this.autoplay || this.count <= 1) return;
+    // #region agent log
+    console.log('[HERO-DEBUG] Starting autoplay, interval:', this.interval, 'ms');
+    // #endregion
     this.#timer = setInterval(this.#next, this.interval);
   }
 
@@ -110,6 +130,9 @@ class RestaurantHeroCarousel extends HTMLElement {
   }
 }
 
+// #region agent log
+console.log('[HERO-DEBUG] Script loaded, alreadyDefined:', !!customElements.get('restaurant-hero-carousel'));
+// #endregion
 if (!customElements.get('restaurant-hero-carousel')) {
   customElements.define('restaurant-hero-carousel', RestaurantHeroCarousel);
 }
