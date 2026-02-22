@@ -134,7 +134,7 @@
         "height_custom": 80,
         "color_scheme": "",
         "overlay": true,
-        "overlay_color": "#00000055"
+        "overlay_color": "#00000054"
       }
     },
     "restaurant_menu_WUY7XF": {
@@ -254,8 +254,47 @@
     },
     "restaurant_about_rmxaYP": {
       "type": "restaurant-about",
+      "blocks": {
+        "feature_card_Fk7NgG": {
+          "type": "feature_card",
+          "settings": {
+            "label": "МЕНЮ",
+            "media_type": "image",
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
+            "link": "",
+            "open_new_tab": false
+          }
+        },
+        "feature_card_7ACnHB": {
+          "type": "feature_card",
+          "settings": {
+            "label": "МЕНЮ",
+            "media_type": "image",
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
+            "link": "",
+            "open_new_tab": false
+          }
+        },
+        "feature_card_fpwQ8k": {
+          "type": "feature_card",
+          "settings": {
+            "label": "МЕНЮ",
+            "media_type": "image",
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
+            "link": "",
+            "open_new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "feature_card_Fk7NgG",
+        "feature_card_7ACnHB",
+        "feature_card_fpwQ8k"
+      ],
       "name": "About Section",
       "settings": {
+        "media_type": "image",
+        "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
         "heading": "ЗА НАС",
         "text": "<p>Добре дошли в Суши Бар Манго — място, където свежестта и вкусът се срещат.</p>",
         "button_label": "Разбери повече",
