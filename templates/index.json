@@ -98,7 +98,7 @@
           "type": "category",
           "settings": {
             "title": "НОВО",
-            "collection": "",
+            "collection": "test",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -107,7 +107,7 @@
           "type": "category",
           "settings": {
             "title": "МАНГО МЕНЮ",
-            "collection": "",
+            "collection": "test",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
