@@ -7,6 +7,8 @@
     --rm-item-desc-size: {{ section.settings.item_desc_size }}px;
     --rm-price-size: {{ section.settings.price_size }}px;
     --rm-tab-size: {{ section.settings.tab_size }}px;
+    --rm-category-border-radius: {{ section.settings.category_border_radius }}px;
+    --rm-category-border-width: {{ section.settings.category_border_width }}px;
   "
 >
   <div class="restaurant-menu__hero">
@@ -57,6 +59,7 @@
           {{ block.shopify_attributes }}
         >
           {%- if collection != blank -%}
+          <div class="rm-category-wrapper">
             {%- comment -%} Decorated category heading {%- endcomment -%}
             <div class="rm-cat-heading">
               <span class="rm-cat-heading__line"></span>
@@ -113,20 +116,21 @@
                 </div>
               </div>
             {%- endfor -%}
+
+            {%- comment -%} CTA button inside category wrapper {%- endcomment -%}
+            {%- if section.settings.cta_label != blank -%}
+              <div class="rm-cta-wrap">
+                <a href="{{ section.settings.cta_link | default: '#' }}" class="rm-cta">
+                  {{ section.settings.cta_label }}
+                </a>
+              </div>
+            {%- endif -%}
+          </div>
           {%- endif -%}
         </div>
         {%- assign panel_idx = panel_idx | plus: 1 -%}
       {%- endif -%}
     {%- endfor -%}
-
-    {%- comment -%} Bottom CTA button {%- endcomment -%}
-    {%- if section.settings.cta_label != blank -%}
-      <div class="rm-cta-wrap">
-        <a href="{{ section.settings.cta_link | default: '#' }}" class="rm-cta">
-          {{ section.settings.cta_label }}
-        </a>
-      </div>
-    {%- endif -%}
   </div>
 </restaurant-menu-component>
 
@@ -243,6 +247,14 @@
 
   .rm-panel--active {
     display: block;
+  }
+
+  /* Category wrapper with border */
+  .rm-category-wrapper {
+    border: var(--rm-category-border-width, 2px) solid #F98760;
+    border-radius: var(--rm-category-border-radius, 16px);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
   }
 
   /* Category heading */
@@ -389,12 +401,13 @@
     letter-spacing: 0.02em;
   }
 
-  /* Bottom CTA */
+  /* CTA inside category wrapper */
   .rm-cta-wrap {
     display: flex;
     justify-content: center;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     padding-top: 1rem;
+    border-top: 1px solid rgba(249, 135, 96, 0.3);
   }
 
   .rm-cta {
@@ -461,6 +474,30 @@
       "type": "url",
       "id": "cta_link",
       "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Category wrapper border"
+    },
+    {
+      "type": "range",
+      "id": "category_border_radius",
+      "label": "Border roundness",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "category_border_width",
+      "label": "Border thickness",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 2,
+      "unit": "px"
     },
     {
       "type": "header",
