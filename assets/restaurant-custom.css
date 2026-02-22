@@ -23,9 +23,16 @@
 .restaurant-contact-section,
 .restaurant-about-section,
 .restaurant-preview-section {
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
   background: var(--restaurant-dark);
+}
+
+/* Ensure no section gaps */
+.restaurant-menu-section + .restaurant-contact-section,
+.restaurant-menu-section + .shopify-section,
+.shopify-section + .restaurant-contact-section {
+  margin-top: 0 !important;
 }
 
 .restaurant-menu-section .section-background,
@@ -170,7 +177,6 @@
 .restaurant-menu {
   display: grid;
   grid-template-columns: 1fr;
-  min-height: 100vh;
   background: var(--restaurant-dark);
   color: #fff;
 }
@@ -240,7 +246,8 @@
  * ================================ */
 
 .restaurant-menu-section {
-  margin-bottom: var(--margin-2xl);
+  margin: 0;
+  padding: 0;
 }
 
 .restaurant-menu-section__heading {

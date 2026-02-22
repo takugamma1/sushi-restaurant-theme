@@ -137,10 +137,14 @@
 <script src="{{ 'restaurant-menu.js' | asset_url }}" type="module"></script>
 
 {% stylesheet %}
+  .restaurant-menu-section {
+    margin: 0;
+    padding: 0;
+  }
+
   restaurant-menu-component {
     display: grid;
     grid-template-columns: 1fr;
-    min-height: 100vh;
     background: var(--restaurant-dark, #0D0D0D);
     color: #fff;
   }
