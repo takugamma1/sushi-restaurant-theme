@@ -269,6 +269,7 @@
       ],
       "name": "Contact Grid & Footer",
       "settings": {
+        "hero_image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.40.png",
         "follow_heading": "ПОСЛЕДВАЙТЕ НИ",
         "hours_title": "РАБОТНО ВРЕМЕ",
         "hours_mon": "16:00 - 22:30",
