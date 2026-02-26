@@ -134,6 +134,15 @@
  * Mobile Header Responsive Styles
  * ================================ */
 
+/* Hide burger menu on desktop */
+@media screen and (min-width: 750px) {
+  .restaurant-mode .header-drawer,
+  .restaurant-mode .restaurant-drawer,
+  .restaurant-mode header-drawer {
+    display: none !important;
+  }
+}
+
 /* Hide desktop nav on mobile */
 @media screen and (max-width: 749px) {
   .restaurant-mode .restaurant-nav {
