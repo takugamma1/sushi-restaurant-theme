@@ -87,7 +87,7 @@
         "nav_2_label": "Меню",
         "nav_2_url": "shopify://pages/меню-суши-манго",
         "nav_3_label": "Комбота",
-        "nav_3_url": "",
+        "nav_3_url": "shopify://pages/меню-суши-манго",
         "nav_4_label": "Ревюта",
         "nav_4_url": "",
         "nav_5_label": "За нас",
