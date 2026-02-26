@@ -168,10 +168,9 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const menuComponent = document.querySelector('restaurant-menu-component');
-  const isMenuPage = menuComponent?.dataset.isMenuPage === 'true';
   const heroImage = document.getElementById('rm-hero-image');
-  const defaultHeroSrc = heroImage?.dataset.defaultSrc;
+  const defaultHeroSrc = heroImage ? heroImage.getAttribute('data-default-src') : null;
+  const isDesktop = window.matchMedia('(min-width: 750px)').matches;
 
   // Tab switching
   const tabs = document.querySelectorAll('.rm-tab');
@@ -213,26 +212,18 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    // Hero image swap on hover (desktop + menu page only)
-    if (isMenuPage && heroImage && heroImage.tagName === 'IMG' && window.innerWidth >= 750) {
+    // Hero image swap on hover (desktop only)
+    if (isDesktop && heroImage && heroImage.tagName === 'IMG') {
       item.addEventListener('mouseenter', function() {
-        const productImage = this.dataset.productImage;
-        if (productImage && productImage.trim() !== '') {
-          heroImage.style.opacity = '0';
-          setTimeout(() => {
-            heroImage.src = productImage;
-            heroImage.style.opacity = '1';
-          }, 150);
+        const productImage = this.getAttribute('data-product-image');
+        if (productImage && productImage.length > 0) {
+          heroImage.src = productImage;
         }
       });
 
       item.addEventListener('mouseleave', function() {
-        if (defaultHeroSrc && defaultHeroSrc.trim() !== '') {
-          heroImage.style.opacity = '0';
-          setTimeout(() => {
-            heroImage.src = defaultHeroSrc;
-            heroImage.style.opacity = '1';
-          }, 150);
+        if (defaultHeroSrc && defaultHeroSrc.length > 0) {
+          heroImage.src = defaultHeroSrc;
         }
       });
     }
