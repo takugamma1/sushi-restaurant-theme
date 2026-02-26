@@ -89,7 +89,7 @@
                 data-product-desc="{{ product.description | strip_html | truncate: 150 | escape }}"
                 data-product-price="{{ product.price }}"
                 data-product-price-formatted="{{ product.price | money }}"
-                data-product-image="{{ product.featured_image | image_url: width: 300 }}"
+                data-product-image="{% if product.featured_image != blank %}{{ product.featured_image | image_url: width: 1200 }}{% endif %}"
               >
                 <div class="rm-item__thumb">
                   {%- if product.featured_image != blank -%}
@@ -214,10 +214,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Hero image swap on hover (desktop + menu page only)
-    if (isMenuPage && heroImage && window.innerWidth >= 750) {
+    if (isMenuPage && heroImage && heroImage.tagName === 'IMG' && window.innerWidth >= 750) {
       item.addEventListener('mouseenter', function() {
         const productImage = this.dataset.productImage;
-        if (productImage && heroImage.tagName === 'IMG') {
+        if (productImage && productImage.trim() !== '') {
           heroImage.style.opacity = '0';
           setTimeout(() => {
             heroImage.src = productImage;
@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
 
       item.addEventListener('mouseleave', function() {
-        if (defaultHeroSrc && heroImage.tagName === 'IMG') {
+        if (defaultHeroSrc && defaultHeroSrc.trim() !== '') {
           heroImage.style.opacity = '0';
           setTimeout(() => {
             heroImage.src = defaultHeroSrc;
