@@ -23,14 +23,16 @@
     {%- if section.settings.hero_image != blank -%}
       <img
         class="restaurant-menu__hero-image"
+        id="rm-hero-image"
         src="{{ section.settings.hero_image | image_url: width: 1200 }}"
+        data-default-src="{{ section.settings.hero_image | image_url: width: 1200 }}"
         alt="{{ section.settings.hero_image.alt | escape }}"
         width="{{ section.settings.hero_image.width }}"
         height="{{ section.settings.hero_image.height }}"
         loading="eager"
       >
     {%- else -%}
-      <div class="restaurant-menu__hero-image" style="background: #1a1a1a;"></div>
+      <div class="restaurant-menu__hero-image" id="rm-hero-image" data-default-src="" style="background: #1a1a1a;"></div>
     {%- endif -%}
     <div class="restaurant-menu__hero-overlay">
       <p class="restaurant-menu__hero-sub">{{ section.settings.hero_subheading }}</p>
@@ -166,6 +168,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  const menuComponent = document.querySelector('restaurant-menu-component');
+  const isMenuPage = menuComponent?.dataset.isMenuPage === 'true';
+  const heroImage = document.getElementById('rm-hero-image');
+  const defaultHeroSrc = heroImage?.dataset.defaultSrc;
+
   // Tab switching
   const tabs = document.querySelectorAll('.rm-tab');
   const panels = document.querySelectorAll('.rm-panel');
@@ -205,6 +212,30 @@ document.addEventListener('DOMContentLoaded', function() {
         window.restaurantModal.open(productData);
       }
     });
+
+    // Hero image swap on hover (desktop + menu page only)
+    if (isMenuPage && heroImage && window.innerWidth >= 750) {
+      item.addEventListener('mouseenter', function() {
+        const productImage = this.dataset.productImage;
+        if (productImage && heroImage.tagName === 'IMG') {
+          heroImage.style.opacity = '0';
+          setTimeout(() => {
+            heroImage.src = productImage;
+            heroImage.style.opacity = '1';
+          }, 150);
+        }
+      });
+
+      item.addEventListener('mouseleave', function() {
+        if (defaultHeroSrc && heroImage.tagName === 'IMG') {
+          heroImage.style.opacity = '0';
+          setTimeout(() => {
+            heroImage.src = defaultHeroSrc;
+            heroImage.style.opacity = '1';
+          }, 150);
+        }
+      });
+    }
   });
 });
 </script>
@@ -248,6 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
     object-fit: cover;
     position: absolute;
     inset: 0;
+    transition: opacity 0.15s ease;
   }
 
   .restaurant-menu__hero-overlay {
