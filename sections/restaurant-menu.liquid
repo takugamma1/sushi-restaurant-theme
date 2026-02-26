@@ -169,8 +169,12 @@
 <script>
 (function() {
   function initMenuHover() {
-    const heroImage = document.querySelector('.restaurant-menu__hero-image');
-    const defaultHeroSrc = heroImage ? heroImage.src : null;
+    const heroImage = document.querySelector('img.restaurant-menu__hero-image');
+    if (!heroImage) {
+      console.log('No hero image found');
+      return;
+    }
+    const defaultHeroSrc = heroImage.getAttribute('src') || heroImage.src;
     const isDesktop = window.innerWidth >= 750;
 
     console.log('Menu init - Hero:', heroImage, 'Default src:', defaultHeroSrc, 'Desktop:', isDesktop);
@@ -218,16 +222,19 @@
     // Hero image swap on hover (desktop only)
     if (isDesktop && heroImage) {
       item.addEventListener('mouseenter', function() {
-        const productImage = this.getAttribute('data-product-image');
+        let productImage = this.getAttribute('data-product-image');
+        if (productImage && productImage.startsWith('//')) {
+          productImage = 'https:' + productImage;
+        }
         console.log('Hover - Product image:', productImage);
-        if (productImage && productImage.length > 0 && heroImage.tagName === 'IMG') {
+        if (productImage && productImage.length > 0) {
           heroImage.src = productImage;
         }
       });
 
       item.addEventListener('mouseleave', function() {
         console.log('Leave - Restore to:', defaultHeroSrc);
-        if (defaultHeroSrc && defaultHeroSrc.length > 0 && heroImage.tagName === 'IMG') {
+        if (defaultHeroSrc && defaultHeroSrc.length > 0) {
           heroImage.src = defaultHeroSrc;
         }
       });
