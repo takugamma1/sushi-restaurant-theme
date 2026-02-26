@@ -1,5 +1,20 @@
+{%- liquid
+  assign nav_2_label = section.settings.nav_2_label | default: 'Меню'
+  assign nav_2_url = section.settings.nav_2_url | default: '/pages/menu'
+  assign nav_3_label = section.settings.nav_3_label | default: 'Комбота'
+  assign nav_3_url = section.settings.nav_3_url | default: '/pages/combos'
+  assign nav_4_label = section.settings.nav_4_label | default: 'Ревюта'
+  assign nav_4_url = section.settings.nav_4_url | default: '/pages/reviews'
+-%}
+
 <nav class="restaurant-nav" aria-label="Restaurant navigation">
-  <a href="/pages/menu" class="restaurant-nav__link">Меню</a>
-  <a href="/pages/combos" class="restaurant-nav__link">Комбота</a>
-  <a href="/pages/reviews" class="restaurant-nav__link">Ревюта</a>
+  {%- if nav_2_label != blank -%}
+    <a href="{{ nav_2_url }}" class="restaurant-nav__link">{{ nav_2_label }}</a>
+  {%- endif -%}
+  {%- if nav_3_label != blank -%}
+    <a href="{{ nav_3_url }}" class="restaurant-nav__link">{{ nav_3_label }}</a>
+  {%- endif -%}
+  {%- if nav_4_label != blank -%}
+    <a href="{{ nav_4_url }}" class="restaurant-nav__link">{{ nav_4_label }}</a>
+  {%- endif -%}
 </nav>

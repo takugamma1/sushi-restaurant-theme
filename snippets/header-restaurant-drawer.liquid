@@ -1,7 +1,25 @@
 {%- doc -%}
   Restaurant mobile drawer menu with custom navigation links.
   Rendered in restaurant mode to replace default drawer menu.
+  Links are configurable via section settings.
 {%- enddoc -%}
+
+{%- liquid
+  assign nav_1_label = section.settings.nav_1_label | default: 'Начало'
+  assign nav_1_url = section.settings.nav_1_url | default: '/'
+  assign nav_2_label = section.settings.nav_2_label | default: 'Меню'
+  assign nav_2_url = section.settings.nav_2_url | default: '/pages/menu'
+  assign nav_3_label = section.settings.nav_3_label | default: 'Комбота'
+  assign nav_3_url = section.settings.nav_3_url | default: '/pages/combos'
+  assign nav_4_label = section.settings.nav_4_label | default: 'Ревюта'
+  assign nav_4_url = section.settings.nav_4_url | default: '/pages/reviews'
+  assign nav_5_label = section.settings.nav_5_label | default: 'За нас'
+  assign nav_5_url = section.settings.nav_5_url | default: '/pages/about'
+  assign nav_6_label = section.settings.nav_6_label | default: 'Контакти'
+  assign nav_6_url = section.settings.nav_6_url | default: '/pages/contact'
+  assign cta_label = section.settings.drawer_cta_label | default: 'Поръчай сега'
+  assign cta_url = section.settings.drawer_cta_url | default: '/pages/menu'
+-%}
 
 <script
   src="{{ 'header-drawer.js' | asset_url }}"
@@ -44,44 +62,58 @@
 
       <nav class="restaurant-drawer__nav" aria-label="Mobile restaurant navigation">
         <ul class="restaurant-drawer__menu" role="list">
-          <li class="restaurant-drawer__item" style="--animation-index: 1;">
-            <a href="/" class="restaurant-drawer__link" on:click="/close">
-              <span class="restaurant-drawer__link-text">Начало</span>
-            </a>
-          </li>
-          <li class="restaurant-drawer__item" style="--animation-index: 2;">
-            <a href="/pages/menu" class="restaurant-drawer__link" on:click="/close">
-              <span class="restaurant-drawer__link-text">Меню</span>
-            </a>
-          </li>
-          <li class="restaurant-drawer__item" style="--animation-index: 3;">
-            <a href="/pages/combos" class="restaurant-drawer__link" on:click="/close">
-              <span class="restaurant-drawer__link-text">Комбота</span>
-            </a>
-          </li>
-          <li class="restaurant-drawer__item" style="--animation-index: 4;">
-            <a href="/pages/reviews" class="restaurant-drawer__link" on:click="/close">
-              <span class="restaurant-drawer__link-text">Ревюта</span>
-            </a>
-          </li>
-          <li class="restaurant-drawer__item" style="--animation-index: 5;">
-            <a href="/pages/about" class="restaurant-drawer__link" on:click="/close">
-              <span class="restaurant-drawer__link-text">За нас</span>
-            </a>
-          </li>
-          <li class="restaurant-drawer__item" style="--animation-index: 6;">
-            <a href="/pages/contact" class="restaurant-drawer__link" on:click="/close">
-              <span class="restaurant-drawer__link-text">Контакти</span>
-            </a>
-          </li>
+          {%- if nav_1_label != blank -%}
+            <li class="restaurant-drawer__item" style="--animation-index: 1;">
+              <a href="{{ nav_1_url }}" class="restaurant-drawer__link" on:click="/close">
+                <span class="restaurant-drawer__link-text">{{ nav_1_label }}</span>
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if nav_2_label != blank -%}
+            <li class="restaurant-drawer__item" style="--animation-index: 2;">
+              <a href="{{ nav_2_url }}" class="restaurant-drawer__link" on:click="/close">
+                <span class="restaurant-drawer__link-text">{{ nav_2_label }}</span>
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if nav_3_label != blank -%}
+            <li class="restaurant-drawer__item" style="--animation-index: 3;">
+              <a href="{{ nav_3_url }}" class="restaurant-drawer__link" on:click="/close">
+                <span class="restaurant-drawer__link-text">{{ nav_3_label }}</span>
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if nav_4_label != blank -%}
+            <li class="restaurant-drawer__item" style="--animation-index: 4;">
+              <a href="{{ nav_4_url }}" class="restaurant-drawer__link" on:click="/close">
+                <span class="restaurant-drawer__link-text">{{ nav_4_label }}</span>
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if nav_5_label != blank -%}
+            <li class="restaurant-drawer__item" style="--animation-index: 5;">
+              <a href="{{ nav_5_url }}" class="restaurant-drawer__link" on:click="/close">
+                <span class="restaurant-drawer__link-text">{{ nav_5_label }}</span>
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if nav_6_label != blank -%}
+            <li class="restaurant-drawer__item" style="--animation-index: 6;">
+              <a href="{{ nav_6_url }}" class="restaurant-drawer__link" on:click="/close">
+                <span class="restaurant-drawer__link-text">{{ nav_6_label }}</span>
+              </a>
+            </li>
+          {%- endif -%}
         </ul>
       </nav>
 
-      <div class="restaurant-drawer-cta">
-        <a href="/pages/menu" class="restaurant-drawer-cta__button" on:click="/close">
-          Поръчай сега
-        </a>
-      </div>
+      {%- if cta_label != blank -%}
+        <div class="restaurant-drawer-cta">
+          <a href="{{ cta_url }}" class="restaurant-drawer-cta__button" on:click="/close">
+            {{ cta_label }}
+          </a>
+        </div>
+      {%- endif -%}
     </div>
 
     <div class="menu-drawer__backdrop" on:click="/close"></div>
