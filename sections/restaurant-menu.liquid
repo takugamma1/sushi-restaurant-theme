@@ -158,7 +158,11 @@
 </restaurant-menu-component>
 
 {%- comment -%} Product modal {%- endcomment -%}
-{% render 'restaurant-product-modal' %}
+{% render 'restaurant-product-modal',
+  addons_collection: section.settings.addons_collection,
+  sauces_collection: section.settings.sauces_collection,
+  menu_page_url: section.settings.menu_page_url
+%}
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -597,25 +601,33 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {
       "type": "header",
-      "content": "Order modal add-ons (Menu page)"
+      "content": "Home page settings"
+    },
+    {
+      "type": "url",
+      "id": "menu_page_url",
+      "label": "Full menu page link",
+      "info": "When clicking 'See full menu' on home page, redirect to this page"
+    },
+    {
+      "type": "header",
+      "content": "Menu page - Order modal"
+    },
+    {
+      "type": "paragraph",
+      "content": "Configure the add-ons and sauces that appear when ordering on the menu page"
     },
     {
       "type": "collection",
       "id": "addons_collection",
       "label": "Add-ons collection",
-      "info": "Products shown as add-ons in Step 1 of order modal"
+      "info": "Step 1: Extra toppings, sides, etc."
     },
     {
       "type": "collection",
       "id": "sauces_collection",
       "label": "Sauces collection",
-      "info": "Products shown as sauces in Step 2 of order modal"
-    },
-    {
-      "type": "url",
-      "id": "menu_page_url",
-      "label": "Menu page URL",
-      "info": "For 'See full menu' button on home page"
+      "info": "Step 2: Soy sauce, wasabi, etc."
     },
     {
       "type": "header",

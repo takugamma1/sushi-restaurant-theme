@@ -2,6 +2,10 @@
   Restaurant product modal component.
   - Home page: Preview only with "See full menu" button
   - Menu page: Multi-step ordering with add-ons and sauces
+
+  @param {object} addons_collection - Collection for add-ons products
+  @param {object} sauces_collection - Collection for sauces products
+  @param {string} menu_page_url - URL for the full menu page
 {%- enddoc -%}
 
 {%- liquid
@@ -10,9 +14,7 @@
     assign is_menu_page = true
   endif
 
-  assign addons_collection = section.settings.addons_collection
-  assign sauces_collection = section.settings.sauces_collection
-  assign menu_page_url = section.settings.menu_page_url | default: '/pages/menu'
+  assign menu_page_url = menu_page_url | default: '/pages/menu'
 -%}
 
 <div class="rm-modal" id="rm-product-modal" aria-hidden="true">
