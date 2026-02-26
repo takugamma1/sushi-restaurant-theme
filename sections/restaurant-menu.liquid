@@ -167,10 +167,13 @@
 %}
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const heroImage = document.getElementById('rm-hero-image');
-  const defaultHeroSrc = heroImage ? heroImage.getAttribute('data-default-src') : null;
-  const isDesktop = window.matchMedia('(min-width: 750px)').matches;
+(function() {
+  function initMenuHover() {
+    const heroImage = document.querySelector('.restaurant-menu__hero-image');
+    const defaultHeroSrc = heroImage ? heroImage.src : null;
+    const isDesktop = window.innerWidth >= 750;
+
+    console.log('Menu init - Hero:', heroImage, 'Default src:', defaultHeroSrc, 'Desktop:', isDesktop);
 
   // Tab switching
   const tabs = document.querySelectorAll('.rm-tab');
@@ -213,22 +216,32 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Hero image swap on hover (desktop only)
-    if (isDesktop && heroImage && heroImage.tagName === 'IMG') {
+    if (isDesktop && heroImage) {
       item.addEventListener('mouseenter', function() {
         const productImage = this.getAttribute('data-product-image');
-        if (productImage && productImage.length > 0) {
+        console.log('Hover - Product image:', productImage);
+        if (productImage && productImage.length > 0 && heroImage.tagName === 'IMG') {
           heroImage.src = productImage;
         }
       });
 
       item.addEventListener('mouseleave', function() {
-        if (defaultHeroSrc && defaultHeroSrc.length > 0) {
+        console.log('Leave - Restore to:', defaultHeroSrc);
+        if (defaultHeroSrc && defaultHeroSrc.length > 0 && heroImage.tagName === 'IMG') {
           heroImage.src = defaultHeroSrc;
         }
       });
     }
   });
-});
+  }
+
+  // Run when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMenuHover);
+  } else {
+    initMenuHover();
+  }
+})();
 </script>
 
 {% stylesheet %}
