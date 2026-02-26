@@ -46,7 +46,7 @@
         "addons_collection": "test",
         "sauces_collection": "test",
         "category_border_radius": 16,
-        "category_border_width": 2,
+        "category_border_width": 1,
         "heading_size": 48,
         "subheading_size": 16,
         "tab_size": 11,
