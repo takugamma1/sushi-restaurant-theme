@@ -1,0 +1,862 @@
+{%- doc -%}
+  Restaurant product modal component.
+  - Home page: Preview only with "See full menu" button
+  - Menu page: Multi-step ordering with add-ons and sauces
+{%- enddoc -%}
+
+{%- liquid
+  assign is_menu_page = false
+  if template.suffix == 'menu' or request.path contains '/pages/menu'
+    assign is_menu_page = true
+  endif
+
+  assign addons_collection = section.settings.addons_collection
+  assign sauces_collection = section.settings.sauces_collection
+  assign menu_page_url = section.settings.menu_page_url | default: '/pages/menu'
+-%}
+
+<div class="rm-modal" id="rm-product-modal" aria-hidden="true">
+  <div class="rm-modal__backdrop" data-close-modal></div>
+  <div class="rm-modal__container">
+    <button class="rm-modal__close" type="button" data-close-modal aria-label="Close">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    {%- comment -%} Step indicators for menu page {%- endcomment -%}
+    {%- if is_menu_page -%}
+      <div class="rm-modal__steps">
+        <div class="rm-modal__step rm-modal__step--active" data-step="1">
+          <span class="rm-modal__step-num">1</span>
+          <span class="rm-modal__step-label">Добавки</span>
+        </div>
+        <div class="rm-modal__step-line"></div>
+        <div class="rm-modal__step" data-step="2">
+          <span class="rm-modal__step-num">2</span>
+          <span class="rm-modal__step-label">Сосове</span>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Modal content wrapper {%- endcomment -%}
+    <div class="rm-modal__content">
+      {%- comment -%} Product header (always visible) {%- endcomment -%}
+      <div class="rm-modal__product-header">
+        <div class="rm-modal__product-image">
+          <img src="" alt="" id="rm-modal-image">
+        </div>
+        <div class="rm-modal__product-info">
+          <h3 class="rm-modal__product-title" id="rm-modal-title"></h3>
+          <p class="rm-modal__product-desc" id="rm-modal-desc"></p>
+          <div class="rm-modal__product-meta">
+            <span class="rm-modal__product-price" id="rm-modal-price"></span>
+          </div>
+        </div>
+      </div>
+
+      {%- if is_menu_page -%}
+        {%- comment -%} Step 1: Add-ons {%- endcomment -%}
+        <div class="rm-modal__page rm-modal__page--active" data-page="1">
+          <div class="rm-modal__section">
+            <h4 class="rm-modal__section-title">Избери добавки <span class="rm-modal__optional">(по желание)</span></h4>
+            <div class="rm-modal__addons" id="rm-modal-addons">
+              {%- if addons_collection != blank -%}
+                {%- for product in addons_collection.products limit: 12 -%}
+                  <label class="rm-modal__addon">
+                    <input
+                      type="checkbox"
+                      name="addon[]"
+                      value="{{ product.selected_or_first_available_variant.id }}"
+                      data-price="{{ product.price }}"
+                      data-title="{{ product.title | escape }}"
+                    >
+                    <span class="rm-modal__addon-check">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </span>
+                    <span class="rm-modal__addon-info">
+                      <span class="rm-modal__addon-name">{{ product.title }}</span>
+                      <span class="rm-modal__addon-price">+{{ product.price | money }}</span>
+                    </span>
+                  </label>
+                {%- endfor -%}
+              {%- else -%}
+                <p class="rm-modal__empty">Няма налични добавки</p>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+
+        {%- comment -%} Step 2: Sauces + Note {%- endcomment -%}
+        <div class="rm-modal__page" data-page="2">
+          <div class="rm-modal__section">
+            <h4 class="rm-modal__section-title">Избери сосове <span class="rm-modal__optional">(по желание)</span></h4>
+            <div class="rm-modal__addons" id="rm-modal-sauces">
+              {%- if sauces_collection != blank -%}
+                {%- for product in sauces_collection.products limit: 8 -%}
+                  <label class="rm-modal__addon">
+                    <input
+                      type="checkbox"
+                      name="sauce[]"
+                      value="{{ product.selected_or_first_available_variant.id }}"
+                      data-price="{{ product.price }}"
+                      data-title="{{ product.title | escape }}"
+                    >
+                    <span class="rm-modal__addon-check">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </span>
+                    <span class="rm-modal__addon-info">
+                      <span class="rm-modal__addon-name">{{ product.title }}</span>
+                      <span class="rm-modal__addon-price">+{{ product.price | money }}</span>
+                    </span>
+                  </label>
+                {%- endfor -%}
+              {%- else -%}
+                <p class="rm-modal__empty">Няма налични сосове</p>
+              {%- endif -%}
+            </div>
+          </div>
+
+          <div class="rm-modal__section">
+            <h4 class="rm-modal__section-title">Бележка към поръчката <span class="rm-modal__optional">(по желание)</span></h4>
+            <textarea
+              class="rm-modal__note"
+              id="rm-modal-note"
+              placeholder="Напр: Без лук, допълнително сусам..."
+              rows="2"
+            ></textarea>
+          </div>
+        </div>
+
+        {%- comment -%} Footer with navigation and total {%- endcomment -%}
+        <div class="rm-modal__footer">
+          <div class="rm-modal__total">
+            <span class="rm-modal__total-label">Общо:</span>
+            <span class="rm-modal__total-price" id="rm-modal-total">0.00 лв.</span>
+          </div>
+          <div class="rm-modal__actions">
+            <button type="button" class="rm-modal__btn rm-modal__btn--back" data-prev-step style="display: none;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              Назад
+            </button>
+            <button type="button" class="rm-modal__btn rm-modal__btn--next" data-next-step>
+              Продължи
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+            <button type="button" class="rm-modal__btn rm-modal__btn--add" data-add-to-cart style="display: none;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              Добави в кошницата
+            </button>
+          </div>
+        </div>
+
+      {%- else -%}
+        {%- comment -%} Home page: Preview only {%- endcomment -%}
+        <div class="rm-modal__preview-footer">
+          <a href="{{ menu_page_url }}" class="rm-modal__btn rm-modal__btn--full">
+            Виж пълното меню
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Loading state {%- endcomment -%}
+    <div class="rm-modal__loading" id="rm-modal-loading" style="display: none;">
+      <div class="rm-modal__spinner"></div>
+      <span>Добавяне...</span>
+    </div>
+
+    {%- comment -%} Success state {%- endcomment -%}
+    <div class="rm-modal__success" id="rm-modal-success" style="display: none;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <span>Добавено в кошницата!</span>
+    </div>
+  </div>
+</div>
+
+<script>
+class RestaurantProductModal {
+  constructor() {
+    this.modal = document.getElementById('rm-product-modal');
+    if (!this.modal) return;
+
+    this.isMenuPage = {{ is_menu_page | json }};
+    this.currentStep = 1;
+    this.selectedProduct = null;
+    this.basePrice = 0;
+
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    // Close modal
+    this.modal.querySelectorAll('[data-close-modal]').forEach(btn => {
+      btn.addEventListener('click', () => this.close());
+    });
+
+    // Close on escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.modal.getAttribute('aria-hidden') === 'false') {
+        this.close();
+      }
+    });
+
+    if (this.isMenuPage) {
+      // Step navigation
+      const nextBtn = this.modal.querySelector('[data-next-step]');
+      const prevBtn = this.modal.querySelector('[data-prev-step]');
+      const addBtn = this.modal.querySelector('[data-add-to-cart]');
+
+      if (nextBtn) nextBtn.addEventListener('click', () => this.nextStep());
+      if (prevBtn) prevBtn.addEventListener('click', () => this.prevStep());
+      if (addBtn) addBtn.addEventListener('click', () => this.addToCart());
+
+      // Update total on addon change
+      this.modal.querySelectorAll('input[type="checkbox"]').forEach(input => {
+        input.addEventListener('change', () => this.updateTotal());
+      });
+    }
+  }
+
+  open(productData) {
+    this.selectedProduct = productData;
+    this.basePrice = parseInt(productData.price) || 0;
+    this.currentStep = 1;
+
+    // Update modal content
+    const imgEl = document.getElementById('rm-modal-image');
+    const titleEl = document.getElementById('rm-modal-title');
+    const descEl = document.getElementById('rm-modal-desc');
+    const priceEl = document.getElementById('rm-modal-price');
+
+    if (imgEl) imgEl.src = productData.image || '';
+    if (titleEl) titleEl.textContent = productData.title || '';
+    if (descEl) descEl.textContent = productData.description || '';
+    if (priceEl) priceEl.textContent = productData.priceFormatted || '';
+
+    // Reset checkboxes and note
+    this.modal.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    const noteEl = document.getElementById('rm-modal-note');
+    if (noteEl) noteEl.value = '';
+
+    // Reset steps
+    if (this.isMenuPage) {
+      this.goToStep(1);
+      this.updateTotal();
+    }
+
+    // Show modal
+    this.modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  close() {
+    this.modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+
+    // Hide success/loading states
+    document.getElementById('rm-modal-loading').style.display = 'none';
+    document.getElementById('rm-modal-success').style.display = 'none';
+    this.modal.querySelector('.rm-modal__content').style.display = '';
+  }
+
+  goToStep(step) {
+    this.currentStep = step;
+
+    // Update step indicators
+    this.modal.querySelectorAll('.rm-modal__step').forEach(el => {
+      const stepNum = parseInt(el.dataset.step);
+      el.classList.toggle('rm-modal__step--active', stepNum === step);
+      el.classList.toggle('rm-modal__step--done', stepNum < step);
+    });
+
+    // Update pages
+    this.modal.querySelectorAll('.rm-modal__page').forEach(el => {
+      el.classList.toggle('rm-modal__page--active', parseInt(el.dataset.page) === step);
+    });
+
+    // Update buttons
+    const prevBtn = this.modal.querySelector('[data-prev-step]');
+    const nextBtn = this.modal.querySelector('[data-next-step]');
+    const addBtn = this.modal.querySelector('[data-add-to-cart]');
+
+    if (step === 1) {
+      prevBtn.style.display = 'none';
+      nextBtn.style.display = '';
+      addBtn.style.display = 'none';
+    } else {
+      prevBtn.style.display = '';
+      nextBtn.style.display = 'none';
+      addBtn.style.display = '';
+    }
+  }
+
+  nextStep() {
+    if (this.currentStep < 2) this.goToStep(this.currentStep + 1);
+  }
+
+  prevStep() {
+    if (this.currentStep > 1) this.goToStep(this.currentStep - 1);
+  }
+
+  updateTotal() {
+    let total = this.basePrice;
+
+    this.modal.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
+      total += parseInt(input.dataset.price) || 0;
+    });
+
+    const totalEl = document.getElementById('rm-modal-total');
+    if (totalEl) {
+      totalEl.textContent = (total / 100).toFixed(2) + ' лв.';
+    }
+  }
+
+  async addToCart() {
+    const loadingEl = document.getElementById('rm-modal-loading');
+    const successEl = document.getElementById('rm-modal-success');
+    const contentEl = this.modal.querySelector('.rm-modal__content');
+
+    // Show loading
+    contentEl.style.display = 'none';
+    loadingEl.style.display = 'flex';
+
+    // Collect items to add
+    const items = [];
+
+    // Main product
+    const note = document.getElementById('rm-modal-note')?.value || '';
+    items.push({
+      id: this.selectedProduct.variantId,
+      quantity: 1,
+      properties: note ? { 'Бележка': note } : {}
+    });
+
+    // Add selected addons and sauces
+    this.modal.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
+      items.push({
+        id: parseInt(input.value),
+        quantity: 1
+      });
+    });
+
+    try {
+      // Add items to cart
+      for (const item of items) {
+        await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item)
+        });
+      }
+
+      // Show success
+      loadingEl.style.display = 'none';
+      successEl.style.display = 'flex';
+
+      // Close after delay
+      setTimeout(() => {
+        this.close();
+        // Refresh cart count if available
+        if (window.refreshCartCount) window.refreshCartCount();
+      }, 1500);
+
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      loadingEl.style.display = 'none';
+      contentEl.style.display = '';
+      alert('Грешка при добавяне. Моля, опитайте отново.');
+    }
+  }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  window.restaurantModal = new RestaurantProductModal();
+});
+</script>
+
+<style>
+/* Modal Base */
+.rm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.rm-modal[aria-hidden="false"] {
+  opacity: 1;
+  visibility: visible;
+}
+
+.rm-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+}
+
+.rm-modal__container {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  background: var(--restaurant-dark-card, #1A1A1A);
+  border-radius: 20px;
+  border: 1px solid var(--restaurant-border, #2A2A2A);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.rm-modal[aria-hidden="false"] .rm-modal__container {
+  transform: translateY(0);
+}
+
+/* Close button */
+.rm-modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.rm-modal__close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Step indicators */
+.rm-modal__steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--restaurant-border, #2A2A2A);
+}
+
+.rm-modal__step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+.rm-modal__step--active,
+.rm-modal__step--done {
+  opacity: 1;
+}
+
+.rm-modal__step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--restaurant-accent, #F98760);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--restaurant-accent, #F98760);
+  transition: all 0.3s ease;
+}
+
+.rm-modal__step--active .rm-modal__step-num {
+  background: var(--restaurant-accent, #F98760);
+  color: #fff;
+}
+
+.rm-modal__step--done .rm-modal__step-num {
+  background: var(--restaurant-accent, #F98760);
+  color: #fff;
+}
+
+.rm-modal__step-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.rm-modal__step-line {
+  width: 40px;
+  height: 1px;
+  background: var(--restaurant-border, #2A2A2A);
+}
+
+/* Content */
+.rm-modal__content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Product header */
+.rm-modal__product-header {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--restaurant-border, #2A2A2A);
+}
+
+.rm-modal__product-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.rm-modal__product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rm-modal__product-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rm-modal__product-title {
+  font-family: var(--font-heading--family);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 0.5rem;
+}
+
+.rm-modal__product-desc {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.4;
+  margin: 0 0 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rm-modal__product-price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--restaurant-accent, #F98760);
+}
+
+/* Pages */
+.rm-modal__page {
+  display: none;
+  padding: 1rem 1.25rem;
+}
+
+.rm-modal__page--active {
+  display: block;
+}
+
+/* Section */
+.rm-modal__section {
+  margin-bottom: 1.25rem;
+}
+
+.rm-modal__section:last-child {
+  margin-bottom: 0;
+}
+
+.rm-modal__section-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rm-modal__optional {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Addons */
+.rm-modal__addons {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.rm-modal__addon {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--restaurant-border, #2A2A2A);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rm-modal__addon:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.rm-modal__addon input {
+  display: none;
+}
+
+.rm-modal__addon-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1.5px solid var(--restaurant-border, #2A2A2A);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  color: transparent;
+}
+
+.rm-modal__addon input:checked + .rm-modal__addon-check {
+  background: var(--restaurant-accent, #F98760);
+  border-color: var(--restaurant-accent, #F98760);
+  color: #fff;
+}
+
+.rm-modal__addon-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rm-modal__addon-name {
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.rm-modal__addon-price {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+/* Note textarea */
+.rm-modal__note {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--restaurant-border, #2A2A2A);
+  border-radius: 10px;
+  padding: 0.75rem;
+  color: #fff;
+  font-size: 0.85rem;
+  resize: none;
+  font-family: inherit;
+}
+
+.rm-modal__note::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.rm-modal__note:focus {
+  outline: none;
+  border-color: var(--restaurant-accent, #F98760);
+}
+
+/* Footer */
+.rm-modal__footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--restaurant-border, #2A2A2A);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.rm-modal__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.rm-modal__total-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.rm-modal__total-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.rm-modal__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Buttons */
+.rm-modal__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.rm-modal__btn--back {
+  flex: 0 0 auto;
+  background: transparent;
+  border: 1px solid var(--restaurant-border, #2A2A2A);
+  color: #fff;
+}
+
+.rm-modal__btn--back:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.rm-modal__btn--next,
+.rm-modal__btn--add,
+.rm-modal__btn--full {
+  flex: 1;
+  background: var(--restaurant-accent, #F98760);
+  color: #fff;
+}
+
+.rm-modal__btn--next:hover,
+.rm-modal__btn--add:hover,
+.rm-modal__btn--full:hover {
+  background: var(--restaurant-accent-hover, #e0764f);
+}
+
+/* Preview footer (home page) */
+.rm-modal__preview-footer {
+  padding: 1.25rem;
+  border-top: 1px solid var(--restaurant-border, #2A2A2A);
+}
+
+.rm-modal__preview-footer .rm-modal__btn--full {
+  width: 100%;
+}
+
+/* Loading & Success states */
+.rm-modal__loading,
+.rm-modal__success {
+  position: absolute;
+  inset: 0;
+  background: var(--restaurant-dark-card, #1A1A1A);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.rm-modal__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--restaurant-border, #2A2A2A);
+  border-top-color: var(--restaurant-accent, #F98760);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.rm-modal__success svg {
+  color: var(--restaurant-accent, #F98760);
+}
+
+.rm-modal__empty {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Mobile responsive */
+@media screen and (max-width: 480px) {
+  .rm-modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .rm-modal__container {
+    max-width: 100%;
+    max-height: 95vh;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .rm-modal__product-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .rm-modal__product-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .rm-modal__step-label {
+    display: none;
+  }
+
+  .rm-modal__step-line {
+    width: 60px;
+  }
+}
+</style>

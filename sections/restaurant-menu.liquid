@@ -1,5 +1,13 @@
+{%- liquid
+  assign is_menu_page = false
+  if template.suffix == 'menu' or request.path contains '/pages/menu'
+    assign is_menu_page = true
+  endif
+-%}
+
 <restaurant-menu-component
   class="restaurant-menu color-{{ section.settings.color_scheme }}"
+  data-is-menu-page="{{ is_menu_page }}"
   style="
     --rm-heading-size: {{ section.settings.heading_size }}px;
     --rm-subheading-size: {{ section.settings.subheading_size }}px;
@@ -73,8 +81,13 @@
             {%- for product in collection.products limit: block.settings.max_products -%}
               <div
                 class="rm-item{% if product.compare_at_price > product.price %} rm-item--sale{% endif %}"
-                data-restaurant-add-to-cart
+                data-product-modal-trigger
                 data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                data-product-title="{{ product.title | escape }}"
+                data-product-desc="{{ product.description | strip_html | truncate: 150 | escape }}"
+                data-product-price="{{ product.price }}"
+                data-product-price-formatted="{{ product.price | money }}"
+                data-product-image="{{ product.featured_image | image_url: width: 300 }}"
               >
                 <div class="rm-item__thumb">
                   {%- if product.featured_image != blank -%}
@@ -114,6 +127,16 @@
                     <span class="rm-item__badge">{{ block.settings.sale_badge_text | default: 'Най-продаван' }}</span>
                   {%- endif -%}
                 </div>
+
+                {%- comment -%} Add button for menu page only {%- endcomment -%}
+                {%- if is_menu_page -%}
+                  <button type="button" class="rm-item__add-btn" aria-label="Add {{ product.title }}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                  </button>
+                {%- endif -%}
               </div>
             {%- endfor -%}
 
@@ -134,7 +157,53 @@
   </div>
 </restaurant-menu-component>
 
-<script src="{{ 'restaurant-menu.js' | asset_url }}" type="module"></script>
+{%- comment -%} Product modal {%- endcomment -%}
+{% render 'restaurant-product-modal' %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab switching
+  const tabs = document.querySelectorAll('.rm-tab');
+  const panels = document.querySelectorAll('.rm-panel');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      const tabIndex = this.dataset.tab;
+
+      tabs.forEach(t => t.classList.remove('rm-tab--active'));
+      panels.forEach(p => p.classList.remove('rm-panel--active'));
+
+      this.classList.add('rm-tab--active');
+      document.querySelector(`[data-panel="${tabIndex}"]`)?.classList.add('rm-panel--active');
+    });
+  });
+
+  // Product modal triggers
+  const productItems = document.querySelectorAll('[data-product-modal-trigger]');
+
+  productItems.forEach(item => {
+    item.addEventListener('click', function(e) {
+      // Prevent if clicking the add button directly
+      if (e.target.closest('.rm-item__add-btn')) {
+        e.stopPropagation();
+      }
+
+      const productData = {
+        variantId: this.dataset.variantId,
+        title: this.dataset.productTitle,
+        description: this.dataset.productDesc,
+        price: this.dataset.productPrice,
+        priceFormatted: this.dataset.productPriceFormatted,
+        image: this.dataset.productImage
+      };
+
+      if (window.restaurantModal) {
+        window.restaurantModal.open(productData);
+      }
+    });
+  });
+});
+</script>
 
 {% stylesheet %}
   .restaurant-menu-section {
@@ -434,6 +503,53 @@
     background: var(--restaurant-accent, #F98760);
     color: #fff;
   }
+
+  /* Add button for menu page */
+  .rm-item__add-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--restaurant-accent, #F98760);
+    background: transparent;
+    color: var(--restaurant-accent, #F98760);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+    margin-left: 0.5rem;
+  }
+
+  .rm-item__add-btn:hover {
+    background: var(--restaurant-accent, #F98760);
+    color: #fff;
+    transform: scale(1.05);
+  }
+
+  .rm-item__add-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Make items look clickable */
+  .rm-item {
+    position: relative;
+  }
+
+  .rm-item::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    transition: border-color 0.25s ease;
+    pointer-events: none;
+  }
+
+  .rm-item:hover::after {
+    border-color: rgba(249, 135, 96, 0.3);
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -478,6 +594,28 @@
       "type": "url",
       "id": "cta_link",
       "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Order modal add-ons (Menu page)"
+    },
+    {
+      "type": "collection",
+      "id": "addons_collection",
+      "label": "Add-ons collection",
+      "info": "Products shown as add-ons in Step 1 of order modal"
+    },
+    {
+      "type": "collection",
+      "id": "sauces_collection",
+      "label": "Sauces collection",
+      "info": "Products shown as sauces in Step 2 of order modal"
+    },
+    {
+      "type": "url",
+      "id": "menu_page_url",
+      "label": "Menu page URL",
+      "info": "For 'See full menu' button on home page"
     },
     {
       "type": "header",
