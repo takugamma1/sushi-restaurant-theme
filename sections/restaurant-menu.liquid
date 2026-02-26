@@ -221,21 +221,33 @@
 
     // Hero image swap on hover (desktop only)
     if (isDesktop && heroImage) {
+      let isAnimating = false;
+
       item.addEventListener('mouseenter', function() {
         let productImage = this.getAttribute('data-product-image');
         if (productImage && productImage.startsWith('//')) {
           productImage = 'https:' + productImage;
         }
-        console.log('Hover - Product image:', productImage);
-        if (productImage && productImage.length > 0) {
-          heroImage.src = productImage;
+        if (productImage && productImage.length > 0 && !isAnimating) {
+          isAnimating = true;
+          heroImage.style.opacity = '0';
+          setTimeout(() => {
+            heroImage.src = productImage;
+            heroImage.style.opacity = '1';
+            isAnimating = false;
+          }, 250);
         }
       });
 
       item.addEventListener('mouseleave', function() {
-        console.log('Leave - Restore to:', defaultHeroSrc);
-        if (defaultHeroSrc && defaultHeroSrc.length > 0) {
-          heroImage.src = defaultHeroSrc;
+        if (defaultHeroSrc && defaultHeroSrc.length > 0 && !isAnimating) {
+          isAnimating = true;
+          heroImage.style.opacity = '0';
+          setTimeout(() => {
+            heroImage.src = defaultHeroSrc;
+            heroImage.style.opacity = '1';
+            isAnimating = false;
+          }, 250);
         }
       });
     }
@@ -290,7 +302,7 @@
     object-fit: cover;
     position: absolute;
     inset: 0;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.25s ease-in-out;
   }
 
   .restaurant-menu__hero-overlay {
