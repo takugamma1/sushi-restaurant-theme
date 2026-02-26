@@ -38,6 +38,7 @@
         "category_mango"
       ],
       "settings": {
+        "hero_image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.50.png",
         "hero_heading": "НАШЕТО МЕНЮ",
         "hero_subheading": "Най-доброто суши в града",
         "cta_label": "",
