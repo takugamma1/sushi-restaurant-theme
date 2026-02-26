@@ -131,6 +131,112 @@
 }
 
 /* ================================
+ * Mobile Header Responsive Styles
+ * ================================ */
+
+/* Hide desktop nav on mobile */
+@media screen and (max-width: 749px) {
+  .restaurant-mode .restaurant-nav {
+    display: none !important;
+  }
+
+  /* Make logo bigger and centered on mobile */
+  .restaurant-mode .header-logo {
+    grid-area: center !important;
+    justify-self: center;
+  }
+
+  .restaurant-mode .header-logo img,
+  .restaurant-mode .header-logo svg {
+    height: 48px !important;
+    width: auto !important;
+    max-height: 48px !important;
+  }
+
+  /* Show hamburger menu on mobile */
+  .restaurant-mode .header-drawer {
+    display: block !important;
+    grid-area: leftA !important;
+  }
+
+  .restaurant-mode .header__icon--menu {
+    color: var(--color-foreground);
+  }
+
+  /* Hide CTA on mobile header */
+  .restaurant-mode .restaurant-nav__cta {
+    display: none !important;
+  }
+}
+
+/* ================================
+ * Restaurant Mobile Drawer Styles
+ * ================================ */
+
+.restaurant-mode .menu-drawer {
+  background: var(--restaurant-dark, #0D0D0D);
+  border-right: 1px solid var(--restaurant-border, #2A2A2A);
+}
+
+.restaurant-mode .menu-drawer__navigation {
+  padding-top: 2rem;
+}
+
+.restaurant-mode .menu-drawer__menu-item {
+  color: #fff;
+  font-family: var(--font-heading--family);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--restaurant-border, #2A2A2A);
+}
+
+.restaurant-mode .menu-drawer__menu-item:hover {
+  color: var(--restaurant-accent, #F98760);
+}
+
+.restaurant-mode .menu-drawer__close-button {
+  color: #fff;
+}
+
+.restaurant-mode .menu-drawer__close-button:hover {
+  color: var(--restaurant-accent, #F98760);
+}
+
+/* Restaurant drawer CTA button */
+.restaurant-drawer-cta {
+  display: flex;
+  justify-content: center;
+  padding: 2rem var(--drawer-padding, 1.5rem);
+  margin-top: auto;
+}
+
+.restaurant-drawer-cta__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem 2rem;
+  background: transparent;
+  border: 1px solid var(--restaurant-accent, #F98760);
+  color: var(--restaurant-accent, #F98760);
+  font-family: var(--font-body--family);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.35s ease;
+}
+
+.restaurant-drawer-cta__button:hover {
+  background: var(--restaurant-accent, #F98760);
+  color: #fff;
+}
+
+/* ================================
  * Decorated Section Headings
  * ================================ */
 
