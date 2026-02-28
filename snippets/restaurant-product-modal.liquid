@@ -432,14 +432,14 @@ document.addEventListener('DOMContentLoaded', () => {
 /* Close button */
 .rm-modal__close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0.75rem;
+  right: 0.75rem;
   z-index: 10;
-  background: rgba(0, 0, 0, 0.5);
-  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
 .rm-modal__close:hover {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
   transform: scale(1.1);
 }
 
@@ -461,39 +461,55 @@ document.addEventListener('DOMContentLoaded', () => {
   flex-direction: column;
 }
 
-/* Hero image - bigger and prominent */
+/* Hero image - mobile first approach */
 .rm-modal__hero-image {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  min-height: 200px;
+  max-height: 280px;
   overflow: hidden;
   background: radial-gradient(ellipse at center, #1a1a1a 0%, #0D0D0D 70%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 3.5rem 1.5rem 1.5rem;
 }
 
 .rm-modal__hero-image::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(249, 135, 96, 0.08) 0%, transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(249, 135, 96, 0.06) 0%, transparent 60%);
   pointer-events: none;
 }
 
 .rm-modal__hero-image img {
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
   position: relative;
   z-index: 1;
-  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
-  transition: transform 0.4s ease;
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.4));
 }
 
-.rm-modal__hero-image img:hover {
-  transform: scale(1.03);
+/* Desktop - larger hero image */
+@media screen and (min-width: 541px) {
+  .rm-modal__hero-image {
+    min-height: 280px;
+    max-height: 340px;
+    padding: 3rem 2rem 1.5rem;
+  }
+
+  .rm-modal__hero-image img {
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
+    transition: transform 0.4s ease;
+  }
+
+  .rm-modal__hero-image img:hover {
+    transform: scale(1.03);
+  }
 }
 
 /* Product info */
@@ -844,11 +860,6 @@ document.addEventListener('DOMContentLoaded', () => {
     max-width: 100%;
     max-height: 95vh;
     border-radius: 24px 24px 0 0;
-  }
-
-  .rm-modal__hero-image {
-    aspect-ratio: 4 / 3;
-    padding: 1rem;
   }
 
   .rm-modal__product-title {
