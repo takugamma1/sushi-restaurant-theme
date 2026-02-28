@@ -36,8 +36,10 @@
           <img src="" alt="" id="rm-modal-image">
         </div>
         <div class="rm-modal__product-overlay">
-          <h3 class="rm-modal__product-title" id="rm-modal-title"></h3>
-          <p class="rm-modal__product-desc" id="rm-modal-desc"></p>
+          <div class="rm-modal__product-overlay-text">
+            <h3 class="rm-modal__product-title" id="rm-modal-title"></h3>
+            <p class="rm-modal__product-desc" id="rm-modal-desc"></p>
+          </div>
           <div class="rm-modal__product-price" id="rm-modal-price"></div>
         </div>
       </div>
@@ -239,7 +241,7 @@ class RestaurantProductModal {
     const track = document.getElementById('rm-modal-carousel-track');
     if (!track) return;
 
-    const cardWidth = 140 + 12; // card width + gap
+    const cardWidth = 100 + 12; // card width + gap
     this.carouselPosition = Math.min(0, this.carouselPosition + cardWidth * 2);
     track.style.transform = `translateX(${this.carouselPosition}px)`;
   }
@@ -249,7 +251,7 @@ class RestaurantProductModal {
     const carousel = document.getElementById('rm-modal-carousel');
     if (!track || !carousel) return;
 
-    const cardWidth = 140 + 12; // card width + gap
+    const cardWidth = 100 + 12; // card width + gap
     const maxScroll = -(track.scrollWidth - carousel.clientWidth);
     this.carouselPosition = Math.max(maxScroll, this.carouselPosition - cardWidth * 2);
     track.style.transform = `translateX(${this.carouselPosition}px)`;
@@ -464,27 +466,20 @@ document.addEventListener('DOMContentLoaded', () => {
 .rm-modal__hero {
   position: relative;
   width: 100%;
-  min-height: 220px;
+  height: 180px;
   overflow: hidden;
-  background: radial-gradient(ellipse at center, #1a1a1a 0%, #0D0D0D 70%);
+  background: #0D0D0D;
+  flex-shrink: 0;
 }
 
-/* Hero image */
+/* Hero image - clean, no effects */
 .rm-modal__hero-image {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2.5rem 1.5rem 4.5rem;
-}
-
-.rm-modal__hero-image::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(249, 135, 96, 0.06) 0%, transparent 60%);
-  pointer-events: none;
+  padding: 0.75rem;
 }
 
 .rm-modal__hero-image img {
@@ -493,81 +488,78 @@ document.addEventListener('DOMContentLoaded', () => {
   width: auto;
   height: auto;
   object-fit: contain;
-  position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.4));
 }
 
-/* Product info overlay */
+/* Product info overlay - brand styled widget */
 .rm-modal__product-overlay {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 2.5rem 1.25rem 1rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 60%, transparent 100%);
+  padding: 0.6rem 1rem;
+  background: var(--restaurant-dark-card, #1A1A1A);
+  border-top: 2px solid var(--restaurant-accent, #F98760);
   z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
-/* Desktop - larger hero */
+.rm-modal__product-overlay-text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Desktop */
 @media screen and (min-width: 541px) {
   .rm-modal__hero {
-    min-height: 280px;
-  }
-
-  .rm-modal__hero-image {
-    padding: 2.5rem 2rem 5rem;
-  }
-
-  .rm-modal__hero-image img {
-    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
-  }
-
-  .rm-modal__product-overlay {
-    padding: 3rem 1.5rem 1.25rem;
+    height: 200px;
   }
 }
 
 .rm-modal__product-title {
   font-family: var(--font-heading--family);
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #fff;
-  margin: 0 0 0.25rem;
+  margin: 0;
   line-height: 1.2;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rm-modal__product-desc {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.4;
-  margin: 0 0 0.35rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.3;
+  margin: 0.15rem 0 0;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rm-modal__product-price {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--restaurant-accent, #F98760);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
 }
 
 /* Add-ons section */
 .rm-modal__addons-section {
-  padding: 1.25rem 0;
+  padding: 0.75rem 0;
   border-bottom: 1px solid var(--restaurant-border, #2A2A2A);
+  flex-shrink: 0;
 }
 
 .rm-modal__addons-title {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #fff;
-  margin: 0 0 1rem;
-  padding: 0 1.5rem;
+  margin: 0 0 0.6rem;
+  padding: 0 1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -625,7 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
 /* Add-on card */
 .rm-modal__addon-card {
   flex-shrink: 0;
-  width: 140px;
+  width: 100px;
   cursor: pointer;
 }
 
@@ -682,25 +674,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* Add-on details */
 .rm-modal__addon-details {
-  padding: 0.75rem;
+  padding: 0.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.15rem;
 }
 
 .rm-modal__addon-name {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 500;
   color: #fff;
-  line-height: 1.3;
+  line-height: 1.2;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .rm-modal__addon-price {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--restaurant-accent, #F98760);
 }
@@ -708,10 +700,10 @@ document.addEventListener('DOMContentLoaded', () => {
 /* Checkmark */
 .rm-modal__addon-check {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 28px;
-  height: 28px;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: var(--restaurant-accent, #F98760);
   display: flex;
@@ -730,14 +722,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* Note section */
 .rm-modal__note-section {
-  padding: 1.25rem 1.5rem;
+  padding: 0.75rem 1rem;
+  flex-shrink: 0;
 }
 
 .rm-modal__note-label {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #fff;
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.5rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -747,10 +740,10 @@ document.addEventListener('DOMContentLoaded', () => {
   width: 100%;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--restaurant-border, #2A2A2A);
-  border-radius: 12px;
-  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   resize: none;
   font-family: inherit;
   transition: border-color 0.2s ease;
@@ -767,28 +760,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* Footer */
 .rm-modal__footer {
-  padding: 1.25rem 1.5rem;
-  background: rgba(0, 0, 0, 0.4);
+  padding: 0.75rem 1rem;
+  background: var(--restaurant-dark-card, #1A1A1A);
   border-top: 1px solid var(--restaurant-border, #2A2A2A);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .rm-modal__total {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+  gap: 0;
 }
 
 .rm-modal__total-label {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.5);
 }
 
 .rm-modal__total-price {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #fff;
 }
@@ -798,11 +792,11 @@ document.addEventListener('DOMContentLoaded', () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem 1.75rem;
+  gap: 0.4rem;
+  padding: 0.75rem 1.25rem;
   border: none;
-  border-radius: 12px;
-  font-size: 0.95rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
@@ -878,43 +872,17 @@ document.addEventListener('DOMContentLoaded', () => {
     border-radius: 24px 24px 0 0;
   }
 
-  .rm-modal__product-title {
-    font-size: 1rem;
-  }
-
-  .rm-modal__product-info {
-    padding: 1rem 1.25rem;
-  }
-
-  .rm-modal__addons-title,
-  .rm-modal__note-label {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-  }
-
-  .rm-modal__note-section {
-    padding: 1rem 1.25rem;
-  }
-
   .rm-modal__footer {
-    padding: 1rem 1.25rem;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .rm-modal__total {
+    padding: 0.6rem 1rem;
     flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    align-items: center;
   }
 
   .rm-modal__btn--add {
-    width: 100%;
+    flex: 1;
   }
 
   .rm-modal__addon-card {
-    width: 120px;
+    width: 90px;
   }
 
   .rm-modal__carousel-btn {
