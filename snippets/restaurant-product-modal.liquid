@@ -30,16 +30,16 @@
 
     {%- comment -%} Modal content wrapper {%- endcomment -%}
     <div class="rm-modal__content">
-      {%- comment -%} Big product image {%- endcomment -%}
-      <div class="rm-modal__hero-image">
-        <img src="" alt="" id="rm-modal-image">
-      </div>
-
-      {%- comment -%} Product info {%- endcomment -%}
-      <div class="rm-modal__product-info">
-        <h3 class="rm-modal__product-title" id="rm-modal-title"></h3>
-        <p class="rm-modal__product-desc" id="rm-modal-desc"></p>
-        <div class="rm-modal__product-price" id="rm-modal-price"></div>
+      {%- comment -%} Hero with image and overlaid info {%- endcomment -%}
+      <div class="rm-modal__hero">
+        <div class="rm-modal__hero-image">
+          <img src="" alt="" id="rm-modal-image">
+        </div>
+        <div class="rm-modal__product-overlay">
+          <h3 class="rm-modal__product-title" id="rm-modal-title"></h3>
+          <p class="rm-modal__product-desc" id="rm-modal-desc"></p>
+          <div class="rm-modal__product-price" id="rm-modal-price"></div>
+        </div>
       </div>
 
       {%- if is_menu_page -%}
@@ -460,18 +460,23 @@ document.addEventListener('DOMContentLoaded', () => {
   overflow: hidden;
 }
 
-/* Hero image - mobile first approach */
-.rm-modal__hero-image {
+/* Hero wrapper */
+.rm-modal__hero {
   position: relative;
   width: 100%;
-  min-height: 200px;
-  max-height: 280px;
+  min-height: 220px;
   overflow: hidden;
   background: radial-gradient(ellipse at center, #1a1a1a 0%, #0D0D0D 70%);
+}
+
+/* Hero image */
+.rm-modal__hero-image {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3.5rem 1.5rem 1.5rem;
+  padding: 2.5rem 1.5rem 4.5rem;
 }
 
 .rm-modal__hero-image::before {
@@ -493,50 +498,62 @@ document.addEventListener('DOMContentLoaded', () => {
   filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.4));
 }
 
-/* Desktop - larger hero image */
+/* Product info overlay */
+.rm-modal__product-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2.5rem 1.25rem 1rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 60%, transparent 100%);
+  z-index: 2;
+}
+
+/* Desktop - larger hero */
 @media screen and (min-width: 541px) {
-  .rm-modal__hero-image {
+  .rm-modal__hero {
     min-height: 280px;
-    max-height: 340px;
-    padding: 3rem 2rem 1.5rem;
+  }
+
+  .rm-modal__hero-image {
+    padding: 2.5rem 2rem 5rem;
   }
 
   .rm-modal__hero-image img {
     filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
-    transition: transform 0.4s ease;
   }
 
-  .rm-modal__hero-image img:hover {
-    transform: scale(1.03);
+  .rm-modal__product-overlay {
+    padding: 3rem 1.5rem 1.25rem;
   }
-}
-
-/* Product info */
-.rm-modal__product-info {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--restaurant-border, #2A2A2A);
 }
 
 .rm-modal__product-title {
   font-family: var(--font-heading--family);
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #fff;
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.25rem;
   line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .rm-modal__product-desc {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
-  line-height: 1.5;
-  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+  margin: 0 0 0.35rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .rm-modal__product-price {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--restaurant-accent, #F98760);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 /* Add-ons section */
@@ -862,7 +879,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   .rm-modal__product-title {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 
   .rm-modal__product-info {
