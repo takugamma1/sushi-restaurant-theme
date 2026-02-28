@@ -241,7 +241,7 @@ class RestaurantProductModal {
     const track = document.getElementById('rm-modal-carousel-track');
     if (!track) return;
 
-    const cardWidth = 100 + 12; // card width + gap
+    const cardWidth = 110 + 12; // card width + gap
     this.carouselPosition = Math.min(0, this.carouselPosition + cardWidth * 2);
     track.style.transform = `translateX(${this.carouselPosition}px)`;
   }
@@ -251,7 +251,7 @@ class RestaurantProductModal {
     const carousel = document.getElementById('rm-modal-carousel');
     if (!track || !carousel) return;
 
-    const cardWidth = 100 + 12; // card width + gap
+    const cardWidth = 110 + 12; // card width + gap
     const maxScroll = -(track.scrollWidth - carousel.clientWidth);
     this.carouselPosition = Math.max(maxScroll, this.carouselPosition - cardWidth * 2);
     track.style.transform = `translateX(${this.carouselPosition}px)`;
@@ -386,15 +386,15 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <style>
-/* Modal Base */
+/* Modal Base - Mobile first (full screen) */
 .rm-modal {
   position: fixed;
   inset: 0;
   z-index: 9999;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  padding: 1rem;
+  padding: 0;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -408,78 +408,92 @@ document.addEventListener('DOMContentLoaded', () => {
 .rm-modal__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.9);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.95);
 }
 
+/* Mobile: Full screen */
 .rm-modal__container {
   position: relative;
   width: 100%;
-  max-width: 500px;
-  max-height: 90vh;
+  height: 100%;
   background: var(--restaurant-dark-card, #1A1A1A);
-  border-radius: 24px;
-  border: 1px solid var(--restaurant-border, #2A2A2A);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transform: translateY(20px) scale(0.95);
+  transform: translateY(20px);
   transition: transform 0.3s ease;
 }
 
 .rm-modal[aria-hidden="false"] .rm-modal__container {
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
+}
+
+/* Desktop: Centered wider modal */
+@media screen and (min-width: 768px) {
+  .rm-modal {
+    padding: 2rem;
+    align-items: center;
+  }
+
+  .rm-modal__container {
+    max-width: 600px;
+    height: auto;
+    max-height: 90vh;
+    border-radius: 20px;
+    border: 1px solid var(--restaurant-border, #2A2A2A);
+  }
 }
 
 /* Close button */
 .rm-modal__close {
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
+  top: 1rem;
+  right: 1rem;
   z-index: 10;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: background 0.2s ease;
 }
 
 .rm-modal__close:hover {
-  background: rgba(0, 0, 0, 0.8);
-  transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.7);
 }
 
 /* Content */
 .rm-modal__content {
   display: flex;
   flex-direction: column;
+  height: 100%;
   overflow: hidden;
 }
 
-/* Hero wrapper */
+/* Hero wrapper - takes available space */
 .rm-modal__hero {
   position: relative;
   width: 100%;
-  height: 180px;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
   background: #0D0D0D;
-  flex-shrink: 0;
 }
 
-/* Hero image - clean, no effects */
+/* Hero image - full size, clean */
 .rm-modal__hero-image {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem;
+  padding: 1rem;
+  padding-bottom: 4rem;
 }
 
 .rm-modal__hero-image img {
@@ -490,32 +504,27 @@ document.addEventListener('DOMContentLoaded', () => {
   object-fit: contain;
 }
 
-/* Product info overlay - brand styled widget */
+/* Product info badge - small widget on image */
 .rm-modal__product-overlay {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 0.6rem 1rem;
-  background: var(--restaurant-dark-card, #1A1A1A);
-  border-top: 2px solid var(--restaurant-accent, #F98760);
+  bottom: 0.75rem;
+  left: 0.75rem;
+  right: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  background: rgba(26, 26, 26, 0.95);
+  border: 1px solid var(--restaurant-accent, #F98760);
+  border-radius: 12px;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+  backdrop-filter: blur(8px);
 }
 
 .rm-modal__product-overlay-text {
   flex: 1;
   min-width: 0;
-}
-
-/* Desktop */
-@media screen and (min-width: 541px) {
-  .rm-modal__hero {
-    height: 200px;
-  }
 }
 
 .rm-modal__product-title {
@@ -617,7 +626,7 @@ document.addEventListener('DOMContentLoaded', () => {
 /* Add-on card */
 .rm-modal__addon-card {
   flex-shrink: 0;
-  width: 100px;
+  width: 110px;
   cursor: pointer;
 }
 
@@ -859,32 +868,8 @@ document.addEventListener('DOMContentLoaded', () => {
   color: var(--restaurant-accent, #F98760);
 }
 
-/* Mobile responsive */
-@media screen and (max-width: 540px) {
-  .rm-modal {
-    padding: 0;
-    align-items: flex-end;
-  }
-
-  .rm-modal__container {
-    max-width: 100%;
-    max-height: 95vh;
-    border-radius: 24px 24px 0 0;
-  }
-
-  .rm-modal__footer {
-    padding: 0.6rem 1rem;
-    flex-direction: row;
-  }
-
-  .rm-modal__btn--add {
-    flex: 1;
-  }
-
-  .rm-modal__addon-card {
-    width: 90px;
-  }
-
+/* Mobile carousel adjustments */
+@media screen and (max-width: 767px) {
   .rm-modal__carousel-btn {
     display: none;
   }
