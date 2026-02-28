@@ -428,6 +428,20 @@ document.addEventListener('DOMContentLoaded', () => {
   transform: translateY(0);
 }
 
+/* Desktop: Popup style */
+@media screen and (min-width: 768px) {
+  .rm-modal {
+    padding: 2rem;
+    align-items: center;
+  }
+
+  .rm-modal__container {
+    max-width: 480px;
+    height: 85vh;
+    border-radius: 20px;
+    border: 1px solid var(--restaurant-border, #2A2A2A);
+  }
+}
 
 /* Close button */
 .rm-modal__close {
