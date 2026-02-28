@@ -465,15 +465,35 @@ document.addEventListener('DOMContentLoaded', () => {
 .rm-modal__hero-image {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
-  background: #0D0D0D;
+  background: radial-gradient(ellipse at center, #1a1a1a 0%, #0D0D0D 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.rm-modal__hero-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(249, 135, 96, 0.08) 0%, transparent 60%);
+  pointer-events: none;
 }
 
 .rm-modal__hero-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
+  transition: transform 0.4s ease;
+}
+
+.rm-modal__hero-image img:hover {
+  transform: scale(1.03);
 }
 
 /* Product info */
@@ -827,7 +847,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   .rm-modal__hero-image {
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 4 / 3;
+    padding: 1rem;
   }
 
   .rm-modal__product-title {
