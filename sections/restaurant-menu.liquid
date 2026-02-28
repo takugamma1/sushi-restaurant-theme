@@ -162,7 +162,7 @@
 {%- comment -%} Product modal {%- endcomment -%}
 {% render 'restaurant-product-modal',
   addons_collection: section.settings.addons_collection,
-  sauces_collection: section.settings.sauces_collection,
+  addons_title: section.settings.addons_title,
   menu_page_url: section.settings.menu_page_url
 %}
 
@@ -675,13 +675,13 @@
       "type": "collection",
       "id": "addons_collection",
       "label": "Add-ons collection",
-      "info": "Step 1: Extra toppings, sides, etc."
+      "info": "Extra toppings, sides, sauces, etc."
     },
     {
-      "type": "collection",
-      "id": "sauces_collection",
-      "label": "Sauces collection",
-      "info": "Step 2: Soy sauce, wasabi, etc."
+      "type": "text",
+      "id": "addons_title",
+      "label": "Add-ons section title",
+      "default": "Добави към поръчката"
     },
     {
       "type": "header",
