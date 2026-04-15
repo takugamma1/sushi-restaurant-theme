@@ -12,12 +12,22 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_PKENkY": {
+          "type": "category",
+          "settings": {
+            "title": "НОВО",
+            "tab_label": "",
+            "collection": "футомаки-1",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_new": {
           "type": "category",
           "settings": {
             "title": "НОВО",
             "tab_label": "",
-            "collection": "test",
+            "collection": "алкохолни-напитки",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -34,6 +44,7 @@
         }
       },
       "block_order": [
+        "category_PKENkY",
         "category_new",
         "category_mango"
       ],
