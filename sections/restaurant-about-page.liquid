@@ -6,7 +6,7 @@
 
 <div class="rab">
 
-  {%- comment -%} ============ Hero (bento) ============ {%- endcomment -%}
+  {%- comment -%} ============ Hero (editorial bento) ============ {%- endcomment -%}
   {%- liquid
     assign side1_link = section.settings.side1_link | default: menu_url
     assign side2_link = section.settings.side2_link | default: contact_url
@@ -23,7 +23,7 @@
               | image_url: width: 2200
               | image_tag:
                 class: 'rab__hero-image',
-                sizes: '(min-width: 990px) 58vw, 100vw',
+                sizes: '(min-width: 990px) 62vw, 100vw',
                 widths: '700,1100,1500,1900,2200',
                 loading: 'eager',
                 fetchpriority: 'high'
@@ -34,19 +34,28 @@
           <div class="rab__hero-overlay"></div>
         </div>
 
+        <span class="rab__hero-tag">
+          <span class="rab__hero-tag-dot" aria-hidden="true"></span>
+          {{ section.settings.hero_tag | default: 'Est. 2012 · София' }}
+        </span>
+
+        <span class="rab__hero-corner" aria-hidden="true">◇</span>
+
         <div class="rab__hero-main-body">
           <h1 class="rab__hero-title">
-            <em>{{ section.settings.hero_title | default: 'За нас' }}</em>
+            {{ section.settings.hero_title_a | default: 'За' }}
+            <em>{{ section.settings.hero_title_em | default: 'нас' }}</em>
           </h1>
           {%- if section.settings.hero_subtitle != blank -%}
             <p class="rab__hero-subtitle">{{ section.settings.hero_subtitle }}</p>
           {%- else -%}
-            <p class="rab__hero-subtitle">Добре дошли в Суши Бар Манго — място, където свежестта и вкусът се срещат.</p>
+            <p class="rab__hero-subtitle">Добре дошли в Суши Бар <em>Манго</em> — място, където свежестта и вкусът се срещат.</p>
           {%- endif -%}
           <a href="{{ section.settings.hero_cta_link | default: menu_url }}" class="rab__hero-cta">
-            <span>{{ section.settings.hero_cta_label | default: 'РАЗБЕРИ ПОВЕЧЕ' }}</span>
-            <span class="rab__arrow-circle" aria-hidden="true">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <span class="rab__hero-cta-line"></span>
+            <span class="rab__hero-cta-text">{{ section.settings.hero_cta_label | default: 'Разбери повече' }}</span>
+            <span class="rab__hero-cta-arrow" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
             </span>
           </a>
         </div>
@@ -60,17 +69,18 @@
               | image_url: width: 1100
               | image_tag:
                 class: 'rab__hero-card-image',
-                sizes: '(min-width: 990px) 40vw, 100vw',
+                sizes: '(min-width: 990px) 36vw, 100vw',
                 widths: '400,700,1100',
                 loading: 'lazy'
             }}
           {%- else -%}
             <div class="rab__hero-card-image rab__hero-card-image--placeholder"></div>
           {%- endif -%}
-          <span class="rab__hero-card-cta">
-            <span class="rab__hero-card-label">{{ section.settings.side1_label | default: 'ПОРЪЧАЙ' }}</span>
-            <span class="rab__arrow-circle rab__arrow-circle--light" aria-hidden="true">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <span class="rab__hero-card-num" aria-hidden="true">01</span>
+          <span class="rab__hero-card-foot">
+            <span class="rab__hero-card-label">{{ section.settings.side1_label | default: 'Поръчай' }}</span>
+            <span class="rab__hero-card-arrow" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
             </span>
           </span>
         </a>
@@ -81,17 +91,18 @@
               | image_url: width: 1100
               | image_tag:
                 class: 'rab__hero-card-image',
-                sizes: '(min-width: 990px) 40vw, 100vw',
+                sizes: '(min-width: 990px) 36vw, 100vw',
                 widths: '400,700,1100',
                 loading: 'lazy'
             }}
           {%- else -%}
             <div class="rab__hero-card-image rab__hero-card-image--placeholder"></div>
           {%- endif -%}
-          <span class="rab__hero-card-cta">
-            <span class="rab__hero-card-label">{{ section.settings.side2_label | default: 'СВЪРЖИ СЕ С НАС' }}</span>
-            <span class="rab__arrow-circle rab__arrow-circle--light" aria-hidden="true">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <span class="rab__hero-card-num" aria-hidden="true">02</span>
+          <span class="rab__hero-card-foot">
+            <span class="rab__hero-card-label">{{ section.settings.side2_label | default: 'Свържи се с нас' }}</span>
+            <span class="rab__hero-card-arrow" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
             </span>
           </span>
         </a>
@@ -102,17 +113,18 @@
               | image_url: width: 1100
               | image_tag:
                 class: 'rab__hero-card-image',
-                sizes: '(min-width: 990px) 40vw, 100vw',
+                sizes: '(min-width: 990px) 36vw, 100vw',
                 widths: '400,700,1100',
                 loading: 'lazy'
             }}
           {%- else -%}
             <div class="rab__hero-card-image rab__hero-card-image--placeholder"></div>
           {%- endif -%}
-          <span class="rab__hero-card-cta">
-            <span class="rab__hero-card-label">{{ section.settings.side3_label | default: 'ГАЛЕРИЯ' }}</span>
-            <span class="rab__arrow-circle rab__arrow-circle--light" aria-hidden="true">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <span class="rab__hero-card-num" aria-hidden="true">03</span>
+          <span class="rab__hero-card-foot">
+            <span class="rab__hero-card-label">{{ section.settings.side3_label | default: 'Галерия' }}</span>
+            <span class="rab__hero-card-arrow" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
             </span>
           </span>
         </a>
@@ -450,21 +462,34 @@
     },
     {
       "type": "text",
-      "id": "hero_title",
-      "label": "Title",
-      "default": "За нас"
+      "id": "hero_tag",
+      "label": "Top corner tag",
+      "default": "Est. 2012 · София"
+    },
+    {
+      "type": "text",
+      "id": "hero_title_a",
+      "label": "Title — regular part",
+      "default": "За"
+    },
+    {
+      "type": "text",
+      "id": "hero_title_em",
+      "label": "Title — italic accent part",
+      "default": "нас"
     },
     {
       "type": "textarea",
       "id": "hero_subtitle",
       "label": "Subtitle",
-      "default": "Добре дошли в Суши Бар Манго — място, където свежестта и вкусът се срещат."
+      "info": "Wrap words in <em>...</em> for italic accents.",
+      "default": "Добре дошли в Суши Бар <em>Манго</em> — място, където свежестта и вкусът се срещат."
     },
     {
       "type": "text",
       "id": "hero_cta_label",
       "label": "CTA label",
-      "default": "РАЗБЕРИ ПОВЕЧЕ"
+      "default": "Разбери повече"
     },
     {
       "type": "url",
