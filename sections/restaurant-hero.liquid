@@ -5,6 +5,8 @@
       assign has_media = false
       if block.settings.media_type == 'video' and block.settings.video != blank
         assign has_media = true
+      elsif block.settings.media_type == 'video_url' and block.settings.video_url != blank
+        assign has_media = true
       elsif block.settings.image != blank
         assign has_media = true
       endif
@@ -35,6 +37,8 @@
           assign has_media = false
           if block.settings.media_type == 'video' and block.settings.video != blank
             assign has_media = true
+          elsif block.settings.media_type == 'video_url' and block.settings.video_url != blank
+            assign has_media = true
           elsif block.settings.image != blank
             assign has_media = true
           endif
@@ -53,8 +57,21 @@
                   loop: true,
                   controls: false,
                   muted: true,
+                  playsinline: true,
                   class: 'rh__media'
               }}
+            {%- elsif block.settings.media_type == 'video_url' and block.settings.video_url != blank -%}
+              <div class="rh__media rh__media--embed">
+                {{ block.settings.video_url
+                  | external_video_tag:
+                    class: 'rh__embed',
+                    loop: true,
+                    autoplay: true,
+                    muted: true,
+                    controls: false,
+                    playsinline: true
+                }}
+              </div>
             {%- else -%}
               {{ block.settings.image
                 | image_url: width: 3840
@@ -142,6 +159,28 @@
     object-fit: cover;
     object-position: center;
     display: block;
+  }
+
+  /* Wrapper for external (YouTube/Vimeo) iframe — make it behave like cover */
+  .rh__media--embed {
+    position: relative;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .rh__embed,
+  .rh__media--embed iframe,
+  .rh__media--embed video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 56.25vw; /* keep 16:9 aspect — covers wide */
+    min-width: 177.78vh; /* keep 16:9 — covers tall */
+    min-height: 100vh;
+    transform: translate(-50%, -50%);
+    border: 0;
+    pointer-events: none;
   }
 
   .rh__overlay {
@@ -399,7 +438,8 @@
           "label": "Type",
           "options": [
             { "value": "image", "label": "Image" },
-            { "value": "video", "label": "Video" }
+            { "value": "video", "label": "Video (upload)" },
+            { "value": "video_url", "label": "Video URL (YouTube / Vimeo)" }
           ],
           "default": "image"
         },
@@ -412,8 +452,16 @@
         {
           "type": "video",
           "id": "video",
-          "label": "Video",
+          "label": "Video (uploaded)",
           "visible_if": "{{ block.settings.media_type == 'video' }}"
+        },
+        {
+          "type": "video_url",
+          "id": "video_url",
+          "label": "Video URL",
+          "accept": ["youtube", "vimeo"],
+          "info": "Paste a YouTube or Vimeo URL. The video will autoplay muted as a hero loop.",
+          "visible_if": "{{ block.settings.media_type == 'video_url' }}"
         }
       ]
     }
