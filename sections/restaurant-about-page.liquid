@@ -1,7 +1,6 @@
 {%- liquid
   assign menu_url = section.settings.menu_url | default: '/pages/menu'
   assign contact_url = section.settings.contact_url | default: '/pages/contact'
-  assign marquee_word = section.settings.marquee_word | default: 'MANGO'
 -%}
 
 <div class="rab">
@@ -25,301 +24,181 @@
       <div class="rab__hero-overlay"></div>
     </div>
 
-    <div class="rab__hero-grid">
-      <span class="rab__hero-meta-left">
-        <span>EST.</span>
-        <span>{{ section.settings.year | default: '2012' }}</span>
-      </span>
-      <span class="rab__hero-meta-right">{{ section.settings.location | default: 'СОФИЯ, БГ' }}</span>
-
-      <h1 class="rab__hero-title">
-        {{ section.settings.hero_line_1 | default: 'Една' }}
-        <em>{{ section.settings.hero_line_1_em | default: 'история' }}</em>
-        <br>
-        {{ section.settings.hero_line_2 | default: 'с вкус на' }}
-        <em>{{ section.settings.hero_line_2_em | default: 'Япония' }}</em>
-      </h1>
-
-      <span class="rab__hero-scroll" aria-hidden="true">
-        <span class="rab__hero-scroll-text">Скрол</span>
-        <span class="rab__hero-scroll-line"></span>
-      </span>
+    <div class="rab__hero-content">
+      {%- if section.settings.hero_tagline != blank -%}
+        <span class="rab__hero-tagline">{{ section.settings.hero_tagline }}</span>
+      {%- endif -%}
+      <h1 class="rab__hero-title">{{ section.settings.hero_title | default: 'Опитай<br>повече' }}</h1>
+      {%- if section.settings.hero_cta_label != blank -%}
+        <a href="{{ menu_url }}" class="rab__hero-cta">
+          <span>{{ section.settings.hero_cta_label }}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      {%- endif -%}
     </div>
   </section>
 
-  {%- comment -%} ============ Marquee ============ {%- endcomment -%}
-  <div class="rab__marquee" aria-hidden="true">
-    <div class="rab__marquee-track">
-      {%- for i in (1..2) -%}
-        {%- for j in (1..6) -%}
-          <span class="rab__marquee-word">{{ marquee_word }}</span>
-          <span class="rab__marquee-dia">◇</span>
-        {%- endfor -%}
-      {%- endfor -%}
-    </div>
-  </div>
-
-  {%- comment -%} ============ Story ============ {%- endcomment -%}
-  <section class="rab__story">
-    <span class="rab__watermark" aria-hidden="true">{{ section.settings.year | default: '2012' }}</span>
-
-    <div class="rab__story-inner">
-      <div class="rab__story-text">
-        <span class="rab__kicker">
-          <span class="rab__kicker-num">№01</span>
-          <span class="rab__kicker-line"></span>
-          <span class="rab__kicker-text">{{ section.settings.story_kicker | default: 'НАШАТА ИСТОРИЯ' }}</span>
-        </span>
-
-        <h2 class="rab__story-heading">
-          {{ section.settings.story_line_1 | default: 'Една кухня,' }}<br>
-          {{ section.settings.story_line_2 | default: 'една' }}
-          <em>{{ section.settings.story_line_2_em | default: 'страст.' }}</em>
-        </h2>
-
-        <p class="rab__story-lead">
-          <span class="rab__dropcap">{{ section.settings.dropcap | default: 'М' }}</span>{{ section.settings.story_lead | default: 'анго е родено от любовта към японската традиция и желанието да донесем истинското суши в България. От една малка кухня преди повече от десет години — до място, в което се срещат майсторски нож, прясна риба и съвременна атмосфера.' }}
-        </p>
-
-        <p class="rab__story-body">{{ section.settings.story_body | default: 'Всяко рулце е приготвено ръчно — с уважение към продукта и с прецизност, която сме научили от истинските майстори на занаята.' }}</p>
-
-        <div class="rab__story-stats">
-          <div class="rab__stat">
-            <span class="rab__stat-num">{{ section.settings.stat_1_num | default: '10+' }}</span>
-            <span class="rab__stat-label">{{ section.settings.stat_1_label | default: 'години' }}</span>
-          </div>
-          <div class="rab__stat">
-            <span class="rab__stat-num">{{ section.settings.stat_2_num | default: '120' }}</span>
-            <span class="rab__stat-label">{{ section.settings.stat_2_label | default: 'ястия' }}</span>
-          </div>
-          <div class="rab__stat">
-            <span class="rab__stat-num">{{ section.settings.stat_3_num | default: '50k+' }}</span>
-            <span class="rab__stat-label">{{ section.settings.stat_3_label | default: 'клиенти' }}</span>
-          </div>
-        </div>
-      </div>
-
-      <figure class="rab__story-photo">
-        {%- if section.settings.story_image != blank -%}
-          {{ section.settings.story_image
-            | image_url: width: 1200
-            | image_tag:
-              class: 'rab__story-image',
-              sizes: '(min-width: 990px) 40vw, 80vw',
-              widths: '500,800,1100,1400',
-              loading: 'lazy'
-          }}
-        {%- else -%}
-          <div class="rab__story-image rab__story-image--placeholder"></div>
-        {%- endif -%}
-        {%- if section.settings.story_caption != blank -%}
-          <figcaption class="rab__photo-caption">— {{ section.settings.story_caption }}</figcaption>
-        {%- endif -%}
-      </figure>
-    </div>
-  </section>
-
-  {%- comment -%} ============ Photo Collage ============ {%- endcomment -%}
-  <section class="rab__collage">
-    <div class="rab__collage-header">
-      <span class="rab__kicker">
-        <span class="rab__kicker-num">№02</span>
-        <span class="rab__kicker-line"></span>
-        <span class="rab__kicker-text">{{ section.settings.collage_kicker | default: 'МОМЕНТИ' }}</span>
-      </span>
-      <h2 class="rab__collage-heading">
-        {{ section.settings.collage_line_1 | default: 'Прецизност' }} <em>—</em><br>
-        {{ section.settings.collage_line_2 | default: 'хапка по хапка.' }}
-      </h2>
-    </div>
-
-    <div class="rab__collage-grid">
-      <figure class="rab__collage-item rab__collage-item--a">
-        {%- if section.settings.collage_image_1 != blank -%}
-          {{ section.settings.collage_image_1 | image_url: width: 1200 | image_tag: class: 'rab__collage-image', sizes: '50vw', widths: '500,800,1200', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption rab__photo-caption--top-left">— {{ section.settings.collage_caption_1 | default: 'ножът' }}</figcaption>
-      </figure>
-
-      <figure class="rab__collage-item rab__collage-item--b">
-        {%- if section.settings.collage_image_2 != blank -%}
-          {{ section.settings.collage_image_2 | image_url: width: 800 | image_tag: class: 'rab__collage-image', sizes: '25vw', widths: '300,500,800', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption">— {{ section.settings.collage_caption_2 | default: 'мигът' }}</figcaption>
-      </figure>
-
-      <figure class="rab__collage-item rab__collage-item--c">
-        {%- if section.settings.collage_image_3 != blank -%}
-          {{ section.settings.collage_image_3 | image_url: width: 1200 | image_tag: class: 'rab__collage-image', sizes: '50vw', widths: '500,800,1200', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption rab__photo-caption--bottom-right">— {{ section.settings.collage_caption_3 | default: 'рибата' }}</figcaption>
-      </figure>
-
-      <figure class="rab__collage-item rab__collage-item--d">
-        {%- if section.settings.collage_image_4 != blank -%}
-          {{ section.settings.collage_image_4 | image_url: width: 800 | image_tag: class: 'rab__collage-image', sizes: '25vw', widths: '300,500,800', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption">— {{ section.settings.collage_caption_4 | default: 'детайлът' }}</figcaption>
-      </figure>
-
-      <figure class="rab__collage-item rab__collage-item--e">
-        {%- if section.settings.collage_image_5 != blank -%}
-          {{ section.settings.collage_image_5 | image_url: width: 800 | image_tag: class: 'rab__collage-image', sizes: '25vw', widths: '300,500,800', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption rab__photo-caption--bottom-right">— {{ section.settings.collage_caption_5 | default: 'ароматът' }}</figcaption>
-      </figure>
-    </div>
-  </section>
-
-  {%- comment -%} ============ Video ============ {%- endcomment -%}
-  <section class="rab__video">
-    <div class="rab__video-header">
-      <span class="rab__kicker rab__kicker--centered">
-        <span class="rab__kicker-num">№03</span>
-        <span class="rab__kicker-line"></span>
-        <span class="rab__kicker-text">{{ section.settings.video_kicker | default: 'ВЛЕЗ В НАШИЯ СВЯТ' }}</span>
-        <span class="rab__kicker-line"></span>
-      </span>
-      <h2 class="rab__video-heading">
-        {{ section.settings.video_line_1 | default: 'Кухнята е' }}
-        <em>{{ section.settings.video_line_1_em | default: 'сцена.' }}</em><br>
-        {{ section.settings.video_line_2 | default: 'Готвачът е' }}
-        <em>{{ section.settings.video_line_2_em | default: 'артистът.' }}</em>
-      </h2>
-    </div>
-
-    <div class="rab__video-frame">
-      {%- if section.settings.video != blank -%}
-        {{ section.settings.video
-          | video_tag:
-            controls: true,
-            autoplay: false,
-            loop: false,
-            muted: false,
-            class: 'rab__video-media',
-            image_size: '1600x'
-        }}
-      {%- elsif section.settings.video_url != blank -%}
-        <div class="rab__video-embed">
-          {{ section.settings.video_url
-            | video_tag:
-              class: 'rab__video-media',
-              loop: false,
-              controls: true,
-              muted: false,
-              image_size: '1600x'
-          }}
-        </div>
-      {%- else -%}
-        <div class="rab__video-placeholder">
-          {%- if section.settings.video_poster != blank -%}
-            {{ section.settings.video_poster | image_url: width: 1800 | image_tag: class: 'rab__video-poster', sizes: '100vw', widths: '600,1200,1800', loading: 'lazy' }}
+  {%- comment -%} ============ Our Menu (white, images left) ============ {%- endcomment -%}
+  <section class="rab__split rab__split--light rab__split--images-left">
+    <div class="rab__split-inner">
+      <div class="rab__pair">
+        <div class="rab__pair-main">
+          {%- if section.settings.menu_image_1 != blank -%}
+            {{ section.settings.menu_image_1
+              | image_url: width: 1400
+              | image_tag:
+                class: 'rab__pair-image',
+                sizes: '(min-width: 990px) 35vw, 70vw',
+                widths: '500,800,1100,1400',
+                loading: 'lazy'
+            }}
+          {%- else -%}
+            <div class="rab__pair-image rab__pair-image--placeholder"></div>
           {%- endif -%}
-          <span class="rab__video-play" aria-hidden="true">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="8,5 19,12 8,19"/></svg>
-          </span>
         </div>
-      {%- endif -%}
-    </div>
-
-    {%- if section.settings.video_caption != blank -%}
-      <p class="rab__video-caption">— {{ section.settings.video_caption }}</p>
-    {%- endif -%}
-  </section>
-
-  {%- comment -%} ============ Principles (Roman numerals) ============ {%- endcomment -%}
-  <section class="rab__principles">
-    <div class="rab__principles-header">
-      <span class="rab__kicker">
-        <span class="rab__kicker-num">№04</span>
-        <span class="rab__kicker-line"></span>
-        <span class="rab__kicker-text">{{ section.settings.principles_kicker | default: 'НАШИТЕ ПРИНЦИПИ' }}</span>
-      </span>
-      <h2 class="rab__principles-heading">
-        {{ section.settings.principles_line_1 | default: 'Три неща,' }}<br>
-        {{ section.settings.principles_line_2 | default: 'които ни' }}
-        <em>{{ section.settings.principles_line_2_em | default: 'водят.' }}</em>
-      </h2>
-    </div>
-
-    <div class="rab__principles-grid">
-      <article class="rab__principle">
-        <span class="rab__roman" aria-hidden="true">I</span>
-        <div class="rab__principle-body">
-          <h3 class="rab__principle-title">{{ section.settings.p1_title | default: 'Свежи съставки' }}</h3>
-          <p class="rab__principle-text">{{ section.settings.p1_text | default: 'Рибата идва ежедневно. Зеленчуците — от локални производители. Без компромиси.' }}</p>
+        <div class="rab__pair-overlap">
+          {%- if section.settings.menu_image_2 != blank -%}
+            {{ section.settings.menu_image_2
+              | image_url: width: 900
+              | image_tag:
+                class: 'rab__pair-image',
+                sizes: '(min-width: 990px) 22vw, 45vw',
+                widths: '400,600,900',
+                loading: 'lazy'
+            }}
+          {%- else -%}
+            <div class="rab__pair-image rab__pair-image--placeholder"></div>
+          {%- endif -%}
         </div>
-      </article>
-
-      <article class="rab__principle">
-        <span class="rab__roman" aria-hidden="true">II</span>
-        <div class="rab__principle-body">
-          <h3 class="rab__principle-title">{{ section.settings.p2_title | default: 'Майстори в занаята' }}</h3>
-          <p class="rab__principle-text">{{ section.settings.p2_text | default: 'Готвачите ни се обучават години, за да достигнат прецизността на японското суши.' }}</p>
-        </div>
-      </article>
-
-      <article class="rab__principle">
-        <span class="rab__roman" aria-hidden="true">III</span>
-        <div class="rab__principle-body">
-          <h3 class="rab__principle-title">{{ section.settings.p3_title | default: 'Уют и гостоприемство' }}</h3>
-          <p class="rab__principle-text">{{ section.settings.p3_text | default: 'От топлото посрещане до последната хапка — всеки детайл е обмислен.' }}</p>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  {%- comment -%} ============ Chef Pull Quote ============ {%- endcomment -%}
-  <section class="rab__quote">
-    <div class="rab__quote-media">
-      {%- if section.settings.quote_image != blank -%}
-        {{ section.settings.quote_image
-          | image_url: width: 2400
-          | image_tag:
-            class: 'rab__quote-image',
-            sizes: '100vw',
-            widths: '800,1200,1800,2400',
-            loading: 'lazy'
-        }}
-      {%- endif -%}
-      <div class="rab__quote-overlay"></div>
-    </div>
-
-    <div class="rab__quote-content">
-      <span class="rab__quote-mark" aria-hidden="true">"</span>
-      <blockquote class="rab__quote-text">
-        {{ section.settings.quote_text | default: 'Сушито не е просто храна — то е <em>разказ.</em> И всеки път, когато режа парче риба, мисля за човека, който ще го опита.' }}
-      </blockquote>
-      <span class="rab__quote-attr">
-        <span class="rab__quote-name">{{ section.settings.quote_name | default: 'ШЕФ КОДЗИ ТАНАКА' }}</span>
-        <span class="rab__quote-role">— {{ section.settings.quote_role | default: 'Главен суши майстор' }}</span>
-      </span>
-    </div>
-  </section>
-
-  {%- comment -%} ============ Strip ============ {%- endcomment -%}
-  <div class="rab__strip" aria-hidden="true">
-    {%- for img_key in 'strip_image_1,strip_image_2,strip_image_3,strip_image_4' | split: ',' -%}
-      {%- assign img = section.settings[img_key] -%}
-      <div class="rab__strip-cell">
-        {%- if img != blank -%}
-          {{ img | image_url: width: 700 | image_tag: class: 'rab__strip-image', sizes: '25vw', widths: '300,500,700', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__strip-image rab__strip-image--placeholder"></div>
-        {%- endif -%}
       </div>
-    {%- endfor -%}
-  </div>
+
+      <div class="rab__copy">
+        <span class="rab__kicker rab__kicker--dark">
+          <span class="rab__kicker-diamond" aria-hidden="true">◇</span>
+          {{ section.settings.menu_kicker | default: 'НАШЕТО МЕНЮ' }}
+        </span>
+        <h2 class="rab__copy-title rab__copy-title--dark">
+          {{ section.settings.menu_title | default: 'Вкусове, които пътуват от Япония до твоята маса' }}
+        </h2>
+        <p class="rab__copy-text rab__copy-text--dark">
+          {{ section.settings.menu_text | default: 'Драги приятели! Добре дошли в Mango. Всяко ястие е приготвено със страст и поднесено в най-добрите традиции на японската кухня. Луксозна селекция от напитки. Тук можеш да научиш повече за нашето меню.' }}
+        </p>
+        <a href="{{ menu_url }}" class="rab__btn rab__btn--ghost-dark">
+          {{ section.settings.menu_cta_label | default: 'МЕНЮ' }}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {%- comment -%} ============ Our Story (dark, text left, images right) ============ {%- endcomment -%}
+  <section class="rab__split rab__split--dark rab__split--images-right">
+    <div class="rab__split-inner">
+      <div class="rab__copy">
+        <span class="rab__kicker rab__kicker--light">
+          <span class="rab__kicker-diamond" aria-hidden="true">◇</span>
+          {{ section.settings.story_kicker | default: 'НАШАТА ИСТОРИЯ' }}
+        </span>
+        <h2 class="rab__copy-title rab__copy-title--light">
+          {{ section.settings.story_title | default: 'Една кухня, една страст, едно десетилетие' }}
+        </h2>
+        <p class="rab__copy-text rab__copy-text--light">
+          {{ section.settings.story_text | default: 'Mango е родено от любовта към японската традиция и желанието да донесем истинското суши в България. От една малка кухня преди повече от десет години — до място, в което се срещат майсторски нож, прясна риба и съвременна атмосфера.' }}
+        </p>
+        <p class="rab__copy-text rab__copy-text--light">
+          {{ section.settings.story_text_2 | default: 'Всяко рулце е приготвено ръчно — с уважение към продукта и с прецизност, която сме научили от истинските майстори на занаята.' }}
+        </p>
+        <a href="{{ menu_url }}" class="rab__btn rab__btn--ghost-light">
+          {{ section.settings.story_cta_label | default: 'ВИЖ МЕНЮТО' }}
+        </a>
+      </div>
+
+      <div class="rab__pair rab__pair--reverse">
+        <div class="rab__pair-main">
+          {%- if section.settings.story_image_1 != blank -%}
+            {{ section.settings.story_image_1
+              | image_url: width: 1400
+              | image_tag:
+                class: 'rab__pair-image',
+                sizes: '(min-width: 990px) 35vw, 70vw',
+                widths: '500,800,1100,1400',
+                loading: 'lazy'
+            }}
+          {%- else -%}
+            <div class="rab__pair-image rab__pair-image--placeholder"></div>
+          {%- endif -%}
+        </div>
+        <div class="rab__pair-overlap">
+          {%- if section.settings.story_image_2 != blank -%}
+            {{ section.settings.story_image_2
+              | image_url: width: 900
+              | image_tag:
+                class: 'rab__pair-image',
+                sizes: '(min-width: 990px) 22vw, 45vw',
+                widths: '400,600,900',
+                loading: 'lazy'
+            }}
+          {%- else -%}
+            <div class="rab__pair-image rab__pair-image--placeholder"></div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {%- comment -%} ============ Our Interior (white, images left) ============ {%- endcomment -%}
+  <section class="rab__split rab__split--light rab__split--images-left">
+    <div class="rab__split-inner">
+      <div class="rab__pair">
+        <div class="rab__pair-main">
+          {%- if section.settings.interior_image_1 != blank -%}
+            {{ section.settings.interior_image_1
+              | image_url: width: 1400
+              | image_tag:
+                class: 'rab__pair-image',
+                sizes: '(min-width: 990px) 35vw, 70vw',
+                widths: '500,800,1100,1400',
+                loading: 'lazy'
+            }}
+          {%- else -%}
+            <div class="rab__pair-image rab__pair-image--placeholder"></div>
+          {%- endif -%}
+        </div>
+        <div class="rab__pair-overlap">
+          {%- if section.settings.interior_image_2 != blank -%}
+            {{ section.settings.interior_image_2
+              | image_url: width: 900
+              | image_tag:
+                class: 'rab__pair-image',
+                sizes: '(min-width: 990px) 22vw, 45vw',
+                widths: '400,600,900',
+                loading: 'lazy'
+            }}
+          {%- else -%}
+            <div class="rab__pair-image rab__pair-image--placeholder"></div>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="rab__copy">
+        <span class="rab__kicker rab__kicker--dark">
+          <span class="rab__kicker-diamond" aria-hidden="true">◇</span>
+          {{ section.settings.interior_kicker | default: 'НАШИЯТ ИНТЕРИОР' }}
+        </span>
+        <h2 class="rab__copy-title rab__copy-title--dark">
+          {{ section.settings.interior_title | default: 'Място, в което всеки детайл е обмислен' }}
+        </h2>
+        <p class="rab__copy-text rab__copy-text--dark">
+          {{ section.settings.interior_text | default: 'Нашият ресторант разполага с две зали — голяма светла зала с панорамни прозорци и зала в тъмни тонове. Тук можеш да събереш голяма компания или да прекараш интимна вечер.' }}
+        </p>
+        <p class="rab__copy-text rab__copy-text--dark">
+          {{ section.settings.interior_text_2 | default: 'Искрено се надяваме да се насладиш на посещението при нас.' }}
+        </p>
+        <a href="{{ contact_url }}" class="rab__btn rab__btn--ghost-dark">
+          {{ section.settings.interior_cta_label | default: 'РЕЗЕРВАЦИЯ' }}
+        </a>
+      </div>
+    </div>
+  </section>
 
   {%- comment -%} ============ Closing Banner ============ {%- endcomment -%}
   <section class="rab__banner">
@@ -336,14 +215,15 @@
     <div class="rab__banner-overlay"></div>
     <div class="rab__banner-content">
       <h2 class="rab__banner-title">
-        {{ section.settings.banner_line_1 | default: 'Създадено' }}
-        <em>{{ section.settings.banner_line_1_em | default: 'с любов.' }}</em><br>
-        {{ section.settings.banner_line_2 | default: 'Подадено с' }}
-        <em>{{ section.settings.banner_line_2_em | default: 'уважение.' }}</em>
+        {{ section.settings.banner_title | default: 'Създадено<br>с любов.' }}
       </h2>
       <div class="rab__banner-actions">
-        <a href="{{ menu_url }}" class="rab__btn rab__btn--solid">{{ section.settings.banner_cta_primary | default: 'ВИЖ МЕНЮТО' }}</a>
-        <a href="{{ contact_url }}" class="rab__btn rab__btn--ghost">{{ section.settings.banner_cta_secondary | default: 'РЕЗЕРВИРАЙ МАСА' }}</a>
+        <a href="{{ menu_url }}" class="rab__btn rab__btn--solid">
+          {{ section.settings.banner_cta_primary | default: 'ВИЖ МЕНЮТО' }}
+        </a>
+        <a href="{{ contact_url }}" class="rab__btn rab__btn--ghost-light">
+          {{ section.settings.banner_cta_secondary | default: 'РЕЗЕРВИРАЙ МАСА' }}
+        </a>
       </div>
     </div>
   </section>
@@ -367,64 +247,73 @@
     },
     {
       "type": "text",
-      "id": "year",
-      "label": "Year tag",
-      "default": "2012"
+      "id": "hero_tagline",
+      "label": "Hero tagline",
+      "default": "Mango Sushi Bar"
     },
     {
       "type": "text",
-      "id": "location",
-      "label": "Location tag",
-      "default": "СОФИЯ, БГ"
+      "id": "hero_title",
+      "label": "Hero title",
+      "info": "Use <br> for line breaks",
+      "default": "Опитай<br>повече"
     },
     {
       "type": "text",
-      "id": "hero_line_1",
-      "label": "Hero line 1",
-      "default": "Една"
-    },
-    {
-      "type": "text",
-      "id": "hero_line_1_em",
-      "label": "Hero line 1 — italic accent",
-      "default": "история"
-    },
-    {
-      "type": "text",
-      "id": "hero_line_2",
-      "label": "Hero line 2",
-      "default": "с вкус на"
-    },
-    {
-      "type": "text",
-      "id": "hero_line_2_em",
-      "label": "Hero line 2 — italic accent",
-      "default": "Япония"
+      "id": "hero_cta_label",
+      "label": "Hero CTA label",
+      "default": "ОТКРИЙ МЕНЮТО"
     },
     {
       "type": "header",
-      "content": "Marquee"
-    },
-    {
-      "type": "text",
-      "id": "marquee_word",
-      "label": "Marquee word",
-      "default": "MANGO"
-    },
-    {
-      "type": "header",
-      "content": "Story"
+      "content": "Our Menu (white)"
     },
     {
       "type": "image_picker",
-      "id": "story_image",
-      "label": "Story portrait"
+      "id": "menu_image_1",
+      "label": "Menu image — main"
+    },
+    {
+      "type": "image_picker",
+      "id": "menu_image_2",
+      "label": "Menu image — overlap"
     },
     {
       "type": "text",
-      "id": "story_caption",
-      "label": "Photo caption",
-      "default": "шеф Танака"
+      "id": "menu_kicker",
+      "label": "Kicker",
+      "default": "НАШЕТО МЕНЮ"
+    },
+    {
+      "type": "text",
+      "id": "menu_title",
+      "label": "Title",
+      "default": "Вкусове, които пътуват от Япония до твоята маса"
+    },
+    {
+      "type": "textarea",
+      "id": "menu_text",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "menu_cta_label",
+      "label": "CTA label",
+      "default": "МЕНЮ"
+    },
+    {
+      "type": "header",
+      "content": "Our Story (dark)"
+    },
+    {
+      "type": "image_picker",
+      "id": "story_image_1",
+      "label": "Story image — main"
+    },
+    {
+      "type": "image_picker",
+      "id": "story_image_2",
+      "label": "Story image — overlap"
     },
     {
       "type": "text",
@@ -434,231 +323,68 @@
     },
     {
       "type": "text",
-      "id": "story_line_1",
-      "label": "Heading line 1",
-      "default": "Една кухня,"
-    },
-    {
-      "type": "text",
-      "id": "story_line_2",
-      "label": "Heading line 2",
-      "default": "една"
-    },
-    {
-      "type": "text",
-      "id": "story_line_2_em",
-      "label": "Heading line 2 — italic accent",
-      "default": "страст."
-    },
-    {
-      "type": "text",
-      "id": "dropcap",
-      "label": "Drop cap letter",
-      "default": "М"
+      "id": "story_title",
+      "label": "Title",
+      "default": "Една кухня, една страст, едно десетилетие"
     },
     {
       "type": "textarea",
-      "id": "story_lead",
-      "label": "Story lead paragraph (without the drop-cap letter)",
-      "info": "Starts after the drop cap letter."
+      "id": "story_text",
+      "label": "Paragraph 1"
     },
     {
       "type": "textarea",
-      "id": "story_body",
-      "label": "Story body paragraph"
+      "id": "story_text_2",
+      "label": "Paragraph 2"
     },
     {
       "type": "text",
-      "id": "stat_1_num",
-      "label": "Stat 1 — number",
-      "default": "10+"
-    },
-    {
-      "type": "text",
-      "id": "stat_1_label",
-      "label": "Stat 1 — label",
-      "default": "години"
-    },
-    {
-      "type": "text",
-      "id": "stat_2_num",
-      "label": "Stat 2 — number",
-      "default": "120"
-    },
-    {
-      "type": "text",
-      "id": "stat_2_label",
-      "label": "Stat 2 — label",
-      "default": "ястия"
-    },
-    {
-      "type": "text",
-      "id": "stat_3_num",
-      "label": "Stat 3 — number",
-      "default": "50k+"
-    },
-    {
-      "type": "text",
-      "id": "stat_3_label",
-      "label": "Stat 3 — label",
-      "default": "клиенти"
+      "id": "story_cta_label",
+      "label": "CTA label",
+      "default": "ВИЖ МЕНЮТО"
     },
     {
       "type": "header",
-      "content": "Collage"
-    },
-    {
-      "type": "text",
-      "id": "collage_kicker",
-      "label": "Kicker",
-      "default": "МОМЕНТИ"
-    },
-    {
-      "type": "text",
-      "id": "collage_line_1",
-      "label": "Heading line 1",
-      "default": "Прецизност"
-    },
-    {
-      "type": "text",
-      "id": "collage_line_2",
-      "label": "Heading line 2",
-      "default": "хапка по хапка."
-    },
-    { "type": "image_picker", "id": "collage_image_1", "label": "Photo 1 (large, top-left)" },
-    { "type": "text", "id": "collage_caption_1", "label": "Photo 1 caption", "default": "ножът" },
-    { "type": "image_picker", "id": "collage_image_2", "label": "Photo 2 (small, top-right)" },
-    { "type": "text", "id": "collage_caption_2", "label": "Photo 2 caption", "default": "мигът" },
-    { "type": "image_picker", "id": "collage_image_3", "label": "Photo 3 (wide, mid-right)" },
-    { "type": "text", "id": "collage_caption_3", "label": "Photo 3 caption", "default": "рибата" },
-    { "type": "image_picker", "id": "collage_image_4", "label": "Photo 4 (small, bottom-left)" },
-    { "type": "text", "id": "collage_caption_4", "label": "Photo 4 caption", "default": "детайлът" },
-    { "type": "image_picker", "id": "collage_image_5", "label": "Photo 5 (square, bottom-right)" },
-    { "type": "text", "id": "collage_caption_5", "label": "Photo 5 caption", "default": "ароматът" },
-    {
-      "type": "header",
-      "content": "Video"
-    },
-    {
-      "type": "video",
-      "id": "video",
-      "label": "Video (Shopify upload)"
-    },
-    {
-      "type": "video_url",
-      "id": "video_url",
-      "label": "Video URL (YouTube / Vimeo)",
-      "accept": ["youtube", "vimeo"]
+      "content": "Our Interior (white)"
     },
     {
       "type": "image_picker",
-      "id": "video_poster",
-      "label": "Poster image (fallback)"
-    },
-    {
-      "type": "text",
-      "id": "video_kicker",
-      "label": "Kicker",
-      "default": "ВЛЕЗ В НАШИЯ СВЯТ"
-    },
-    {
-      "type": "text",
-      "id": "video_line_1",
-      "label": "Heading line 1",
-      "default": "Кухнята е"
-    },
-    {
-      "type": "text",
-      "id": "video_line_1_em",
-      "label": "Heading line 1 — italic accent",
-      "default": "сцена."
-    },
-    {
-      "type": "text",
-      "id": "video_line_2",
-      "label": "Heading line 2",
-      "default": "Готвачът е"
-    },
-    {
-      "type": "text",
-      "id": "video_line_2_em",
-      "label": "Heading line 2 — italic accent",
-      "default": "артистът."
-    },
-    {
-      "type": "text",
-      "id": "video_caption",
-      "label": "Video caption",
-      "default": "поглед зад кулисите"
-    },
-    {
-      "type": "header",
-      "content": "Principles"
-    },
-    {
-      "type": "text",
-      "id": "principles_kicker",
-      "label": "Kicker",
-      "default": "НАШИТЕ ПРИНЦИПИ"
-    },
-    {
-      "type": "text",
-      "id": "principles_line_1",
-      "label": "Heading line 1",
-      "default": "Три неща,"
-    },
-    {
-      "type": "text",
-      "id": "principles_line_2",
-      "label": "Heading line 2",
-      "default": "които ни"
-    },
-    {
-      "type": "text",
-      "id": "principles_line_2_em",
-      "label": "Heading line 2 — italic accent",
-      "default": "водят."
-    },
-    { "type": "text", "id": "p1_title", "label": "Principle I — title", "default": "Свежи съставки" },
-    { "type": "textarea", "id": "p1_text", "label": "Principle I — text" },
-    { "type": "text", "id": "p2_title", "label": "Principle II — title", "default": "Майстори в занаята" },
-    { "type": "textarea", "id": "p2_text", "label": "Principle II — text" },
-    { "type": "text", "id": "p3_title", "label": "Principle III — title", "default": "Уют и гостоприемство" },
-    { "type": "textarea", "id": "p3_text", "label": "Principle III — text" },
-    {
-      "type": "header",
-      "content": "Chef quote"
+      "id": "interior_image_1",
+      "label": "Interior image — main"
     },
     {
       "type": "image_picker",
-      "id": "quote_image",
-      "label": "Background image"
-    },
-    {
-      "type": "richtext",
-      "id": "quote_text",
-      "label": "Quote text (use italic for emphasis)"
+      "id": "interior_image_2",
+      "label": "Interior image — overlap"
     },
     {
       "type": "text",
-      "id": "quote_name",
-      "label": "Name",
-      "default": "ШЕФ КОДЗИ ТАНАКА"
+      "id": "interior_kicker",
+      "label": "Kicker",
+      "default": "НАШИЯТ ИНТЕРИОР"
     },
     {
       "type": "text",
-      "id": "quote_role",
-      "label": "Role",
-      "default": "Главен суши майстор"
+      "id": "interior_title",
+      "label": "Title",
+      "default": "Място, в което всеки детайл е обмислен"
     },
     {
-      "type": "header",
-      "content": "Photo strip"
+      "type": "textarea",
+      "id": "interior_text",
+      "label": "Paragraph 1"
     },
-    { "type": "image_picker", "id": "strip_image_1", "label": "Strip photo 1" },
-    { "type": "image_picker", "id": "strip_image_2", "label": "Strip photo 2" },
-    { "type": "image_picker", "id": "strip_image_3", "label": "Strip photo 3" },
-    { "type": "image_picker", "id": "strip_image_4", "label": "Strip photo 4" },
+    {
+      "type": "textarea",
+      "id": "interior_text_2",
+      "label": "Paragraph 2"
+    },
+    {
+      "type": "text",
+      "id": "interior_cta_label",
+      "label": "CTA label",
+      "default": "РЕЗЕРВАЦИЯ"
+    },
     {
       "type": "header",
       "content": "Closing banner"
@@ -668,10 +394,13 @@
       "id": "banner_image",
       "label": "Banner background image"
     },
-    { "type": "text", "id": "banner_line_1", "label": "Banner line 1", "default": "Създадено" },
-    { "type": "text", "id": "banner_line_1_em", "label": "Banner line 1 — italic accent", "default": "с любов." },
-    { "type": "text", "id": "banner_line_2", "label": "Banner line 2", "default": "Подадено с" },
-    { "type": "text", "id": "banner_line_2_em", "label": "Banner line 2 — italic accent", "default": "уважение." },
+    {
+      "type": "text",
+      "id": "banner_title",
+      "label": "Banner title",
+      "info": "Use <br> for line breaks",
+      "default": "Създадено<br>с любов."
+    },
     {
       "type": "text",
       "id": "banner_cta_primary",
