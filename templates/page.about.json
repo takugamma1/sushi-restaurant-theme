@@ -12,11 +12,11 @@
     "main": {
       "type": "restaurant-about-page",
       "settings": {
-        "hero_image": "shopify://shop_images/Screenshot_2026-05-16_135237.png",
         "hero_tag": "Mango — Sushi Bar",
         "hero_title_a": "За",
         "hero_title_em": "нас",
         "hero_subtitle": "<p>Поднасяме широка селекция от прясна риба и японски деликатеси — суши, сашими, рулца и още много вкусове, приготвени ръчно.</p>",
+        "hero_image": "shopify://shop_images/1767969736385591.jpg",
         "marquee_word": "MANGO",
         "story_image": "shopify://shop_images/Screenshot_2026-05-16_135237.png",
         "story_caption": "шеф Танака",
@@ -46,6 +46,7 @@
         "collage_caption_4": "детайлът",
         "collage_image_5": "shopify://shop_images/Screenshot_2026-05-16_135237.png",
         "collage_caption_5": "ароматът",
+        "video_url": "",
         "video_poster": "shopify://shop_images/Screenshot_2026-05-16_135237.png",
         "video_kicker": "ВЛЕЗ В НАШИЯ СВЯТ",
         "video_line_1": "Кухнята е",
