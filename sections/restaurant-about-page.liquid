@@ -206,19 +206,11 @@
             autoplay: false,
             loop: false,
             muted: false,
-            class: 'rab__video-media',
-            image_size: '1600x'
+            class: 'rab__video-media'
         }}
       {%- elsif section.settings.video_url != blank -%}
         <div class="rab__video-embed">
-          {{ section.settings.video_url
-            | video_tag:
-              class: 'rab__video-media',
-              loop: false,
-              controls: true,
-              muted: false,
-              image_size: '1600x'
-          }}
+          {{ section.settings.video_url | external_video_tag: class: 'rab__video-media' }}
         </div>
       {%- else -%}
         <div class="rab__video-placeholder">
@@ -309,16 +301,34 @@
 
   {%- comment -%} ============ Strip ============ {%- endcomment -%}
   <div class="rab__strip" aria-hidden="true">
-    {%- for img_key in 'strip_image_1,strip_image_2,strip_image_3,strip_image_4' | split: ',' -%}
-      {%- assign img = section.settings[img_key] -%}
-      <div class="rab__strip-cell">
-        {%- if img != blank -%}
-          {{ img | image_url: width: 700 | image_tag: class: 'rab__strip-image', sizes: '25vw', widths: '300,500,700', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__strip-image rab__strip-image--placeholder"></div>
-        {%- endif -%}
-      </div>
-    {%- endfor -%}
+    <div class="rab__strip-cell">
+      {%- if section.settings.strip_image_1 != blank -%}
+        {{ section.settings.strip_image_1 | image_url: width: 700 | image_tag: class: 'rab__strip-image', sizes: '25vw', widths: '300,500,700', loading: 'lazy' }}
+      {%- else -%}
+        <div class="rab__strip-image rab__strip-image--placeholder"></div>
+      {%- endif -%}
+    </div>
+    <div class="rab__strip-cell">
+      {%- if section.settings.strip_image_2 != blank -%}
+        {{ section.settings.strip_image_2 | image_url: width: 700 | image_tag: class: 'rab__strip-image', sizes: '25vw', widths: '300,500,700', loading: 'lazy' }}
+      {%- else -%}
+        <div class="rab__strip-image rab__strip-image--placeholder"></div>
+      {%- endif -%}
+    </div>
+    <div class="rab__strip-cell">
+      {%- if section.settings.strip_image_3 != blank -%}
+        {{ section.settings.strip_image_3 | image_url: width: 700 | image_tag: class: 'rab__strip-image', sizes: '25vw', widths: '300,500,700', loading: 'lazy' }}
+      {%- else -%}
+        <div class="rab__strip-image rab__strip-image--placeholder"></div>
+      {%- endif -%}
+    </div>
+    <div class="rab__strip-cell">
+      {%- if section.settings.strip_image_4 != blank -%}
+        {{ section.settings.strip_image_4 | image_url: width: 700 | image_tag: class: 'rab__strip-image', sizes: '25vw', widths: '300,500,700', loading: 'lazy' }}
+      {%- else -%}
+        <div class="rab__strip-image rab__strip-image--placeholder"></div>
+      {%- endif -%}
+    </div>
   </div>
 
   {%- comment -%} ============ Closing Banner ============ {%- endcomment -%}
