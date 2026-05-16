@@ -1593,19 +1593,43 @@
   left: auto;
 }
 
-/* ============ Hero ============ */
+/* ============ Hero (bento) ============ */
 
 .rab__hero {
-  position: relative;
-  min-height: clamp(620px, 95vh, 920px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  color: #fff;
+  background: var(--restaurant-dark);
+  padding: clamp(0.75rem, 1.2vw, 1.25rem);
 }
 
-.rab__hero-media { position: absolute; inset: 0; }
+.rab__hero-grid {
+  max-width: 1500px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
+}
+
+@media screen and (min-width: 900px) {
+  .rab__hero-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    height: clamp(620px, 92vh, 880px);
+  }
+}
+
+/* --- Main card --- */
+.rab__hero-main {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  border-radius: clamp(20px, 2vw, 32px);
+  background: var(--restaurant-dark-card);
+  min-height: clamp(420px, 70vh, 720px);
+}
+
+.rab__hero-main-media {
+  position: absolute;
+  inset: 0;
+}
 
 .rab__hero-image {
   width: 100%;
@@ -1614,137 +1638,183 @@
   display: block;
   position: absolute;
   inset: 0;
-  transform: scale(1.04);
-  animation: rab-kenburns 18s ease-in-out infinite alternate;
 }
 
 .rab__hero-image--placeholder {
   background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
 }
 
-@keyframes rab-kenburns {
-  from { transform: scale(1.04); }
-  to   { transform: scale(1.12); }
-}
-
 .rab__hero-overlay {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(60% 80% at 50% 60%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.85) 100%);
+    linear-gradient(180deg, rgba(13,13,13,0.05) 0%, rgba(13,13,13,0.35) 60%, rgba(13,13,13,0.8) 100%);
 }
 
-.rab__hero-grid {
+.rab__hero-main-body {
   position: relative;
   z-index: 1;
-  width: 100%;
-  max-width: 1320px;
-  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 5vw, 4rem);
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-rows: auto 1fr auto;
-  grid-template-areas:
-    "ml . mr"
-    "title title title"
-    "scroll . .";
-  gap: 1.5rem 1rem;
-  align-items: center;
-  text-align: center;
-}
-
-.rab__hero-meta-left {
-  grid-area: ml;
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  font-family: var(--font-body--family);
-  font-size: 0.72rem;
-  letter-spacing: 0.32em;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.6;
-  text-transform: uppercase;
-}
-
-.rab__hero-meta-left span:last-child {
-  color: var(--restaurant-accent);
-  font-family: var(--font-heading--family);
-  font-style: italic;
-  font-size: 1.1rem;
-  letter-spacing: 0.04em;
-  text-transform: none;
-}
-
-.rab__hero-meta-right {
-  grid-area: mr;
-  font-family: var(--font-body--family);
-  font-size: 0.72rem;
-  letter-spacing: 0.32em;
-  color: rgba(255, 255, 255, 0.7);
-  align-self: start;
-  text-transform: uppercase;
+  gap: clamp(1rem, 1.5vw, 1.5rem);
+  padding: clamp(1.75rem, 4vw, 3.25rem);
+  width: 100%;
+  max-width: 640px;
 }
 
 .rab__hero-title {
-  grid-area: title;
   font-family: var(--font-heading--family);
   font-weight: var(--font-heading--weight);
-  font-size: clamp(3.5rem, 11vw, 10rem);
-  line-height: 0.92;
-  letter-spacing: 0.005em;
+  font-size: clamp(3rem, 7.5vw, 6.5rem);
+  line-height: 0.95;
   color: #fff;
   margin: 0;
+  letter-spacing: 0.01em;
   text-transform: uppercase;
-  text-wrap: balance;
 }
 
 .rab__hero-title em {
   font-style: italic;
-  font-weight: 300;
-  color: var(--restaurant-accent);
-  text-transform: none;
-  letter-spacing: -0.005em;
+  font-weight: 400;
+  letter-spacing: 0.005em;
 }
 
-.rab__hero-scroll {
-  grid-area: scroll;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.4rem;
-  align-self: end;
-  justify-self: start;
-}
-
-.rab__hero-scroll-text {
+.rab__hero-subtitle {
   font-family: var(--font-heading--family);
   font-style: italic;
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.8);
-  letter-spacing: 0.04em;
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
+  line-height: 1.5;
+  color: rgba(255,255,255,0.85);
+  margin: 0;
+  max-width: 440px;
 }
 
-.rab__hero-scroll-line {
-  width: 1px;
-  height: 56px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
-  position: relative;
+.rab__hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  align-self: flex-start;
+  padding: 0.85rem 1.65rem;
+  border: 1px solid var(--restaurant-accent);
+  border-radius: 12px;
+  color: var(--restaurant-accent);
+  text-decoration: none;
+  font-family: var(--font-body--family);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: background 0.3s ease, color 0.3s ease;
+  margin-top: 0.5rem;
 }
 
-.rab__hero-scroll-line::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: -2px;
-  width: 5px;
-  height: 5px;
-  border-radius: 999px;
+.rab__hero-cta:hover {
   background: var(--restaurant-accent);
-  animation: rab-scroll 2s ease-in-out infinite;
+  color: #1a0e08;
 }
 
-@keyframes rab-scroll {
-  0%, 100% { transform: translateY(0); opacity: 1; }
-  50%      { transform: translateY(-14px); opacity: 0.3; }
+.rab__arrow-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  transition: transform 0.3s ease;
+}
+
+.rab__arrow-circle--light {
+  border-color: rgba(255,255,255,0.4);
+  color: #fff;
+  background: rgba(13,13,13,0.35);
+  backdrop-filter: blur(4px);
+}
+
+.rab__hero-cta:hover .rab__arrow-circle,
+.rab__hero-card:hover .rab__arrow-circle {
+  transform: translateX(3px);
+}
+
+/* --- Side cards --- */
+.rab__hero-side {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
+  min-height: 0;
+}
+
+@media screen and (max-width: 899px) {
+  .rab__hero-side {
+    grid-auto-rows: minmax(180px, 1fr);
+  }
+}
+
+.rab__hero-card {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  overflow: hidden;
+  border-radius: clamp(20px, 2vw, 32px);
+  background: var(--restaurant-dark-card);
+  text-decoration: none;
+  color: #fff;
+  padding: clamp(0.85rem, 1.3vw, 1.25rem);
+  min-height: 180px;
+  transition: transform 0.4s ease;
+}
+
+.rab__hero-card:hover {
+  transform: translateY(-2px);
+}
+
+.rab__hero-card-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 1s ease;
+}
+
+.rab__hero-card:hover .rab__hero-card-image {
+  transform: scale(1.04);
+}
+
+.rab__hero-card-image--placeholder {
+  background: linear-gradient(135deg, #1d1d1d, #131313);
+}
+
+.rab__hero-card-cta {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.5rem 0.5rem 1.1rem;
+  background: rgba(13,13,13,0.78);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px;
+  font-family: var(--font-body--family);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.rab__hero-card-label {
+  line-height: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rab__hero-card-image,
+  .rab__hero-card,
+  .rab__arrow-circle { transition: none; }
 }
 
 /* ============ Marquee ============ */
@@ -1919,7 +1989,7 @@
 .rab__story-photo {
   position: relative;
   margin: 0;
-  border-radius: 2px;
+  border-radius: clamp(20px, 2vw, 28px);
   overflow: hidden;
   aspect-ratio: 3 / 4;
   background: var(--restaurant-dark-card);
@@ -1983,7 +2053,7 @@
 .rab__collage-item {
   position: relative;
   overflow: hidden;
-  border-radius: 2px;
+  border-radius: clamp(16px, 1.4vw, 22px);
   background: var(--restaurant-dark-card);
 }
 
@@ -2063,7 +2133,7 @@
   max-width: 1280px;
   margin: 0 auto;
   position: relative;
-  border-radius: 4px;
+  border-radius: clamp(20px, 2vw, 28px);
   overflow: hidden;
   aspect-ratio: 16 / 9;
   background: #000;
@@ -2264,6 +2334,8 @@
 
 .rab__quote {
   position: relative;
+  max-width: 1500px;
+  margin: clamp(0.75rem, 1.2vw, 1.25rem) auto;
   min-height: clamp(480px, 75vh, 740px);
   display: flex;
   align-items: center;
@@ -2272,6 +2344,8 @@
   overflow: hidden;
   padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 5vw, 3rem);
   color: #fff;
+  border-radius: clamp(20px, 2vw, 32px);
+  background: var(--restaurant-dark-card);
 }
 
 .rab__quote-media {
@@ -2372,9 +2446,12 @@
 /* ============ Photo strip ============ */
 
 .rab__strip {
+  max-width: 1500px;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 2px;
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
+  padding: clamp(0.75rem, 2vw, 1.5rem) clamp(0.75rem, 1.2vw, 1.25rem);
   background: var(--restaurant-dark);
 }
 
@@ -2386,6 +2463,7 @@
   position: relative;
   overflow: hidden;
   aspect-ratio: 1 / 1;
+  border-radius: clamp(16px, 1.4vw, 22px);
   background: var(--restaurant-dark-card);
 }
 
@@ -2410,6 +2488,8 @@
 
 .rab__banner {
   position: relative;
+  max-width: 1500px;
+  margin: clamp(0.75rem, 1.2vw, 1.25rem) auto;
   min-height: clamp(440px, 65vh, 640px);
   display: flex;
   align-items: center;
@@ -2417,6 +2497,8 @@
   text-align: center;
   overflow: hidden;
   color: #fff;
+  border-radius: clamp(20px, 2vw, 32px);
+  background: var(--restaurant-dark-card);
 }
 
 .rab__banner-image {

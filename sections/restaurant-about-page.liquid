@@ -6,44 +6,117 @@
 
 <div class="rab">
 
-  {%- comment -%} ============ Hero ============ {%- endcomment -%}
+  {%- comment -%} ============ Hero (bento) ============ {%- endcomment -%}
+  {%- liquid
+    assign side1_link = section.settings.side1_link | default: menu_url
+    assign side2_link = section.settings.side2_link | default: contact_url
+    assign side3_link = section.settings.side3_link | default: '/pages/gallery'
+  -%}
   <section class="rab__hero">
-    <div class="rab__hero-media">
-      {%- if section.settings.hero_image != blank -%}
-        {{ section.settings.hero_image
-          | image_url: width: 2800
-          | image_tag:
-            class: 'rab__hero-image',
-            sizes: '100vw',
-            widths: '800,1200,1600,2200,2800',
-            loading: 'eager',
-            fetchpriority: 'high'
-        }}
-      {%- else -%}
-        <div class="rab__hero-image rab__hero-image--placeholder"></div>
-      {%- endif -%}
-      <div class="rab__hero-overlay"></div>
-    </div>
-
     <div class="rab__hero-grid">
-      <span class="rab__hero-meta-left">
-        <span>EST.</span>
-        <span>{{ section.settings.year | default: '2012' }}</span>
-      </span>
-      <span class="rab__hero-meta-right">{{ section.settings.location | default: 'СОФИЯ, БГ' }}</span>
 
-      <h1 class="rab__hero-title">
-        {{ section.settings.hero_line_1 | default: 'Една' }}
-        <em>{{ section.settings.hero_line_1_em | default: 'история' }}</em>
-        <br>
-        {{ section.settings.hero_line_2 | default: 'с вкус на' }}
-        <em>{{ section.settings.hero_line_2_em | default: 'Япония' }}</em>
-      </h1>
+      {%- comment -%} Main card (left) {%- endcomment -%}
+      <div class="rab__hero-main">
+        <div class="rab__hero-main-media">
+          {%- if section.settings.hero_image != blank -%}
+            {{ section.settings.hero_image
+              | image_url: width: 2200
+              | image_tag:
+                class: 'rab__hero-image',
+                sizes: '(min-width: 990px) 58vw, 100vw',
+                widths: '700,1100,1500,1900,2200',
+                loading: 'eager',
+                fetchpriority: 'high'
+            }}
+          {%- else -%}
+            <div class="rab__hero-image rab__hero-image--placeholder"></div>
+          {%- endif -%}
+          <div class="rab__hero-overlay"></div>
+        </div>
 
-      <span class="rab__hero-scroll" aria-hidden="true">
-        <span class="rab__hero-scroll-text">Скрол</span>
-        <span class="rab__hero-scroll-line"></span>
-      </span>
+        <div class="rab__hero-main-body">
+          <h1 class="rab__hero-title">
+            <em>{{ section.settings.hero_title | default: 'За нас' }}</em>
+          </h1>
+          {%- if section.settings.hero_subtitle != blank -%}
+            <p class="rab__hero-subtitle">{{ section.settings.hero_subtitle }}</p>
+          {%- else -%}
+            <p class="rab__hero-subtitle">Добре дошли в Суши Бар Манго — място, където свежестта и вкусът се срещат.</p>
+          {%- endif -%}
+          <a href="{{ section.settings.hero_cta_link | default: menu_url }}" class="rab__hero-cta">
+            <span>{{ section.settings.hero_cta_label | default: 'РАЗБЕРИ ПОВЕЧЕ' }}</span>
+            <span class="rab__arrow-circle" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </a>
+        </div>
+      </div>
+
+      {%- comment -%} Side cards (right) {%- endcomment -%}
+      <div class="rab__hero-side">
+        <a href="{{ side1_link }}" class="rab__hero-card">
+          {%- if section.settings.side1_image != blank -%}
+            {{ section.settings.side1_image
+              | image_url: width: 1100
+              | image_tag:
+                class: 'rab__hero-card-image',
+                sizes: '(min-width: 990px) 40vw, 100vw',
+                widths: '400,700,1100',
+                loading: 'lazy'
+            }}
+          {%- else -%}
+            <div class="rab__hero-card-image rab__hero-card-image--placeholder"></div>
+          {%- endif -%}
+          <span class="rab__hero-card-cta">
+            <span class="rab__hero-card-label">{{ section.settings.side1_label | default: 'ПОРЪЧАЙ' }}</span>
+            <span class="rab__arrow-circle rab__arrow-circle--light" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </span>
+        </a>
+
+        <a href="{{ side2_link }}" class="rab__hero-card">
+          {%- if section.settings.side2_image != blank -%}
+            {{ section.settings.side2_image
+              | image_url: width: 1100
+              | image_tag:
+                class: 'rab__hero-card-image',
+                sizes: '(min-width: 990px) 40vw, 100vw',
+                widths: '400,700,1100',
+                loading: 'lazy'
+            }}
+          {%- else -%}
+            <div class="rab__hero-card-image rab__hero-card-image--placeholder"></div>
+          {%- endif -%}
+          <span class="rab__hero-card-cta">
+            <span class="rab__hero-card-label">{{ section.settings.side2_label | default: 'СВЪРЖИ СЕ С НАС' }}</span>
+            <span class="rab__arrow-circle rab__arrow-circle--light" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </span>
+        </a>
+
+        <a href="{{ side3_link }}" class="rab__hero-card">
+          {%- if section.settings.side3_image != blank -%}
+            {{ section.settings.side3_image
+              | image_url: width: 1100
+              | image_tag:
+                class: 'rab__hero-card-image',
+                sizes: '(min-width: 990px) 40vw, 100vw',
+                widths: '400,700,1100',
+                loading: 'lazy'
+            }}
+          {%- else -%}
+            <div class="rab__hero-card-image rab__hero-card-image--placeholder"></div>
+          {%- endif -%}
+          <span class="rab__hero-card-cta">
+            <span class="rab__hero-card-label">{{ section.settings.side3_label | default: 'ГАЛЕРИЯ' }}</span>
+            <span class="rab__arrow-circle rab__arrow-circle--light" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </span>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -368,49 +441,57 @@
   "settings": [
     {
       "type": "header",
-      "content": "Hero"
+      "content": "Hero — main card"
     },
     {
       "type": "image_picker",
       "id": "hero_image",
-      "label": "Hero background image"
+      "label": "Main image"
     },
     {
       "type": "text",
-      "id": "year",
-      "label": "Year tag",
-      "default": "2012"
+      "id": "hero_title",
+      "label": "Title",
+      "default": "За нас"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_subtitle",
+      "label": "Subtitle",
+      "default": "Добре дошли в Суши Бар Манго — място, където свежестта и вкусът се срещат."
     },
     {
       "type": "text",
-      "id": "location",
-      "label": "Location tag",
-      "default": "СОФИЯ, БГ"
+      "id": "hero_cta_label",
+      "label": "CTA label",
+      "default": "РАЗБЕРИ ПОВЕЧЕ"
     },
     {
-      "type": "text",
-      "id": "hero_line_1",
-      "label": "Hero line 1",
-      "default": "Една"
+      "type": "url",
+      "id": "hero_cta_link",
+      "label": "CTA link"
     },
     {
-      "type": "text",
-      "id": "hero_line_1_em",
-      "label": "Hero line 1 — italic accent",
-      "default": "история"
+      "type": "header",
+      "content": "Hero — side card 1 (Order)"
     },
+    { "type": "image_picker", "id": "side1_image", "label": "Image" },
+    { "type": "text", "id": "side1_label", "label": "Label", "default": "ПОРЪЧАЙ" },
+    { "type": "url", "id": "side1_link", "label": "Link" },
     {
-      "type": "text",
-      "id": "hero_line_2",
-      "label": "Hero line 2",
-      "default": "с вкус на"
+      "type": "header",
+      "content": "Hero — side card 2 (Contact)"
     },
+    { "type": "image_picker", "id": "side2_image", "label": "Image" },
+    { "type": "text", "id": "side2_label", "label": "Label", "default": "СВЪРЖИ СЕ С НАС" },
+    { "type": "url", "id": "side2_link", "label": "Link" },
     {
-      "type": "text",
-      "id": "hero_line_2_em",
-      "label": "Hero line 2 — italic accent",
-      "default": "Япония"
+      "type": "header",
+      "content": "Hero — side card 3 (Gallery)"
     },
+    { "type": "image_picker", "id": "side3_image", "label": "Image" },
+    { "type": "text", "id": "side3_label", "label": "Label", "default": "ГАЛЕРИЯ" },
+    { "type": "url", "id": "side3_link", "label": "Link" },
     {
       "type": "header",
       "content": "Marquee"
