@@ -100,21 +100,24 @@
           "settings": {
             "media_type": "video",
             "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
-            "video": "shopify://files/videos/03_Sushi-Bar-Mango_Feb2026_Trailer-Website_4K-YouTube-Facebook.mp4"
+            "video": "shopify://files/videos/03_Sushi-Bar-Mango_Feb2026_Trailer-Website_4K-YouTube-Facebook.mp4",
+            "video_url": ""
           }
         },
         "slide_4wRHPd": {
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png"
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
+            "video_url": ""
           }
         },
         "slide_D6V9KH": {
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png"
+            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
+            "video_url": ""
           }
         }
       },
@@ -129,7 +132,7 @@
         "heading": "СУШИ БАР МАНГО",
         "cta_label": "ПОРЪЧАЙ СЕГА",
         "cta_link": "",
-        "heading_size": 100,
+        "heading_size": 60,
         "subheading_size": 16,
         "cta_size": 13,
         "autoplay": true,
@@ -235,7 +238,7 @@
         "addons_title": "Добави към поръчката",
         "category_border_radius": 20,
         "category_border_width": 1,
-        "heading_size": 80,
+        "heading_size": 70,
         "subheading_size": 20,
         "tab_size": 11,
         "item_title_size": 22,
