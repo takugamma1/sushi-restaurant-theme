@@ -7,11 +7,6 @@
 <div class="rab">
 
   {%- comment -%} ============ Hero (stacked: band + photo) ============ {%- endcomment -%}
-  {%- liquid
-    assign side1_link = section.settings.side1_link | default: menu_url
-    assign side2_link = section.settings.side2_link | default: contact_url
-    assign side3_link = section.settings.side3_link | default: '/pages/gallery'
-  -%}
   <section class="rab__hero">
     <div class="rab__hero-band">
       <div class="rab__hero-band-inner">
@@ -49,75 +44,6 @@
         <div class="rab__hero-photo-image rab__hero-photo-image--placeholder"></div>
       {%- endif -%}
     </div>
-  </section>
-
-  {%- comment -%} ============ Quick links row ============ {%- endcomment -%}
-  <section class="rab__quick">
-    <a href="{{ side1_link }}" class="rab__quick-card">
-      {%- if section.settings.side1_image != blank -%}
-        {{ section.settings.side1_image
-          | image_url: width: 1100
-          | image_tag:
-            class: 'rab__quick-image',
-            sizes: '(min-width: 750px) 33vw, 100vw',
-            widths: '400,700,1100',
-            loading: 'lazy'
-        }}
-      {%- else -%}
-        <div class="rab__quick-image rab__quick-image--placeholder"></div>
-      {%- endif -%}
-      <span class="rab__quick-num" aria-hidden="true">01</span>
-      <span class="rab__quick-foot">
-        <span class="rab__quick-label">{{ section.settings.side1_label | default: 'Поръчай' }}</span>
-        <span class="rab__quick-arrow" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-        </span>
-      </span>
-    </a>
-
-    <a href="{{ side2_link }}" class="rab__quick-card">
-      {%- if section.settings.side2_image != blank -%}
-        {{ section.settings.side2_image
-          | image_url: width: 1100
-          | image_tag:
-            class: 'rab__quick-image',
-            sizes: '(min-width: 750px) 33vw, 100vw',
-            widths: '400,700,1100',
-            loading: 'lazy'
-        }}
-      {%- else -%}
-        <div class="rab__quick-image rab__quick-image--placeholder"></div>
-      {%- endif -%}
-      <span class="rab__quick-num" aria-hidden="true">02</span>
-      <span class="rab__quick-foot">
-        <span class="rab__quick-label">{{ section.settings.side2_label | default: 'Свържи се' }}</span>
-        <span class="rab__quick-arrow" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-        </span>
-      </span>
-    </a>
-
-    <a href="{{ side3_link }}" class="rab__quick-card">
-      {%- if section.settings.side3_image != blank -%}
-        {{ section.settings.side3_image
-          | image_url: width: 1100
-          | image_tag:
-            class: 'rab__quick-image',
-            sizes: '(min-width: 750px) 33vw, 100vw',
-            widths: '400,700,1100',
-            loading: 'lazy'
-        }}
-      {%- else -%}
-        <div class="rab__quick-image rab__quick-image--placeholder"></div>
-      {%- endif -%}
-      <span class="rab__quick-num" aria-hidden="true">03</span>
-      <span class="rab__quick-foot">
-        <span class="rab__quick-label">{{ section.settings.side3_label | default: 'Галерия' }}</span>
-        <span class="rab__quick-arrow" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-        </span>
-      </span>
-    </a>
   </section>
 
   {%- comment -%} ============ Marquee ============ {%- endcomment -%}
@@ -476,27 +402,6 @@
       "id": "hero_image",
       "label": "Full-width photo"
     },
-    {
-      "type": "header",
-      "content": "Quick links — card 1 (Order)"
-    },
-    { "type": "image_picker", "id": "side1_image", "label": "Image" },
-    { "type": "text", "id": "side1_label", "label": "Label", "default": "Поръчай" },
-    { "type": "url", "id": "side1_link", "label": "Link" },
-    {
-      "type": "header",
-      "content": "Quick links — card 2 (Contact)"
-    },
-    { "type": "image_picker", "id": "side2_image", "label": "Image" },
-    { "type": "text", "id": "side2_label", "label": "Label", "default": "СВЪРЖИ СЕ С НАС" },
-    { "type": "url", "id": "side2_link", "label": "Link" },
-    {
-      "type": "header",
-      "content": "Quick links — card 3 (Gallery)"
-    },
-    { "type": "image_picker", "id": "side3_image", "label": "Image" },
-    { "type": "text", "id": "side3_label", "label": "Label", "default": "ГАЛЕРИЯ" },
-    { "type": "url", "id": "side3_link", "label": "Link" },
     {
       "type": "header",
       "content": "Marquee"
