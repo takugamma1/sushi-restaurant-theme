@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
@@ -16,6 +25,7 @@
         "meta_line_2": "Доставка до 45 минути",
         "meta_line_3": "Премиум съставки",
         "related_title": "МОЖЕ БИ ЩЕ ВИ ХАРЕСА",
+        "related_collection": "манго-меню",
         "color_scheme": "scheme-5"
       }
     }
