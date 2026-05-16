@@ -197,30 +197,52 @@
     "restaurant_menu_WUY7XF": {
       "type": "restaurant-menu",
       "blocks": {
-        "category_BEp7bV": {
+        "category_xjQf3z": {
           "type": "category",
           "settings": {
-            "title": "НОВО",
+            "title": "СЕТОВЕ",
             "tab_label": "",
-            "collection": "test",
-            "max_products": 14,
+            "collection": "сетове",
+            "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
         },
-        "category_aqNKHa": {
+        "category_QM3mje": {
+          "type": "category",
+          "settings": {
+            "title": "САШИМИ",
+            "tab_label": "",
+            "collection": "сашими",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
+        "category_NyzfXw": {
+          "type": "category",
+          "settings": {
+            "title": "НИГИРИ",
+            "tab_label": "",
+            "collection": "нигири",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
+        "category_QnRC6h": {
           "type": "category",
           "settings": {
             "title": "МАНГО МЕНЮ",
             "tab_label": "",
-            "collection": "test",
+            "collection": "манго-меню",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
         }
       },
       "block_order": [
-        "category_BEp7bV",
-        "category_aqNKHa"
+        "category_xjQf3z",
+        "category_QM3mje",
+        "category_NyzfXw",
+        "category_QnRC6h"
       ],
       "name": "Restaurant Menu",
       "settings": {
