@@ -1,0 +1,162 @@
+{%- liquid
+  assign menu_url = section.settings.menu_url | default: '/pages/menu'
+-%}
+
+<restaurant-gallery class="rg" data-stagger="{{ section.settings.stagger_ms | default: 80 }}">
+  <header class="rg__header">
+    <span class="rg__kicker">
+      <span class="rg__kicker-mark" aria-hidden="true">◇</span>
+      {{ section.settings.kicker | default: 'ГАЛЕРИЯ' }}
+    </span>
+    <h1 class="rg__title">
+      {{ section.settings.title_a | default: 'Парче по' }}
+      <em>{{ section.settings.title_em | default: 'парче.' }}</em>
+    </h1>
+    {%- if section.settings.intro != blank -%}
+      <p class="rg__intro">{{ section.settings.intro }}</p>
+    {%- else -%}
+      <p class="rg__intro">Моменти, които разказват историята на нашата кухня — от острието на ножа до последната хапка.</p>
+    {%- endif -%}
+  </header>
+
+  <div class="rg__grid">
+    {%- capture cell_a -%}{%- if section.settings.gallery_image_1 != blank -%}{{ section.settings.gallery_image_1 | image_url: width: 1400 | image_tag: class: 'rg__image', sizes: '(min-width: 990px) 45vw, 100vw', widths: '400,700,1000,1400', loading: 'lazy' }}{%- else -%}<div class="rg__image rg__image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+    {%- capture cell_b -%}{%- if section.settings.gallery_image_2 != blank -%}{{ section.settings.gallery_image_2 | image_url: width: 1200 | image_tag: class: 'rg__image', sizes: '(min-width: 990px) 35vw, 100vw', widths: '400,700,1000,1200', loading: 'lazy' }}{%- else -%}<div class="rg__image rg__image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+    {%- capture cell_c -%}{%- if section.settings.gallery_image_3 != blank -%}{{ section.settings.gallery_image_3 | image_url: width: 1400 | image_tag: class: 'rg__image', sizes: '(min-width: 990px) 35vw, 100vw', widths: '400,700,1000,1400', loading: 'lazy' }}{%- else -%}<div class="rg__image rg__image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+    {%- capture cell_d -%}{%- if section.settings.gallery_image_4 != blank -%}{{ section.settings.gallery_image_4 | image_url: width: 1400 | image_tag: class: 'rg__image', sizes: '(min-width: 990px) 35vw, 100vw', widths: '400,700,1000,1400', loading: 'lazy' }}{%- else -%}<div class="rg__image rg__image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+    {%- capture cell_e -%}{%- if section.settings.gallery_image_5 != blank -%}{{ section.settings.gallery_image_5 | image_url: width: 1200 | image_tag: class: 'rg__image', sizes: '(min-width: 990px) 35vw, 100vw', widths: '400,700,1000,1200', loading: 'lazy' }}{%- else -%}<div class="rg__image rg__image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+    {%- capture cell_f -%}{%- if section.settings.gallery_image_6 != blank -%}{{ section.settings.gallery_image_6 | image_url: width: 1400 | image_tag: class: 'rg__image', sizes: '(min-width: 990px) 30vw, 100vw', widths: '400,700,1000,1400', loading: 'lazy' }}{%- else -%}<div class="rg__image rg__image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+    {%- capture cell_g -%}{%- if section.settings.gallery_image_7 != blank -%}{{ section.settings.gallery_image_7 | image_url: width: 900 | image_tag: class: 'rg__image', sizes: '(min-width: 990px) 18vw, 50vw', widths: '300,500,700,900', loading: 'lazy' }}{%- else -%}<div class="rg__image rg__image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+    {%- capture cell_h -%}{%- if section.settings.gallery_image_8 != blank -%}{{ section.settings.gallery_image_8 | image_url: width: 900 | image_tag: class: 'rg__image', sizes: '(min-width: 990px) 18vw, 50vw', widths: '300,500,700,900', loading: 'lazy' }}{%- else -%}<div class="rg__image rg__image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+    {%- capture cell_i -%}{%- if section.settings.gallery_image_9 != blank -%}{{ section.settings.gallery_image_9 | image_url: width: 900 | image_tag: class: 'rg__image', sizes: '(min-width: 990px) 18vw, 50vw', widths: '300,500,700,900', loading: 'lazy' }}{%- else -%}<div class="rg__image rg__image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+    {%- capture cell_j -%}{%- if section.settings.gallery_image_10 != blank -%}{{ section.settings.gallery_image_10 | image_url: width: 1200 | image_tag: class: 'rg__image', sizes: '(min-width: 990px) 30vw, 100vw', widths: '400,700,1000,1200', loading: 'lazy' }}{%- else -%}<div class="rg__image rg__image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+
+    <figure class="rg__cell rg__cell--a">{{ cell_a }}{%- if section.settings.gallery_caption_1 != blank -%}<figcaption class="rg__caption">— {{ section.settings.gallery_caption_1 }}</figcaption>{%- endif -%}</figure>
+    <figure class="rg__cell rg__cell--b">{{ cell_b }}{%- if section.settings.gallery_caption_2 != blank -%}<figcaption class="rg__caption">— {{ section.settings.gallery_caption_2 }}</figcaption>{%- endif -%}</figure>
+    <figure class="rg__cell rg__cell--c">{{ cell_c }}{%- if section.settings.gallery_caption_3 != blank -%}<figcaption class="rg__caption">— {{ section.settings.gallery_caption_3 }}</figcaption>{%- endif -%}</figure>
+    <figure class="rg__cell rg__cell--d">{{ cell_d }}{%- if section.settings.gallery_caption_4 != blank -%}<figcaption class="rg__caption">— {{ section.settings.gallery_caption_4 }}</figcaption>{%- endif -%}</figure>
+    <figure class="rg__cell rg__cell--e">{{ cell_e }}{%- if section.settings.gallery_caption_5 != blank -%}<figcaption class="rg__caption">— {{ section.settings.gallery_caption_5 }}</figcaption>{%- endif -%}</figure>
+    <figure class="rg__cell rg__cell--f">{{ cell_f }}{%- if section.settings.gallery_caption_6 != blank -%}<figcaption class="rg__caption">— {{ section.settings.gallery_caption_6 }}</figcaption>{%- endif -%}</figure>
+    <figure class="rg__cell rg__cell--g">{{ cell_g }}{%- if section.settings.gallery_caption_7 != blank -%}<figcaption class="rg__caption">— {{ section.settings.gallery_caption_7 }}</figcaption>{%- endif -%}</figure>
+    <figure class="rg__cell rg__cell--h">{{ cell_h }}{%- if section.settings.gallery_caption_8 != blank -%}<figcaption class="rg__caption">— {{ section.settings.gallery_caption_8 }}</figcaption>{%- endif -%}</figure>
+    <figure class="rg__cell rg__cell--i">{{ cell_i }}{%- if section.settings.gallery_caption_9 != blank -%}<figcaption class="rg__caption">— {{ section.settings.gallery_caption_9 }}</figcaption>{%- endif -%}</figure>
+    <figure class="rg__cell rg__cell--j">{{ cell_j }}{%- if section.settings.gallery_caption_10 != blank -%}<figcaption class="rg__caption">— {{ section.settings.gallery_caption_10 }}</figcaption>{%- endif -%}</figure>
+  </div>
+
+  {%- if section.settings.show_footer -%}
+    <footer class="rg__footer">
+      <a href="{{ menu_url }}" class="rg__back-link">
+        <span class="rg__back-arrow" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="17" x2="7" y2="7"/><polyline points="7 17 7 7 17 7"/></svg>
+        </span>
+        <span class="rg__back-text">{{ section.settings.footer_label | default: 'Виж менюто' }}</span>
+      </a>
+    </footer>
+  {%- endif -%}
+</restaurant-gallery>
+
+<script src="{{ 'restaurant-gallery.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Restaurant Gallery",
+  "tag": "section",
+  "class": "restaurant-gallery-section",
+  "enabled_on": { "templates": ["page"] },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Kicker",
+      "default": "ГАЛЕРИЯ"
+    },
+    {
+      "type": "text",
+      "id": "title_a",
+      "label": "Title — regular part",
+      "default": "Парче по"
+    },
+    {
+      "type": "text",
+      "id": "title_em",
+      "label": "Title — italic accent",
+      "default": "парче."
+    },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "Intro text",
+      "default": "Моменти, които разказват историята на нашата кухня — от острието на ножа до последната хапка."
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "stagger_ms",
+      "label": "Stagger delay (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "default": 80,
+      "unit": "ms"
+    },
+    {
+      "type": "header",
+      "content": "Photos (10 bento cells)"
+    },
+    { "type": "image_picker", "id": "gallery_image_1",  "label": "Photo 1 — wide top-left (2×2)" },
+    { "type": "text",         "id": "gallery_caption_1","label": "Caption 1" },
+    { "type": "image_picker", "id": "gallery_image_2",  "label": "Photo 2 — top-middle (3×2)" },
+    { "type": "text",         "id": "gallery_caption_2","label": "Caption 2" },
+    { "type": "image_picker", "id": "gallery_image_3",  "label": "Photo 3 — tall middle (3×3)" },
+    { "type": "text",         "id": "gallery_caption_3","label": "Caption 3" },
+    { "type": "image_picker", "id": "gallery_image_4",  "label": "Photo 4 — top-right (4×1)" },
+    { "type": "text",         "id": "gallery_caption_4","label": "Caption 4" },
+    { "type": "image_picker", "id": "gallery_image_5",  "label": "Photo 5 — right (4×2)" },
+    { "type": "text",         "id": "gallery_caption_5","label": "Caption 5" },
+    { "type": "image_picker", "id": "gallery_image_6",  "label": "Photo 6 — bottom-left (3×3)" },
+    { "type": "text",         "id": "gallery_caption_6","label": "Caption 6" },
+    { "type": "image_picker", "id": "gallery_image_7",  "label": "Photo 7 — tall middle-left (2×3)" },
+    { "type": "text",         "id": "gallery_caption_7","label": "Caption 7" },
+    { "type": "image_picker", "id": "gallery_image_8",  "label": "Photo 8 — bottom-middle-left (2×2)" },
+    { "type": "text",         "id": "gallery_caption_8","label": "Caption 8" },
+    { "type": "image_picker", "id": "gallery_image_9",  "label": "Photo 9 — bottom-middle-right (2×2)" },
+    { "type": "text",         "id": "gallery_caption_9","label": "Caption 9" },
+    { "type": "image_picker", "id": "gallery_image_10", "label": "Photo 10 — bottom-right (3×2)" },
+    { "type": "text",         "id": "gallery_caption_10","label": "Caption 10" },
+    {
+      "type": "header",
+      "content": "Footer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_footer",
+      "label": "Show back-to-menu link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "footer_label",
+      "label": "Back link label",
+      "default": "Виж менюто"
+    },
+    {
+      "type": "url",
+      "id": "menu_url",
+      "label": "Menu URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Restaurant Gallery",
+      "category": "t:categories.image"
+    }
+  ]
+}
+{% endschema %}

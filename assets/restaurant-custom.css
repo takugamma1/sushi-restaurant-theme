@@ -2505,3 +2505,275 @@
   .rab__btn { animation: none; transition: none; }
 }
 
+/* ================================
+ * Restaurant Gallery (rg) — bento grid with scroll-fade
+ * ================================ */
+
+.shopify-section:has(.restaurant-gallery-section) {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: var(--restaurant-dark) !important;
+}
+
+.restaurant-gallery-section {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: var(--restaurant-dark);
+}
+
+.restaurant-gallery-section .section-background { display: none; }
+
+.rg {
+  display: block;
+  background: var(--restaurant-dark);
+  color: #fff;
+  padding: clamp(3rem, 7vw, 6rem) clamp(0.75rem, 1.2vw, 1.25rem);
+  font-family: var(--font-body--family);
+}
+
+/* --- Header --- */
+.rg__header {
+  max-width: 880px;
+  margin: 0 auto clamp(2.5rem, 5vw, 4rem);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rg__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-body--family);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--restaurant-accent);
+}
+
+.rg__kicker-mark { font-size: 0.7em; }
+
+.rg__title {
+  font-family: var(--font-heading--family);
+  font-weight: var(--font-heading--weight);
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: 0.005em;
+  color: #fff;
+  margin: 0;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.rg__title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--restaurant-accent);
+  text-transform: uppercase;
+  margin-left: 0.08em;
+}
+
+.rg__intro {
+  max-width: 560px;
+  margin: 0.25rem 0 0;
+  font-family: var(--font-heading--family);
+  font-style: italic;
+  font-size: clamp(0.98rem, 1.2vw, 1.1rem);
+  line-height: 1.6;
+  color: rgba(255,255,255,0.72);
+  font-weight: 300;
+}
+
+/* --- Bento grid --- */
+.rg__grid {
+  max-width: 1500px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(5, clamp(110px, 11vw, 170px));
+  grid-template-areas:
+    "a a b b b c c c d d d d"
+    "a a b b b c c c e e e e"
+    "f f f g g c c c e e e e"
+    "f f f g g h h i i j j j"
+    "f f f g g h h i i j j j";
+  gap: clamp(0.6rem, 1vw, 1rem);
+}
+
+.rg__cell--a { grid-area: a; }
+.rg__cell--b { grid-area: b; }
+.rg__cell--c { grid-area: c; }
+.rg__cell--d { grid-area: d; }
+.rg__cell--e { grid-area: e; }
+.rg__cell--f { grid-area: f; }
+.rg__cell--g { grid-area: g; }
+.rg__cell--h { grid-area: h; }
+.rg__cell--i { grid-area: i; }
+.rg__cell--j { grid-area: j; }
+
+/* --- Individual cell + fade-in/out --- */
+.rg__cell {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: clamp(14px, 1.4vw, 22px);
+  background: var(--restaurant-dark-card);
+  border: 1px solid rgba(255,255,255,0.04);
+  isolation: isolate;
+
+  opacity: 0;
+  transform: translateY(28px) scale(0.97);
+  transition:
+    opacity 1.15s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.15s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.4s ease;
+  transition-delay: var(--rg-delay, 0ms);
+}
+
+.rg__cell.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.rg__cell:hover {
+  border-color: rgba(249,135,96,0.35);
+}
+
+.rg__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: absolute;
+  inset: 0;
+  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.5s ease;
+  filter: saturate(0.95);
+}
+
+.rg__cell:hover .rg__image {
+  transform: scale(1.05);
+  filter: saturate(1.05);
+}
+
+.rg__image--placeholder {
+  background: linear-gradient(135deg, #1d1d1d, #131313);
+}
+
+.rg__caption {
+  position: absolute;
+  bottom: 0.85rem;
+  left: 1rem;
+  z-index: 1;
+  font-family: var(--font-heading--family);
+  font-style: italic;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  color: rgba(255,255,255,0.95);
+  background: rgba(13,13,13,0.55);
+  backdrop-filter: blur(6px);
+  padding: 0.25em 0.6em;
+  border-radius: 3px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.rg__cell:hover .rg__caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Footer back link --- */
+.rg__footer {
+  max-width: 1500px;
+  margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+  display: flex;
+  justify-content: center;
+}
+
+.rg__back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: #fff;
+  text-decoration: none;
+  font-family: var(--font-body--family);
+  font-size: 0.78rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.4);
+  transition: color 0.3s ease, border-color 0.3s ease, gap 0.3s ease;
+}
+
+.rg__back-link:hover {
+  color: var(--restaurant-accent);
+  border-color: var(--restaurant-accent);
+  gap: 1.05rem;
+}
+
+.rg__back-arrow {
+  display: inline-flex;
+  align-items: center;
+  color: var(--restaurant-accent);
+  transition: transform 0.3s ease;
+}
+
+.rg__back-link:hover .rg__back-arrow {
+  transform: translate(-2px, 2px);
+}
+
+/* --- Mobile: collapsed bento, faster timing --- */
+@media screen and (max-width: 749px) {
+  .rg__grid {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: none;
+    grid-auto-rows: clamp(120px, 28vw, 180px);
+    grid-template-areas: none;
+    gap: 0.5rem;
+  }
+
+  .rg__cell--a, .rg__cell--b, .rg__cell--c, .rg__cell--d,
+  .rg__cell--e, .rg__cell--f, .rg__cell--g, .rg__cell--h,
+  .rg__cell--i, .rg__cell--j { grid-area: auto; }
+
+  .rg__cell--a { grid-column: span 6; grid-row: span 2; }
+  .rg__cell--b { grid-column: span 3; grid-row: span 2; }
+  .rg__cell--c { grid-column: span 3; grid-row: span 2; }
+  .rg__cell--d { grid-column: span 6; grid-row: span 1; }
+  .rg__cell--e { grid-column: span 3; grid-row: span 2; }
+  .rg__cell--f { grid-column: span 3; grid-row: span 2; }
+  .rg__cell--g { grid-column: span 3; grid-row: span 2; }
+  .rg__cell--h { grid-column: span 3; grid-row: span 2; }
+  .rg__cell--i { grid-column: span 3; grid-row: span 1; }
+  .rg__cell--j { grid-column: span 3; grid-row: span 1; }
+
+  .rg__cell {
+    transform: translateY(18px) scale(0.98);
+    transition:
+      opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.4s ease;
+    transition-delay: var(--rg-delay, 0ms);
+  }
+
+  .rg__caption {
+    /* Always-visible caption on mobile (no hover state) */
+    opacity: 1;
+    transform: translateY(0);
+    font-size: 0.78rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rg__cell {
+    opacity: 1;
+    transform: none;
+    transition: border-color 0.4s ease;
+  }
+  .rg__image { transition: none; }
+}
+
