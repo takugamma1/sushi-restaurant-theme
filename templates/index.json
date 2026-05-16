@@ -155,18 +155,21 @@
           "type": "collection_card",
           "settings": {
             "collection": "test",
-            "title": "НИГИРИ"
+            "title": "НИГИРИ",
+            "image": "shopify://shop_images/Screenshot_2026-05-16_130748.png"
           }
         },
         "collection_card_KF63HC": {
           "type": "collection_card",
           "settings": {
             "collection": "test",
-            "title": "ПОКЕ"
+            "title": "ПОКЕ",
+            "image": "shopify://shop_images/hf_20260516_102606_32d2421c-a27c-4eb7-9849-127767c54144.png"
           }
         },
         "collection_card_QRjdCy": {
           "type": "collection_card",
+          "disabled": true,
           "settings": {
             "collection": "test",
             "title": "НАПИТКИ"
