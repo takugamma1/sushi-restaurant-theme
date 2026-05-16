@@ -132,5 +132,36 @@
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
+
+    <script>
+      // Opens the cart drawer after a cross-page add-to-cart from the product page.
+      (function () {
+        var FLAG = 'mango_open_cart_drawer';
+        try {
+          if (sessionStorage.getItem(FLAG) !== '1') return;
+          sessionStorage.removeItem(FLAG);
+        } catch (e) { return; }
+
+        function openDrawer() {
+          var d = document.querySelector('cart-drawer-component');
+          if (d && typeof d.open === 'function') { d.open(); return true; }
+          return false;
+        }
+
+        function tryOpen() {
+          if (openDrawer()) return;
+          var start = Date.now();
+          var t = setInterval(function () {
+            if (openDrawer() || Date.now() - start > 4000) clearInterval(t);
+          }, 100);
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', tryOpen);
+        } else {
+          tryOpen();
+        }
+      })();
+    </script>
   </body>
 </html>

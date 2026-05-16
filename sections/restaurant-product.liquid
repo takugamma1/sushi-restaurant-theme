@@ -1,0 +1,392 @@
+{%- liquid
+  assign product = product
+  assign current_variant = product.selected_or_first_available_variant
+  assign featured_image = product.featured_image | default: current_variant.image
+  assign images = product.images
+  assign menu_page_url = section.settings.menu_page_url | default: '/pages/menu'
+  assign category_label = section.settings.category_label
+  if category_label == blank
+    if product.type != blank
+      assign category_label = product.type | upcase
+    else
+      assign category_label = 'МАНГО МЕНЮ'
+    endif
+  endif
+
+  assign on_sale = false
+  if current_variant.compare_at_price > current_variant.price
+    assign on_sale = true
+  endif
+-%}
+
+<restaurant-product
+  class="rp color-{{ section.settings.color_scheme }}"
+  data-menu-url="{{ menu_page_url }}"
+  data-product-id="{{ product.id }}"
+>
+  <div class="rp__container">
+    <div class="rp__grid">
+
+      {%- comment -%} ============ Gallery ============ {%- endcomment -%}
+      <div class="rp__gallery">
+        <div class="rp__main-card">
+          {%- if featured_image != blank -%}
+            <img
+              class="rp__main-image"
+              id="rp-main-image"
+              src="{{ featured_image | image_url: width: 1400 }}"
+              srcset="
+                {{ featured_image | image_url: width: 600 }} 600w,
+                {{ featured_image | image_url: width: 900 }} 900w,
+                {{ featured_image | image_url: width: 1400 }} 1400w
+              "
+              sizes="(min-width: 990px) 50vw, 100vw"
+              alt="{{ featured_image.alt | escape | default: product.title }}"
+              width="{{ featured_image.width }}"
+              height="{{ featured_image.height }}"
+              loading="eager"
+              fetchpriority="high"
+            >
+          {%- else -%}
+            <div class="rp__main-placeholder">
+              {{ 'product-1' | placeholder_svg_tag: 'rp__placeholder-svg' }}
+            </div>
+          {%- endif -%}
+
+          <div class="rp__main-badge">
+            <span class="rp__badge-diamond">◇</span>
+            <span class="rp__badge-text">{{ category_label }}</span>
+            <span class="rp__badge-diamond">◇</span>
+          </div>
+
+          {%- if on_sale -%}
+            <span class="rp__sale-tag">{{ section.settings.sale_label | default: 'ПРОМО' }}</span>
+          {%- endif -%}
+        </div>
+
+        {%- if images.size > 1 -%}
+          <div class="rp__thumbs" role="list">
+            {%- for image in images limit: 6 -%}
+              <button
+                type="button"
+                class="rp__thumb{% if image.id == featured_image.id %} rp__thumb--active{% endif %}"
+                data-image-src="{{ image | image_url: width: 1400 }}"
+                aria-label="{{ 'accessibility.image_thumbnail' | t: image_number: forloop.index }}"
+              >
+                <img
+                  src="{{ image | image_url: width: 200 }}"
+                  alt="{{ image.alt | escape }}"
+                  width="100"
+                  height="100"
+                  loading="lazy"
+                >
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} ============ Details ============ {%- endcomment -%}
+      <div class="rp__details">
+        <div class="rp__eyebrow">
+          <span class="rp__eyebrow-line"></span>
+          <span class="rp__eyebrow-text">{{ category_label }}</span>
+          <span class="rp__eyebrow-line"></span>
+        </div>
+
+        <h1 class="rp__title">{{ product.title }}</h1>
+
+        <div class="rp__price-row">
+          {%- if on_sale -%}
+            <span class="rp__price rp__price--compare">{{ current_variant.compare_at_price | money }}</span>
+          {%- endif -%}
+          <span class="rp__price">{{ current_variant.price | money }}</span>
+          {%- if section.settings.show_weight and current_variant.weight > 0 -%}
+            <span class="rp__weight">/ {{ current_variant.weight_in_unit }}{{ current_variant.weight_unit }}</span>
+          {%- endif -%}
+        </div>
+
+        <div class="rp__rule"><span class="rp__rule-diamond">◇</span></div>
+
+        {%- if product.description != blank -%}
+          <div class="rp__description rte">
+            {{ product.description }}
+          </div>
+        {%- endif -%}
+
+        {%- if product.has_only_default_variant == false and product.variants.size > 1 -%}
+          <div class="rp__variants">
+            {%- for option in product.options_with_values -%}
+              <div class="rp__option" data-option-index="{{ forloop.index0 }}">
+                <span class="rp__option-label">{{ option.name }}</span>
+                <div class="rp__option-values">
+                  {%- for value in option.values -%}
+                    {%- assign is_selected = false -%}
+                    {%- if option.selected_value == value -%}{%- assign is_selected = true -%}{%- endif -%}
+                    <button
+                      type="button"
+                      class="rp__option-value{% if is_selected %} rp__option-value--active{% endif %}"
+                      data-option-name="{{ option.name | escape }}"
+                      data-option-value="{{ value | escape }}"
+                      data-option-position="{{ forloop.parentloop.index }}"
+                    >{{ value }}</button>
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <div class="rp__qty-row">
+          <span class="rp__qty-label">{{ section.settings.qty_label | default: 'Количество' }}</span>
+          <div class="rp__qty" data-qty>
+            <button type="button" class="rp__qty-btn" data-qty-decrement aria-label="Decrease quantity">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <input type="number" class="rp__qty-input" value="1" min="1" inputmode="numeric" aria-label="Quantity">
+            <button type="button" class="rp__qty-btn" data-qty-increment aria-label="Increase quantity">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="rp__cta-row">
+          <a href="{{ menu_page_url }}" class="rp__cta rp__cta--ghost">
+            <span class="rp__cta-label">{{ section.settings.cta_menu_label | default: 'ВИЖ МЕНЮТО' }}</span>
+            <span class="rp__cta-arrow" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </a>
+
+          <button
+            type="button"
+            class="rp__cta rp__cta--solid"
+            data-rp-add-to-cart
+            data-variant-id="{{ current_variant.id }}"
+            data-redirect-url="{{ menu_page_url }}"
+            {% unless current_variant.available %}disabled{% endunless %}
+          >
+            <span class="rp__cta-label" data-cta-label-default>
+              {%- if current_variant.available -%}
+                {{ section.settings.cta_add_label | default: 'ДОБАВИ КЪМ ПОРЪЧКА' }}
+              {%- else -%}
+                {{ 'products.product.sold_out' | t | default: 'ИЗЧЕРПАН' }}
+              {%- endif -%}
+            </span>
+            <span class="rp__cta-label rp__cta-label--loading" hidden>
+              <span class="rp__spinner" aria-hidden="true"></span>
+              {{ section.settings.cta_loading_label | default: 'ДОБАВЯНЕ...' }}
+            </span>
+            <span class="rp__cta-arrow" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </button>
+        </div>
+
+        {%- if section.settings.show_meta -%}
+          <div class="rp__meta">
+            {%- if section.settings.meta_line_1 != blank -%}
+              <div class="rp__meta-row">
+                <span class="rp__meta-dot"></span>
+                <span>{{ section.settings.meta_line_1 }}</span>
+              </div>
+            {%- endif -%}
+            {%- if section.settings.meta_line_2 != blank -%}
+              <div class="rp__meta-row">
+                <span class="rp__meta-dot"></span>
+                <span>{{ section.settings.meta_line_2 }}</span>
+              </div>
+            {%- endif -%}
+            {%- if section.settings.meta_line_3 != blank -%}
+              <div class="rp__meta-row">
+                <span class="rp__meta-dot"></span>
+                <span>{{ section.settings.meta_line_3 }}</span>
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- comment -%} ============ Related ============ {%- endcomment -%}
+    {%- assign rel_collection = section.settings.related_collection -%}
+    {%- if rel_collection != blank and rel_collection.products.size > 0 -%}
+      <div class="rp__related">
+        <div class="rp__related-heading">
+          <span class="rp__eyebrow-line"></span>
+          <span class="rp__related-diamond">◇</span>
+          <span class="rp__related-title">{{ section.settings.related_title | default: 'МОЖЕ БИ ЩЕ ВИ ХАРЕСА' }}</span>
+          <span class="rp__related-diamond">◇</span>
+          <span class="rp__eyebrow-line"></span>
+        </div>
+
+        <div class="rp__related-grid">
+          {%- for related in rel_collection.products limit: 4 -%}
+            {%- if related.id == product.id -%}{%- continue -%}{%- endif -%}
+            <a href="{{ related.url }}" class="rp__related-card">
+              <div class="rp__related-image">
+                {%- if related.featured_image != blank -%}
+                  <img
+                    src="{{ related.featured_image | image_url: width: 600 }}"
+                    alt="{{ related.featured_image.alt | escape }}"
+                    width="300"
+                    height="300"
+                    loading="lazy"
+                  >
+                {%- endif -%}
+              </div>
+              <div class="rp__related-body">
+                <span class="rp__related-name">{{ related.title }}</span>
+                <span class="rp__related-price">{{ related.price | money }}</span>
+              </div>
+            </a>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</restaurant-product>
+
+<script type="application/json" data-product-json>
+  {
+    "id": {{ product.id }},
+    "title": {{ product.title | json }},
+    "variants": [
+      {%- for v in product.variants -%}
+        {
+          "id": {{ v.id }},
+          "title": {{ v.title | json }},
+          "available": {{ v.available }},
+          "price": {{ v.price }},
+          "compare_at_price": {{ v.compare_at_price | json }},
+          "options": {{ v.options | json }},
+          "featured_image": {%- if v.featured_image -%}{{ v.featured_image | image_url: width: 1400 | json }}{%- else -%}null{%- endif -%}
+        }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  }
+</script>
+
+<script src="{{ 'restaurant-product.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Restaurant Product",
+  "tag": "section",
+  "class": "restaurant-product-section",
+  "enabled_on": { "templates": ["product"] },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "text",
+      "id": "category_label",
+      "label": "Category eyebrow label",
+      "info": "Leave empty to use the product type."
+    },
+    {
+      "type": "text",
+      "id": "sale_label",
+      "label": "Sale badge text",
+      "default": "ПРОМО"
+    },
+    {
+      "type": "text",
+      "id": "qty_label",
+      "label": "Quantity label",
+      "default": "Количество"
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "text",
+      "id": "cta_menu_label",
+      "label": "View menu CTA label",
+      "default": "ВИЖ МЕНЮТО"
+    },
+    {
+      "type": "text",
+      "id": "cta_add_label",
+      "label": "Add to order CTA label",
+      "default": "ДОБАВИ КЪМ ПОРЪЧКА"
+    },
+    {
+      "type": "text",
+      "id": "cta_loading_label",
+      "label": "Add to order — loading state",
+      "default": "ДОБАВЯНЕ..."
+    },
+    {
+      "type": "url",
+      "id": "menu_page_url",
+      "label": "Menu page URL",
+      "info": "The View menu CTA navigates here, and Add to order opens the cart drawer on this page."
+    },
+    {
+      "type": "header",
+      "content": "Highlights"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_weight",
+      "label": "Show weight next to price",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_meta",
+      "label": "Show highlight bullets",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "meta_line_1",
+      "label": "Highlight 1",
+      "default": "Прясно приготвено всеки ден"
+    },
+    {
+      "type": "text",
+      "id": "meta_line_2",
+      "label": "Highlight 2",
+      "default": "Доставка до 45 минути"
+    },
+    {
+      "type": "text",
+      "id": "meta_line_3",
+      "label": "Highlight 3",
+      "default": "Премиум съставки"
+    },
+    {
+      "type": "header",
+      "content": "Related"
+    },
+    {
+      "type": "text",
+      "id": "related_title",
+      "label": "Related section title",
+      "default": "МОЖЕ БИ ЩЕ ВИ ХАРЕСА"
+    },
+    {
+      "type": "collection",
+      "id": "related_collection",
+      "label": "Related collection"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-5"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Restaurant Product",
+      "category": "t:categories.commerce"
+    }
+  ]
+}
+{% endschema %}
