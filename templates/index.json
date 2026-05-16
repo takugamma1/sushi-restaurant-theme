@@ -147,21 +147,22 @@
           "type": "collection_card",
           "settings": {
             "collection": "test",
-            "title": "СУШИ"
+            "title": "СУШИ",
+            "image": "shopify://shop_images/Mango_Salmon.jpg"
           }
         },
         "collection_card_eFaVYX": {
           "type": "collection_card",
           "settings": {
             "collection": "test",
-            "title": "ПОКЕ"
+            "title": "НИГИРИ"
           }
         },
         "collection_card_KF63HC": {
           "type": "collection_card",
           "settings": {
             "collection": "test",
-            "title": "ДЕСЕРТИ"
+            "title": "ПОКЕ"
           }
         },
         "collection_card_QRjdCy": {
