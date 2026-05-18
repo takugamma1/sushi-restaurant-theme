@@ -12,6 +12,36 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_kfWXVh": {
+          "type": "category",
+          "settings": {
+            "title": "ПЪРЖЕНИ РОЛКИ",
+            "tab_label": "",
+            "collection": "пържени-ролки",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
+        "category_mango": {
+          "type": "category",
+          "settings": {
+            "title": "МАНГО МЕНЮ",
+            "tab_label": "",
+            "collection": "test",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
+        "category_rGzUMD": {
+          "type": "category",
+          "settings": {
+            "title": "КАЛИФОРНИЯ",
+            "tab_label": "",
+            "collection": "калифорния",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_PKENkY": {
           "type": "category",
           "settings": {
@@ -31,22 +61,14 @@
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
-        },
-        "category_mango": {
-          "type": "category",
-          "settings": {
-            "title": "МАНГО МЕНЮ",
-            "tab_label": "",
-            "collection": "test",
-            "max_products": 10,
-            "sale_badge_text": "Най-продаван"
-          }
         }
       },
       "block_order": [
+        "category_kfWXVh",
+        "category_mango",
+        "category_rGzUMD",
         "category_PKENkY",
-        "category_new",
-        "category_mango"
+        "category_new"
       ],
       "settings": {
         "hero_image": "shopify://shop_images/Screenshot_2026-05-16_135237.png",
