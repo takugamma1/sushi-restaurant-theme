@@ -372,8 +372,9 @@
       ],
       "name": "About Section",
       "settings": {
-        "media_type": "image",
+        "media_type": "video",
         "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
+        "video": "shopify://files/videos/03_Sushi-Bar-Mango_Feb2026_Trailer-Website_4K-YouTube-Facebook.mp4",
         "heading": "ЗА НАС",
         "text": "<p>Добре дошли в Суши Бар Манго — място, където свежестта и вкусът се срещат.</p>",
         "button_label": "Разбери повече",
