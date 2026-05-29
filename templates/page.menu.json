@@ -12,6 +12,16 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_afd99j": {
+          "type": "category",
+          "settings": {
+            "title": "БЕЗАЛКОХОЛНИ НАПИТКИ",
+            "tab_label": "",
+            "collection": "безалкохолни-напитки",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_dnh78J": {
           "type": "category",
           "settings": {
@@ -154,6 +164,7 @@
         }
       },
       "block_order": [
+        "category_afd99j",
         "category_dnh78J",
         "category_RRzetk",
         "category_QdArVJ",
