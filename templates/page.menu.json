@@ -12,6 +12,16 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_7iJDCe": {
+          "type": "category",
+          "settings": {
+            "title": "СЕТОВЕ",
+            "tab_label": "",
+            "collection": "сетове",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_9DmcKe": {
           "type": "category",
           "settings": {
@@ -104,6 +114,7 @@
         }
       },
       "block_order": [
+        "category_7iJDCe",
         "category_9DmcKe",
         "category_xKxYkb",
         "category_qBT8XW",
