@@ -12,6 +12,16 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_xKxYkb": {
+          "type": "category",
+          "settings": {
+            "title": "САЛАТИ",
+            "tab_label": "",
+            "collection": "салати",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_qBT8XW": {
           "type": "category",
           "settings": {
@@ -84,6 +94,7 @@
         }
       },
       "block_order": [
+        "category_xKxYkb",
         "category_qBT8XW",
         "category_m4hGPP",
         "category_kfWXVh",
