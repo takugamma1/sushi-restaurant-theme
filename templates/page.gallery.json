@@ -39,7 +39,7 @@
         "gallery_caption_10": "Посетете ни",
         "show_footer": true,
         "footer_label": "Разгледай нашето меню",
-        "menu_url": "/pages/menu"
+        "menu_url": "shopify://pages/меню-суши-манго"
       }
     }
   },
