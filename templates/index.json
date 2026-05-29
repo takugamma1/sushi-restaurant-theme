@@ -204,9 +204,9 @@
         "category_BEp7bV": {
           "type": "category",
           "settings": {
-            "title": "НОВО",
+            "title": "СЕТОВЕ",
             "tab_label": "",
-            "collection": "test",
+            "collection": "сетове",
             "max_products": 14,
             "sale_badge_text": "Най-продаван"
           }
