@@ -12,6 +12,16 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_m4hGPP": {
+          "type": "category",
+          "settings": {
+            "title": "ДЕСЕРТИ",
+            "tab_label": "",
+            "collection": "десерти",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_kfWXVh": {
           "type": "category",
           "settings": {
@@ -64,6 +74,7 @@
         }
       },
       "block_order": [
+        "category_m4hGPP",
         "category_kfWXVh",
         "category_mango",
         "category_rGzUMD",
