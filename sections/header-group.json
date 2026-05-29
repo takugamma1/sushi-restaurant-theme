@@ -95,7 +95,7 @@
         "nav_6_label": "Контакти",
         "nav_6_url": "",
         "drawer_cta_label": "Поръчай сега",
-        "drawer_cta_url": "",
+        "drawer_cta_url": "shopify://pages/меню-суши-манго",
         "menu_position": "center",
         "menu_row": "top",
         "customer_account_menu": "customer-account-main-menu",
