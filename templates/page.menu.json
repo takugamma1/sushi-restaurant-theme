@@ -27,7 +27,7 @@
           "settings": {
             "title": "МАНГО МЕНЮ",
             "tab_label": "",
-            "collection": "test",
+            "collection": "манго-меню",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
