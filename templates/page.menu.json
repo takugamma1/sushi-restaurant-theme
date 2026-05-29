@@ -12,6 +12,16 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_nLp68D": {
+          "type": "category",
+          "settings": {
+            "title": "АЛКОХОЛНИ НАПИТКИ",
+            "tab_label": "",
+            "collection": "алкохолни-напитки",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_afd99j": {
           "type": "category",
           "settings": {
@@ -164,6 +174,7 @@
         }
       },
       "block_order": [
+        "category_nLp68D",
         "category_afd99j",
         "category_dnh78J",
         "category_RRzetk",
