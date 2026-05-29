@@ -12,6 +12,26 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_QdArVJ": {
+          "type": "category",
+          "settings": {
+            "title": "УРАМАКИ",
+            "tab_label": "",
+            "collection": "урамаки",
+            "max_products": 20,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
+        "category_HDbFjR": {
+          "type": "category",
+          "settings": {
+            "title": "ТАТАКИ",
+            "tab_label": "",
+            "collection": "татаки",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_e9xfwh": {
           "type": "category",
           "settings": {
@@ -124,6 +144,8 @@
         }
       },
       "block_order": [
+        "category_QdArVJ",
+        "category_HDbFjR",
         "category_e9xfwh",
         "category_7iJDCe",
         "category_9DmcKe",
