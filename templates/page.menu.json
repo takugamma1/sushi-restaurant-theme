@@ -12,6 +12,16 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_RRzetk": {
+          "type": "category",
+          "settings": {
+            "title": "ФУТОМАКИ",
+            "tab_label": "",
+            "collection": "футомаки",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_QdArVJ": {
           "type": "category",
           "settings": {
@@ -144,6 +154,7 @@
         }
       },
       "block_order": [
+        "category_RRzetk",
         "category_QdArVJ",
         "category_HDbFjR",
         "category_e9xfwh",
