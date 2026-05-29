@@ -337,7 +337,7 @@
             "label": "Поръчай",
             "media_type": "image",
             "image": "shopify://shop_images/Screenshot_2026-05-16_133530.png",
-            "link": "",
+            "link": "shopify://pages/меню-суши-манго",
             "open_new_tab": false,
             "label_size": 13
           }
@@ -381,7 +381,7 @@
         "heading_size": 80,
         "desc_size": 15,
         "cta_size": 13,
-        "button_link": "",
+        "button_link": "shopify://pages/about",
         "color_scheme": ""
       }
     },
