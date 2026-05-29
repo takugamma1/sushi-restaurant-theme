@@ -12,6 +12,16 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_e9xfwh": {
+          "type": "category",
+          "settings": {
+            "title": "СОСОВЕ ЗА СУШИ",
+            "tab_label": "",
+            "collection": "сосове-за-суши",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_7iJDCe": {
           "type": "category",
           "settings": {
@@ -114,6 +124,7 @@
         }
       },
       "block_order": [
+        "category_e9xfwh",
         "category_7iJDCe",
         "category_9DmcKe",
         "category_xKxYkb",
