@@ -79,7 +79,7 @@
         "banner_line_2_em": "уважение.",
         "banner_cta_primary": "ВИЖ МЕНЮТО",
         "banner_cta_secondary": "РЕЗЕРВИРАЙ МАСА",
-        "menu_url": "/pages/menu",
+        "menu_url": "shopify://collections",
         "contact_url": "/pages/contact"
       }
     }
