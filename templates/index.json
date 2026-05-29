@@ -150,15 +150,15 @@
         "collection_card_TR6DLz": {
           "type": "collection_card",
           "settings": {
-            "collection": "test",
-            "title": "СУШИ",
+            "collection": "сетове",
+            "title": "Сетове",
             "image": "shopify://shop_images/Mango_Salmon.jpg"
           }
         },
         "collection_card_eFaVYX": {
           "type": "collection_card",
           "settings": {
-            "collection": "test",
+            "collection": "нигири",
             "title": "НИГИРИ",
             "image": "shopify://shop_images/Screenshot_2026-05-16_130748.png"
           }
