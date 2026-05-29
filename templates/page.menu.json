@@ -12,6 +12,16 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_qBT8XW": {
+          "type": "category",
+          "settings": {
+            "title": "ПОКЕ",
+            "tab_label": "",
+            "collection": "поке",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_m4hGPP": {
           "type": "category",
           "settings": {
@@ -74,6 +84,7 @@
         }
       },
       "block_order": [
+        "category_qBT8XW",
         "category_m4hGPP",
         "category_kfWXVh",
         "category_mango",
