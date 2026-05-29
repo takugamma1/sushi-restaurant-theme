@@ -12,6 +12,16 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_dnh78J": {
+          "type": "category",
+          "settings": {
+            "title": "ХОСОМАКИ",
+            "tab_label": "",
+            "collection": "хосомаки",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_RRzetk": {
           "type": "category",
           "settings": {
@@ -154,6 +164,7 @@
         }
       },
       "block_order": [
+        "category_dnh78J",
         "category_RRzetk",
         "category_QdArVJ",
         "category_HDbFjR",
