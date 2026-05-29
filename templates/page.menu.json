@@ -82,16 +82,6 @@
             "sale_badge_text": "Най-продаван"
           }
         },
-        "category_xKxYkb": {
-          "type": "category",
-          "settings": {
-            "title": "САЛАТИ",
-            "tab_label": "",
-            "collection": "салати",
-            "max_products": 10,
-            "sale_badge_text": "Най-продаван"
-          }
-        },
         "category_qBT8XW": {
           "type": "category",
           "settings": {
@@ -105,7 +95,7 @@
         "category_m4hGPP": {
           "type": "category",
           "settings": {
-            "title": "ДЕСЕРТИ",
+            "title": "ДОБАВКИ",
             "tab_label": "",
             "collection": "десерти",
             "max_products": 10,
@@ -171,7 +161,6 @@
         "category_e9xfwh",
         "category_7iJDCe",
         "category_9DmcKe",
-        "category_xKxYkb",
         "category_qBT8XW",
         "category_m4hGPP",
         "category_kfWXVh",
