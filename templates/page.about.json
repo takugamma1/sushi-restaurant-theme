@@ -82,9 +82,83 @@
         "menu_url": "shopify://pages/меню-суши-манго",
         "contact_url": "/pages/contact"
       }
+    },
+    "restaurant_contact_grid_PKiKWi": {
+      "type": "restaurant-contact-grid",
+      "blocks": {
+        "instagram_image_FQQbL8": {
+          "type": "instagram_image",
+          "settings": {
+            "link": ""
+          }
+        },
+        "instagram_image_hNazzR": {
+          "type": "instagram_image",
+          "settings": {
+            "link": ""
+          }
+        },
+        "instagram_image_bbBdqX": {
+          "type": "instagram_image",
+          "settings": {
+            "link": ""
+          }
+        },
+        "instagram_image_jtNaWy": {
+          "type": "instagram_image",
+          "settings": {
+            "link": ""
+          }
+        },
+        "footer_link_JMaafa": {
+          "type": "footer_link",
+          "settings": {
+            "label": "Licensing",
+            "link": ""
+          }
+        },
+        "footer_link_bGhfnQ": {
+          "type": "footer_link",
+          "settings": {
+            "label": "Styleguide",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "instagram_image_FQQbL8",
+        "instagram_image_hNazzR",
+        "instagram_image_bbBdqX",
+        "instagram_image_jtNaWy",
+        "footer_link_JMaafa",
+        "footer_link_bGhfnQ"
+      ],
+      "name": "Contact Grid & Footer",
+      "settings": {
+        "follow_heading": "ПОСЛЕДВАЙТЕ НИ",
+        "hours_title": "РАБОТНО ВРЕМЕ",
+        "hours_mon": "16:00 - 22:30",
+        "hours_tue": "16:00 - 22:30",
+        "hours_wed": "16:00 - 22:30",
+        "hours_thu": "16:00 - 22:30",
+        "hours_fri": "16:00 - 22:30",
+        "hours_weekend": "16:00 - 22:30",
+        "map_address": "23 Greenfield Avenue, Prague",
+        "map_link": "",
+        "address": "23 Greenfield Avenue, Prague 120 00",
+        "phone": "+49 1234 567890",
+        "email": "email@example.com",
+        "social_facebook": "",
+        "social_instagram": "",
+        "social_twitter": "",
+        "footer_logo_height": 56,
+        "footer_menu": "",
+        "color_scheme": ""
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "restaurant_contact_grid_PKiKWi"
   ]
 }
