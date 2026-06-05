@@ -197,28 +197,42 @@
       </h2>
     </div>
 
+    {%- liquid
+      assign has_video = false
+      if section.settings.video != blank or section.settings.video_url != blank
+        assign has_video = true
+      endif
+    -%}
     <div class="rab__video-frame">
-      {%- if section.settings.video != blank -%}
-        {{ section.settings.video
-          | video_tag:
-            controls: true,
-            autoplay: false,
-            loop: false,
-            muted: false,
-            class: 'rab__video-media'
-        }}
+      {%- if section.settings.video_poster != blank and has_video -%}
+        {%- comment -%} Poster + click-to-play {%- endcomment -%}
+        <div class="rab__video-placeholder" data-rab-poster>
+          {{ section.settings.video_poster | image_url: width: 1800 | image_tag: class: 'rab__video-poster', sizes: '100vw', widths: '600,1200,1800', loading: 'lazy' }}
+          <button type="button" class="rab__video-play" data-rab-play aria-label="Пусни видеото">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="8,5 19,12 8,19"/></svg>
+          </button>
+        </div>
+        <template data-rab-player>
+          {%- if section.settings.video != blank -%}
+            {{ section.settings.video | video_tag: controls: true, autoplay: true, loop: false, muted: false, playsinline: true, class: 'rab__video-media' }}
+          {%- else -%}
+            <div class="rab__video-embed">
+              {{ section.settings.video_url | external_video_tag: class: 'rab__video-media', autoplay: true }}
+            </div>
+          {%- endif -%}
+        </template>
+      {%- elsif section.settings.video != blank -%}
+        {{ section.settings.video | video_tag: controls: true, autoplay: false, loop: false, muted: false, playsinline: true, class: 'rab__video-media' }}
       {%- elsif section.settings.video_url != blank -%}
         <div class="rab__video-embed">
           {{ section.settings.video_url | external_video_tag: class: 'rab__video-media' }}
         </div>
       {%- else -%}
+        {%- comment -%} Only a poster, no video configured — just the image {%- endcomment -%}
         <div class="rab__video-placeholder">
           {%- if section.settings.video_poster != blank -%}
             {{ section.settings.video_poster | image_url: width: 1800 | image_tag: class: 'rab__video-poster', sizes: '100vw', widths: '600,1200,1800', loading: 'lazy' }}
           {%- endif -%}
-          <span class="rab__video-play" aria-hidden="true">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="8,5 19,12 8,19"/></svg>
-          </span>
         </div>
       {%- endif -%}
     </div>
@@ -357,6 +371,20 @@
     </div>
   </section>
 </div>
+
+<script>
+  (function () {
+    document.querySelectorAll('[data-rab-play]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var poster = btn.closest('[data-rab-poster]');
+        var frame = poster && poster.parentElement;
+        var tpl = frame && frame.querySelector('[data-rab-player]');
+        if (!poster || !tpl) return;
+        poster.replaceWith(tpl.content.cloneNode(true));
+      });
+    });
+  })();
+</script>
 
 {% schema %}
 {

@@ -1,0 +1,146 @@
+{%- liquid
+  assign menu_url = section.settings.menu_url | default: '/pages/меню-суши-манго'
+-%}
+
+<div class="rcf">
+  <div class="rcf__inner">
+
+    <header class="rcf__header">
+      <span class="rcf__kicker">
+        <span class="rcf__kicker-mark" aria-hidden="true">◇</span>
+        {{ section.settings.kicker | default: 'КОНТАКТИ' }}
+      </span>
+      <h1 class="rcf__title">
+        {{ section.settings.title_a | default: 'Пишете' }}
+        <em>{{ section.settings.title_em | default: 'ни.' }}</em>
+      </h1>
+      {%- if section.settings.intro != blank -%}
+        <p class="rcf__intro">{{ section.settings.intro }}</p>
+      {%- endif -%}
+    </header>
+
+    <div class="rcf__grid">
+      {%- comment -%} Form {%- endcomment -%}
+      <div class="rcf__form-card">
+        {%- form 'contact', class: 'rcf__form' -%}
+          {%- if form.posted_successfully? -%}
+            <p class="rcf__success">{{ section.settings.success_text | default: 'Благодарим! Съобщението е изпратено — ще се свържем с вас скоро.' }}</p>
+          {%- endif -%}
+
+          {%- if form.errors -%}
+            <div class="rcf__errors">
+              {{ form.errors | default_errors }}
+            </div>
+          {%- endif -%}
+
+          <div class="rcf__field-row">
+            <div class="rcf__field">
+              <label class="rcf__label" for="rcf-name">{{ section.settings.label_name | default: 'Име' }}</label>
+              <input class="rcf__input" type="text" id="rcf-name" name="contact[name]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}" autocomplete="name" required>
+            </div>
+            <div class="rcf__field">
+              <label class="rcf__label" for="rcf-phone">{{ section.settings.label_phone | default: 'Телефон' }}</label>
+              <input class="rcf__input" type="tel" id="rcf-phone" name="contact[phone]" value="{% if form.phone %}{{ form.phone }}{% endif %}" autocomplete="tel">
+            </div>
+          </div>
+
+          <div class="rcf__field">
+            <label class="rcf__label" for="rcf-email">{{ section.settings.label_email | default: 'Имейл' }}</label>
+            <input class="rcf__input" type="email" id="rcf-email" name="contact[email]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" autocomplete="email" required>
+          </div>
+
+          <div class="rcf__field">
+            <label class="rcf__label" for="rcf-message">{{ section.settings.label_message | default: 'Съобщение' }}</label>
+            <textarea class="rcf__input rcf__textarea" id="rcf-message" name="contact[body]" rows="5" required>{% if form.body %}{{ form.body }}{% endif %}</textarea>
+          </div>
+
+          <button type="submit" class="rcf__submit">
+            <span>{{ section.settings.submit_label | default: 'ИЗПРАТИ' }}</span>
+            <span class="rcf__submit-arrow" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </button>
+        {%- endform -%}
+      </div>
+
+      {%- comment -%} Details {%- endcomment -%}
+      <aside class="rcf__details">
+        {%- if section.settings.address != blank -%}
+          <div class="rcf__detail">
+            <span class="rcf__detail-label">{{ section.settings.address_label | default: 'Адрес' }}</span>
+            <span class="rcf__detail-value">{{ section.settings.address }}</span>
+          </div>
+        {%- endif -%}
+        {%- if section.settings.phone != blank -%}
+          <div class="rcf__detail">
+            <span class="rcf__detail-label">{{ section.settings.phone_label | default: 'Телефон' }}</span>
+            <a class="rcf__detail-value rcf__detail-link" href="tel:{{ section.settings.phone | strip | replace: ' ', '' }}">{{ section.settings.phone }}</a>
+          </div>
+        {%- endif -%}
+        {%- if section.settings.email != blank -%}
+          <div class="rcf__detail">
+            <span class="rcf__detail-label">{{ section.settings.email_label | default: 'Имейл' }}</span>
+            <a class="rcf__detail-value rcf__detail-link" href="mailto:{{ section.settings.email }}">{{ section.settings.email }}</a>
+          </div>
+        {%- endif -%}
+        {%- if section.settings.hours != blank -%}
+          <div class="rcf__detail">
+            <span class="rcf__detail-label">{{ section.settings.hours_label | default: 'Работно време' }}</span>
+            <span class="rcf__detail-value">{{ section.settings.hours }}</span>
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.map_embed != blank -%}
+          <div class="rcf__map">
+            {{ section.settings.map_embed }}
+          </div>
+        {%- endif -%}
+
+        <a href="{{ menu_url }}" class="rcf__back">
+          <span class="rcf__back-arrow" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          </span>
+          {{ section.settings.back_label | default: 'Към менюто' }}
+        </a>
+      </aside>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Restaurant Contact",
+  "tag": "section",
+  "class": "restaurant-contact-form-section",
+  "enabled_on": { "templates": ["page"] },
+  "settings": [
+    { "type": "header", "content": "Header" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "КОНТАКТИ" },
+    { "type": "text", "id": "title_a", "label": "Title — regular", "default": "Пишете" },
+    { "type": "text", "id": "title_em", "label": "Title — italic accent", "default": "ни." },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Имате въпрос, резервация или специална поръчка? Пишете ни и ще се свържем с вас възможно най-скоро." },
+    { "type": "header", "content": "Form labels" },
+    { "type": "text", "id": "label_name", "label": "Name label", "default": "Име" },
+    { "type": "text", "id": "label_phone", "label": "Phone label", "default": "Телефон" },
+    { "type": "text", "id": "label_email", "label": "Email label", "default": "Имейл" },
+    { "type": "text", "id": "label_message", "label": "Message label", "default": "Съобщение" },
+    { "type": "text", "id": "submit_label", "label": "Submit label", "default": "ИЗПРАТИ" },
+    { "type": "text", "id": "success_text", "label": "Success message", "default": "Благодарим! Съобщението е изпратено — ще се свържем с вас скоро." },
+    { "type": "header", "content": "Contact details" },
+    { "type": "text", "id": "address_label", "label": "Address label", "default": "Адрес" },
+    { "type": "text", "id": "address", "label": "Address", "default": "ул. Пример 23, София" },
+    { "type": "text", "id": "phone_label", "label": "Phone label", "default": "Телефон" },
+    { "type": "text", "id": "phone", "label": "Phone", "default": "+359 88 888 8888" },
+    { "type": "text", "id": "email_label", "label": "Email label", "default": "Имейл" },
+    { "type": "text", "id": "email", "label": "Email", "default": "hello@mangosushi.bg" },
+    { "type": "text", "id": "hours_label", "label": "Hours label", "default": "Работно време" },
+    { "type": "text", "id": "hours", "label": "Hours", "default": "Пон–Нед · 11:00 – 22:30" },
+    { "type": "html", "id": "map_embed", "label": "Map embed (iframe)", "info": "Paste a Google Maps embed iframe (optional)." },
+    { "type": "text", "id": "back_label", "label": "Back link label", "default": "Към менюто" },
+    { "type": "url", "id": "menu_url", "label": "Menu page link" }
+  ],
+  "presets": [
+    { "name": "Restaurant Contact", "category": "t:categories.contact" }
+  ]
+}
+{% endschema %}
