@@ -47,12 +47,23 @@
     </span>
     {%- for block in section.blocks -%}
       {%- if block.type == 'instagram_image' and block.settings.image != blank -%}
-        <img
-          src="{{ block.settings.image | image_url: width: 300, height: 300, crop: 'center' }}"
-          alt="{{ block.settings.image.alt | default: 'Instagram' | escape }}"
-          loading="lazy"
-          {{ block.shopify_attributes }}
-        >
+        {%- assign ig_link = block.settings.link | default: section.settings.social_instagram -%}
+        {%- if ig_link != blank -%}
+          <a href="{{ ig_link }}" class="restaurant-bento__ig-link" target="_blank" rel="noopener" aria-label="Instagram" {{ block.shopify_attributes }}>
+            <img
+              src="{{ block.settings.image | image_url: width: 300, height: 300, crop: 'center' }}"
+              alt="{{ block.settings.image.alt | default: 'Instagram' | escape }}"
+              loading="lazy"
+            >
+          </a>
+        {%- else -%}
+          <img
+            src="{{ block.settings.image | image_url: width: 300, height: 300, crop: 'center' }}"
+            alt="{{ block.settings.image.alt | default: 'Instagram' | escape }}"
+            loading="lazy"
+            {{ block.shopify_attributes }}
+          >
+        {%- endif -%}
       {%- else -%}
         <div style="background: #1a1a1a;" {{ block.shopify_attributes }}></div>
       {%- endif -%}
@@ -131,12 +142,34 @@
 </div>
 
 {%- comment -%} Footer nav {%- endcomment -%}
-<div class="color-{{ section.settings.color_scheme }}" style="background: var(--color-background);">
+<div class="restaurant-footer-bar color-{{ section.settings.color_scheme }}">
+  {%- if section.settings.footer_logo != blank -%}
+    <a href="{{ routes.root_url }}" class="restaurant-footer-logo" aria-label="{{ shop.name | escape }}">
+      <img
+        src="{{ section.settings.footer_logo | image_url: width: 360 }}"
+        alt="{{ shop.name | escape }}"
+        height="{{ section.settings.footer_logo_height | default: 56 }}"
+        style="height: {{ section.settings.footer_logo_height | default: 56 }}px; width: auto;"
+        loading="lazy"
+      >
+    </a>
+  {%- endif -%}
+
   <div class="restaurant-footer-nav">
-    <span>НАВИГАЦИЯ</span>
+    {%- assign rendered_first = false -%}
+
+    {%- comment -%} Shopify menu (linklist) {%- endcomment -%}
+    {%- if section.settings.footer_menu != blank -%}
+      {%- for link in section.settings.footer_menu.links -%}
+        {%- unless rendered_first -%}{%- assign rendered_first = true -%}{%- else -%}<span class="restaurant-footer-nav__sep">◇</span>{%- endunless -%}
+        <a href="{{ link.url }}">{{ link.title }}</a>
+      {%- endfor -%}
+    {%- endif -%}
+
+    {%- comment -%} Manual footer links (blocks) {%- endcomment -%}
     {%- for block in section.blocks -%}
       {%- if block.type == 'footer_link' -%}
-        <span class="restaurant-footer-nav__sep">◇</span>
+        {%- unless rendered_first -%}{%- assign rendered_first = true -%}{%- else -%}<span class="restaurant-footer-nav__sep">◇</span>{%- endunless -%}
         <a href="{{ block.settings.link }}" {{ block.shopify_attributes }}>{{ block.settings.label }}</a>
       {%- endif -%}
     {%- endfor -%}
@@ -267,6 +300,31 @@
       "label": "Twitter URL"
     },
     {
+      "type": "header",
+      "content": "Footer bar (logo + navigation)"
+    },
+    {
+      "type": "image_picker",
+      "id": "footer_logo",
+      "label": "Footer logo"
+    },
+    {
+      "type": "range",
+      "id": "footer_logo_height",
+      "label": "Footer logo height",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "link_list",
+      "id": "footer_menu",
+      "label": "Footer menu",
+      "info": "Pick a Shopify menu (e.g. your main menu) to list its items in the footer."
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color scheme",
@@ -282,6 +340,11 @@
           "type": "image_picker",
           "id": "image",
           "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link (defaults to your Instagram URL)"
         }
       ]
     },
