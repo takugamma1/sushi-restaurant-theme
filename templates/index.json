@@ -507,7 +507,7 @@
       "name": "Contact Grid & Footer",
       "settings": {
         "hero_image": "shopify://shop_images/Screenshot_2026-05-16_134242.png",
-        "follow_heading": "ПОСЛЕДВАЙ НИ",
+        "follow_heading": "СУШИ БАР  МАНГО",
         "hours_title": "РАБОТНО ВРЕМЕ",
         "hours_mon": "16:00 - 22:30",
         "hours_tue": "16:00 - 22:30",
@@ -523,8 +523,8 @@
         "social_facebook": "https://www.facebook.com/sushibarmango/?locale=bg_BG",
         "social_instagram": "https://www.instagram.com/sushibar_mango/",
         "social_twitter": "",
-        "footer_logo_height": 56,
-        "footer_menu": "",
+        "footer_logo_height": 68,
+        "footer_menu": "main-menu",
         "color_scheme": ""
       }
     }
