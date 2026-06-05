@@ -29,6 +29,44 @@
   {% endif %}
   style="--rh-height: {% if section.settings.height == 'custom' %}{{ section.settings.height_custom }}svh{% else %}100svh{% endif %};"
 >
+  {%- liquid
+    assign single_video = false
+    if section.settings.hero_video != blank or section.settings.hero_video_url != blank
+      assign single_video = true
+    endif
+  -%}
+
+  {%- if single_video -%}
+    {%- comment -%} Single-video hero — overrides slides, no dots {%- endcomment -%}
+    <div class="rh__slides">
+      <div class="rh__slide is-active" data-index="0">
+        {%- if section.settings.hero_video != blank -%}
+          {{ section.settings.hero_video
+            | video_tag:
+              poster: nil,
+              autoplay: true,
+              loop: true,
+              controls: false,
+              muted: true,
+              playsinline: true,
+              class: 'rh__media'
+          }}
+        {%- else -%}
+          <div class="rh__media rh__media--embed">
+            {{ section.settings.hero_video_url
+              | external_video_tag:
+                class: 'rh__embed',
+                loop: true,
+                autoplay: true,
+                muted: true,
+                controls: false,
+                playsinline: true
+            }}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- else -%}
   <div class="rh__slides">
     {%- assign idx = 0 -%}
     {%- for block in section.blocks -%}
@@ -91,6 +129,7 @@
       {%- endif -%}
     {%- endfor -%}
   </div>
+  {%- endif -%}
 
   {%- if section.settings.overlay -%}
     <div class="rh__overlay" style="background:{{ section.settings.overlay_color }};"></div>
@@ -110,7 +149,7 @@
     {%- endif -%}
   </div>
 
-  {%- if total_slides > 1 -%}
+  {%- if total_slides > 1 and single_video == false -%}
     <nav class="rh__dots" aria-label="Slides">
       {%- for i in (1..total_slides) -%}
         <button
@@ -299,6 +338,25 @@
   "class": "hero-wrapper section-wrapper",
   "disabled_on": { "groups": ["header", "footer"] },
   "settings": [
+    {
+      "type": "header",
+      "content": "Single video (overrides slides)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Set a video here to show ONE looping video as the hero — the slides and dots below are ignored."
+    },
+    {
+      "type": "video",
+      "id": "hero_video",
+      "label": "Hero video (upload)"
+    },
+    {
+      "type": "video_url",
+      "id": "hero_video_url",
+      "label": "Hero video URL (YouTube / Vimeo)",
+      "accept": ["youtube", "vimeo"]
+    },
     {
       "type": "header",
       "content": "Content"

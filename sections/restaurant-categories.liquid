@@ -22,12 +22,20 @@
     {%- endif -%}
 
     {%- comment -%} Collection Cards Grid {%- endcomment -%}
+    {%- assign menu_url = section.settings.menu_url | default: '/pages/меню-суши-манго' -%}
     <div class="restaurant-categories__grid">
       {%- for block in section.blocks -%}
         {%- if block.type == 'collection_card' -%}
           {%- assign collection = block.settings.collection -%}
+          {%- liquid
+            if collection != blank and collection.handle != blank
+              assign card_url = menu_url | append: '?collection=' | append: collection.handle
+            else
+              assign card_url = menu_url
+            endif
+          -%}
           <a
-            href="{{ collection.url | default: '#' }}"
+            href="{{ card_url }}"
             class="restaurant-categories__card"
             {{ block.shopify_attributes }}
           >
@@ -135,7 +143,7 @@
 
   @media screen and (min-width: 750px) {
     .restaurant-categories__grid {
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 
@@ -304,6 +312,12 @@
       "id": "show_product_count",
       "label": "Show product count",
       "default": false
+    },
+    {
+      "type": "url",
+      "id": "menu_url",
+      "label": "Menu page link",
+      "info": "Cards open the menu page with this collection preselected. Set to your menu page."
     },
     {
       "type": "header",

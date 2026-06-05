@@ -394,6 +394,20 @@ shopify-account,
   text-transform: uppercase;
 }
 
+/* Menu-preview heading: keep it on one line on small phones
+   (the long word "НАШЕТО МЕНЮ" was dropping the last letter). */
+.restaurant-preview__image-overlay .restaurant-menu__hero-title {
+  font-size: clamp(1.5rem, 8vw, 3rem);
+  text-wrap: balance;
+  max-width: 12ch;
+}
+
+@media screen and (max-width: 480px) {
+  .restaurant-preview__image-overlay .restaurant-menu__hero-title {
+    font-size: clamp(1.4rem, 9vw, 2rem);
+  }
+}
+
 .restaurant-menu__content {
   padding: var(--padding-2xl);
   overflow-y: auto;
@@ -807,7 +821,8 @@ shopify-account,
 .restaurant-preview {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2px;
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
+  padding: clamp(0.75rem, 1.2vw, 1.25rem);
   background: var(--restaurant-dark);
   color: #fff;
 }
@@ -823,6 +838,7 @@ shopify-account,
   position: relative;
   min-height: 300px;
   overflow: hidden;
+  border-radius: clamp(16px, 1.6vw, 24px);
 }
 
 .restaurant-preview__image-panel img {
@@ -831,6 +847,14 @@ shopify-account,
   object-fit: cover;
   position: absolute;
   inset: 0;
+  /* Stabilize the hover/scale repaint to stop the flicker */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  transition: transform 0.6s ease;
+}
+
+.restaurant-preview__image-panel:hover img {
+  transform: translateZ(0) scale(1.03);
 }
 
 .restaurant-preview__image-overlay {
@@ -840,12 +864,15 @@ shopify-account,
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  border-radius: inherit;
 }
 
 .restaurant-preview__side {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px;
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
 }
 
 .restaurant-preview__side img {
@@ -853,6 +880,7 @@ shopify-account,
   height: 100%;
   object-fit: cover;
   aspect-ratio: 1;
+  border-radius: clamp(16px, 1.6vw, 24px);
 }
 
 /* ================================
