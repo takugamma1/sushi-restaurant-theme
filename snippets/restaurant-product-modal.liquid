@@ -14,7 +14,7 @@
     assign is_menu_page = true
   endif
 
-  assign menu_page_url = menu_page_url | default: '/pages/menu'
+  assign menu_page_url = menu_page_url | default: '/pages/меню-суши-манго'
   assign addons_title = addons_title | default: 'Добави към поръчката'
 -%}
 
@@ -119,7 +119,7 @@
         <div class="rm-modal__footer">
           <div class="rm-modal__total">
             <span class="rm-modal__total-label">Общо:</span>
-            <span class="rm-modal__total-price" id="rm-modal-total">0.00 лв.</span>
+            <span class="rm-modal__total-price" id="rm-modal-total">{{ 0 | money }}</span>
           </div>
           <button type="button" class="rm-modal__btn rm-modal__btn--add" data-add-to-cart>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -171,8 +171,21 @@ class RestaurantProductModal {
     this.selectedProduct = null;
     this.basePrice = 0;
     this.carouselPosition = 0;
+    this.moneyFormat = {{ shop.money_format | json }};
 
     this.bindEvents();
+  }
+
+  // Format an amount in cents using the shop's money format (respects store currency).
+  formatMoney(cents) {
+    cents = parseInt(cents, 10) || 0;
+    const value = (cents / 100).toFixed(2);
+    const format = this.moneyFormat || '{{ '{{' }}amount{{ '}}' }}';
+    return format
+      .replace(/\{\{\s*amount\s*\}\}/g, value)
+      .replace(/\{\{\s*amount_no_decimals\s*\}\}/g, Math.round(cents / 100).toString())
+      .replace(/\{\{\s*amount_with_comma_separator\s*\}\}/g, value.replace('.', ','))
+      .replace(/\{\{\s*amount_no_decimals_with_comma_separator\s*\}\}/g, Math.round(cents / 100).toString());
   }
 
   bindEvents() {
@@ -317,7 +330,7 @@ class RestaurantProductModal {
 
     const totalEl = document.getElementById('rm-modal-total');
     if (totalEl) {
-      totalEl.textContent = (total / 100).toFixed(2) + ' лв.';
+      totalEl.textContent = this.formatMoney(total);
     }
   }
 
@@ -349,32 +362,68 @@ class RestaurantProductModal {
       });
     });
 
+    // Collect the cart sections so the drawer + bubble refresh after adding.
+    const sectionIds = [];
+    document.querySelectorAll('cart-items-component').forEach((c) => {
+      if (c.dataset.sectionId && !sectionIds.includes(c.dataset.sectionId)) {
+        sectionIds.push(c.dataset.sectionId);
+      }
+    });
+
     try {
-      // Add items to cart
-      for (const item of items) {
-        await fetch('/cart/add.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(item)
-        });
+      // One atomic add for all items (main + addons)
+      const res = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/javascript' },
+        body: JSON.stringify({
+          items,
+          sections: sectionIds.join(','),
+          sections_url: window.location.pathname
+        })
+      });
+
+      if (!res.ok) {
+        let message = 'Грешка при добавяне.';
+        try { const err = await res.json(); if (err.description) message = err.description; } catch (e) {}
+        throw new Error(message);
       }
 
-      // Show success
+      const data = await res.json();
+
+      // Pull the fresh cart so the bubble count + drawer reflect reality
+      let cart = null;
+      try { cart = await (await fetch('/cart.js')).json(); } catch (e) {}
+
+      // Notify the theme: refreshes cart bubble (cart-icon) and morphs the
+      // drawer contents (cart-items-component reads detail.data.sections).
+      document.dispatchEvent(new CustomEvent('cart:update', {
+        bubbles: true,
+        detail: {
+          resource: cart,
+          sourceId: 'restaurant-modal',
+          data: {
+            source: 'product-form-component',
+            itemCount: cart ? cart.item_count : items.length,
+            sections: data.sections
+          }
+        }
+      }));
+
+      // Show success briefly, then close and open the drawer
       loadingEl.style.display = 'none';
       successEl.style.display = 'flex';
 
-      // Close after delay
       setTimeout(() => {
         this.close();
-        // Refresh cart count if available
-        if (window.refreshCartCount) window.refreshCartCount();
-      }, 1500);
+        const drawer = document.querySelector('cart-drawer-component');
+        if (drawer && typeof drawer.open === 'function') drawer.open();
+      }, 900);
 
     } catch (error) {
       console.error('Error adding to cart:', error);
       loadingEl.style.display = 'none';
       contentEl.style.display = '';
-      alert('Грешка при добавяне. Моля, опитайте отново.');
+      alert(error.message || 'Грешка при добавяне. Моля, опитайте отново.');
     }
   }
 }
