@@ -103,31 +103,14 @@
             "video": "shopify://files/videos/03_Sushi-Bar-Mango_Feb2026_Trailer-Website_4K-YouTube-Facebook.mp4",
             "video_url": ""
           }
-        },
-        "slide_4wRHPd": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
-            "video_url": ""
-          }
-        },
-        "slide_D6V9KH": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.18.png",
-            "video_url": ""
-          }
         }
       },
       "block_order": [
-        "slide_pfFa6x",
-        "slide_4wRHPd",
-        "slide_D6V9KH"
+        "slide_pfFa6x"
       ],
       "name": "Restaurant Hero",
       "settings": {
+        "hero_video_url": "",
         "subheading": "Най-доброто суши в града",
         "heading": "СУШИ БАР МАНГО",
         "cta_label": "ПОРЪЧАЙ СЕГА",
@@ -193,6 +176,7 @@
         "card_radius": 10,
         "card_gap": 8,
         "show_product_count": true,
+        "menu_url": "",
         "heading_size": 50,
         "title_size": 16,
         "color_scheme": ""
@@ -472,25 +456,29 @@
         "instagram_image_dURXHz": {
           "type": "instagram_image",
           "settings": {
-            "image": "shopify://shop_images/Screenshot_2026-05-16_133636.png"
+            "image": "shopify://shop_images/Screenshot_2026-05-16_133636.png",
+            "link": ""
           }
         },
         "instagram_image_E4WGGt": {
           "type": "instagram_image",
           "settings": {
-            "image": "shopify://shop_images/1767969736108336.jpg"
+            "image": "shopify://shop_images/1767969736108336.jpg",
+            "link": ""
           }
         },
         "instagram_image_gWg3tn": {
           "type": "instagram_image",
           "settings": {
-            "image": "shopify://shop_images/Screenshot_2026-05-16_134318.png"
+            "image": "shopify://shop_images/Screenshot_2026-05-16_134318.png",
+            "link": ""
           }
         },
         "instagram_image_nJp7fe": {
           "type": "instagram_image",
           "settings": {
-            "image": "shopify://shop_images/Screenshot_2026-05-16_134640.png"
+            "image": "shopify://shop_images/Screenshot_2026-05-16_134640.png",
+            "link": ""
           }
         },
         "footer_link_rMiEzU": {
@@ -535,6 +523,8 @@
         "social_facebook": "https://www.facebook.com/sushibarmango/?locale=bg_BG",
         "social_instagram": "https://www.instagram.com/sushibar_mango/",
         "social_twitter": "",
+        "footer_logo_height": 56,
+        "footer_menu": "",
         "color_scheme": ""
       }
     }
