@@ -28,120 +28,142 @@
       </svg>
     </button>
 
-    {%- comment -%} Modal content wrapper {%- endcomment -%}
+    {%- comment -%} Modal content wrapper — media + order panel {%- endcomment -%}
     <div class="rm-modal__content">
-      {%- comment -%} Hero with image and overlaid info {%- endcomment -%}
-      <div class="rm-modal__hero">
-        <div class="rm-modal__hero-image">
-          <img src="" alt="" id="rm-modal-image">
-        </div>
-        <div class="rm-modal__product-overlay">
-          <div class="rm-modal__product-overlay-text">
-            <h3 class="rm-modal__product-title" id="rm-modal-title"></h3>
-            <p class="rm-modal__product-desc" id="rm-modal-desc"></p>
-          </div>
-          <div class="rm-modal__product-price" id="rm-modal-price"></div>
-        </div>
+
+      {%- comment -%} Media side {%- endcomment -%}
+      <div class="rm-modal__media">
+        <span class="rm-modal__handle" aria-hidden="true"></span>
+        <img src="" alt="" id="rm-modal-image" class="rm-modal__media-img">
+        <span class="rm-modal__media-tag"><span class="rm-modal__media-diamond">◇</span> Mango Sushi Bar</span>
       </div>
 
-      {%- if is_menu_page -%}
-        {%- comment -%} Add-ons section with carousel {%- endcomment -%}
-        {%- if addons_collection != blank and addons_collection.products.size > 0 -%}
-          <div class="rm-modal__addons-section">
-            <h4 class="rm-modal__addons-title">{{ addons_title }} <span class="rm-modal__optional">(по желание)</span></h4>
+      {%- comment -%} Order panel {%- endcomment -%}
+      <div class="rm-modal__panel">
+        <div class="rm-modal__panel-scroll">
+          <div class="rm-modal__head">
+            <h3 class="rm-modal__product-title" id="rm-modal-title"></h3>
+            <div class="rm-modal__price" id="rm-modal-price"></div>
+          </div>
+          <p class="rm-modal__product-desc" id="rm-modal-desc"></p>
 
-            <div class="rm-modal__carousel-wrapper">
-              <button type="button" class="rm-modal__carousel-btn rm-modal__carousel-btn--prev" data-carousel-prev aria-label="Previous">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-              </button>
+          {%- if is_menu_page -%}
+            <div class="rm-modal__divider"><span class="rm-modal__divider-d">◇</span></div>
 
-              <div class="rm-modal__carousel" id="rm-modal-carousel">
-                <div class="rm-modal__carousel-track" id="rm-modal-carousel-track">
-                  {%- for product in addons_collection.products limit: 20 -%}
-                    <label class="rm-modal__addon-card">
-                      <input
-                        type="checkbox"
-                        name="addon[]"
-                        value="{{ product.selected_or_first_available_variant.id }}"
-                        data-price="{{ product.price }}"
-                        data-title="{{ product.title | escape }}"
-                      >
-                      <span class="rm-modal__addon-card-inner">
-                        <span class="rm-modal__addon-image">
-                          {%- if product.featured_image != blank -%}
-                            <img
-                              src="{{ product.featured_image | image_url: width: 300, height: 300, crop: 'center' }}"
-                              alt="{{ product.featured_image.alt | escape }}"
-                              loading="lazy"
-                            >
-                          {%- else -%}
-                            <span class="rm-modal__addon-placeholder"></span>
-                          {%- endif -%}
-                        </span>
-                        <span class="rm-modal__addon-details">
-                          <span class="rm-modal__addon-name">{{ product.title }}</span>
-                          <span class="rm-modal__addon-price">+{{ product.price | money }}</span>
-                        </span>
-                        <span class="rm-modal__addon-check">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                          </svg>
-                        </span>
-                      </span>
-                    </label>
-                  {%- endfor -%}
+            {%- comment -%} Quantity {%- endcomment -%}
+            <div class="rm-modal__qty-row">
+              <span class="rm-modal__qty-label">Количество</span>
+              <div class="rm-modal__qty">
+                <button type="button" class="rm-modal__qty-btn" data-qty-minus aria-label="Намали">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span class="rm-modal__qty-val" id="rm-modal-qty">1</span>
+                <button type="button" class="rm-modal__qty-btn" data-qty-plus aria-label="Увеличи">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+              </div>
+            </div>
+
+            {%- comment -%} Add-ons section with carousel {%- endcomment -%}
+            {%- if addons_collection != blank and addons_collection.products.size > 0 -%}
+              <div class="rm-modal__addons-section">
+                <h4 class="rm-modal__addons-title">{{ addons_title }} <span class="rm-modal__optional">(по желание)</span></h4>
+
+                <div class="rm-modal__carousel-wrapper">
+                  <button type="button" class="rm-modal__carousel-btn rm-modal__carousel-btn--prev" data-carousel-prev aria-label="Previous">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                  </button>
+
+                  <div class="rm-modal__carousel" id="rm-modal-carousel">
+                    <div class="rm-modal__carousel-track" id="rm-modal-carousel-track">
+                      {%- for product in addons_collection.products limit: 20 -%}
+                        <label class="rm-modal__addon-card">
+                          <input
+                            type="checkbox"
+                            name="addon[]"
+                            value="{{ product.selected_or_first_available_variant.id }}"
+                            data-price="{{ product.price }}"
+                            data-title="{{ product.title | escape }}"
+                          >
+                          <span class="rm-modal__addon-card-inner">
+                            <span class="rm-modal__addon-image">
+                              {%- if product.featured_image != blank -%}
+                                <img
+                                  src="{{ product.featured_image | image_url: width: 300, height: 300, crop: 'center' }}"
+                                  alt="{{ product.featured_image.alt | escape }}"
+                                  loading="lazy"
+                                >
+                              {%- else -%}
+                                <span class="rm-modal__addon-placeholder"></span>
+                              {%- endif -%}
+                            </span>
+                            <span class="rm-modal__addon-details">
+                              <span class="rm-modal__addon-name">{{ product.title }}</span>
+                              <span class="rm-modal__addon-price">+{{ product.price | money }}</span>
+                            </span>
+                            <span class="rm-modal__addon-check">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                            </span>
+                          </span>
+                        </label>
+                      {%- endfor -%}
+                    </div>
+                  </div>
+
+                  <button type="button" class="rm-modal__carousel-btn rm-modal__carousel-btn--next" data-carousel-next aria-label="Next">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
                 </div>
               </div>
+            {%- endif -%}
 
-              <button type="button" class="rm-modal__carousel-btn rm-modal__carousel-btn--next" data-carousel-next aria-label="Next">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-              </button>
+            {%- comment -%} Order note {%- endcomment -%}
+            <div class="rm-modal__note-section">
+              <h4 class="rm-modal__note-label">Бележка към поръчката <span class="rm-modal__optional">(по желание)</span></h4>
+              <textarea
+                class="rm-modal__note"
+                id="rm-modal-note"
+                placeholder="Напр: Без лук, допълнително сусам, алергии..."
+                rows="2"
+              ></textarea>
             </div>
+          {%- endif -%}
+        </div>
+
+        {%- if is_menu_page -%}
+          {%- comment -%} Sticky footer: total + add button {%- endcomment -%}
+          <div class="rm-modal__footer">
+            <div class="rm-modal__total">
+              <span class="rm-modal__total-label">Общо</span>
+              <span class="rm-modal__total-price" id="rm-modal-total">{{ 0 | money }}</span>
+            </div>
+            <button type="button" class="rm-modal__btn rm-modal__btn--add" data-add-to-cart>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              Добави
+            </button>
+          </div>
+        {%- else -%}
+          {%- comment -%} Home page: Preview only {%- endcomment -%}
+          <div class="rm-modal__footer rm-modal__footer--preview">
+            <a href="{{ menu_page_url }}" class="rm-modal__btn rm-modal__btn--full">
+              Виж пълното меню
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </a>
           </div>
         {%- endif -%}
-
-        {%- comment -%} Order note {%- endcomment -%}
-        <div class="rm-modal__note-section">
-          <h4 class="rm-modal__note-label">Бележка към поръчката <span class="rm-modal__optional">(по желание)</span></h4>
-          <textarea
-            class="rm-modal__note"
-            id="rm-modal-note"
-            placeholder="Напр: Без лук, допълнително сусам, алергии..."
-            rows="2"
-          ></textarea>
-        </div>
-
-        {%- comment -%} Footer with total and add button {%- endcomment -%}
-        <div class="rm-modal__footer">
-          <div class="rm-modal__total">
-            <span class="rm-modal__total-label">Общо:</span>
-            <span class="rm-modal__total-price" id="rm-modal-total">{{ 0 | money }}</span>
-          </div>
-          <button type="button" class="rm-modal__btn rm-modal__btn--add" data-add-to-cart>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
-            Добави в кошницата
-          </button>
-        </div>
-
-      {%- else -%}
-        {%- comment -%} Home page: Preview only {%- endcomment -%}
-        <div class="rm-modal__preview-footer">
-          <a href="{{ menu_page_url }}" class="rm-modal__btn rm-modal__btn--full">
-            Виж пълното меню
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </a>
-        </div>
-      {%- endif -%}
+      </div>
     </div>
 
     {%- comment -%} Loading state {%- endcomment -%}
@@ -170,6 +192,7 @@ class RestaurantProductModal {
     this.isMenuPage = {{ is_menu_page | json }};
     this.selectedProduct = null;
     this.basePrice = 0;
+    this.quantity = 1;
     this.carouselPosition = 0;
     this.moneyFormat = {{ shop.money_format | json }};
 
@@ -209,6 +232,12 @@ class RestaurantProductModal {
       // Add to cart
       const addBtn = this.modal.querySelector('[data-add-to-cart]');
       if (addBtn) addBtn.addEventListener('click', () => this.addToCart());
+
+      // Quantity stepper
+      const minus = this.modal.querySelector('[data-qty-minus]');
+      const plus = this.modal.querySelector('[data-qty-plus]');
+      if (minus) minus.addEventListener('click', () => this.setQuantity(this.quantity - 1));
+      if (plus) plus.addEventListener('click', () => this.setQuantity(this.quantity + 1));
 
       // Update total on addon change
       this.modal.querySelectorAll('input[type="checkbox"]').forEach(input => {
@@ -274,9 +303,19 @@ class RestaurantProductModal {
     track.style.transform = `translateX(${this.carouselPosition}px)`;
   }
 
+  setQuantity(q) {
+    this.quantity = Math.max(1, parseInt(q, 10) || 1);
+    const el = document.getElementById('rm-modal-qty');
+    if (el) el.textContent = this.quantity;
+    this.updateTotal();
+  }
+
   open(productData) {
     this.selectedProduct = productData;
     this.basePrice = parseInt(productData.price) || 0;
+    this.quantity = 1;
+    const qtyEl = document.getElementById('rm-modal-qty');
+    if (qtyEl) qtyEl.textContent = '1';
     this.carouselPosition = 0;
 
     // Update modal content
@@ -326,11 +365,13 @@ class RestaurantProductModal {
   }
 
   updateTotal() {
-    let total = this.basePrice;
-
+    let addons = 0;
     this.modal.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
-      total += parseInt(input.dataset.price) || 0;
+      addons += parseInt(input.dataset.price) || 0;
     });
+
+    // Quantity multiplies the base item; add-ons are added once per order.
+    const total = (this.basePrice * this.quantity) + addons;
 
     const totalEl = document.getElementById('rm-modal-total');
     if (totalEl) {
@@ -354,7 +395,7 @@ class RestaurantProductModal {
     const note = document.getElementById('rm-modal-note')?.value || '';
     items.push({
       id: this.selectedProduct.variantId,
-      quantity: 1,
+      quantity: this.quantity,
       properties: note ? { 'Бележка': note } : {}
     });
 
@@ -439,15 +480,14 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <style>
-/* Modal Base - Mobile first (full screen) */
+/* ===== Product modal — bottom sheet (mobile) / two-column (desktop) ===== */
 .rm-modal {
   position: fixed;
   inset: 0;
   z-index: 9999;
   display: flex;
-  align-items: stretch;
+  align-items: flex-end;          /* mobile: sheet docks to bottom */
   justify-content: center;
-  padding: 0;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -461,49 +501,60 @@ document.addEventListener('DOMContentLoaded', () => {
 .rm-modal__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.95);
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(3px);
 }
 
-/* Mobile: Full screen */
+/* Mobile: bottom sheet */
 .rm-modal__container {
   position: relative;
   width: 100%;
-  height: 100%;
+  max-height: 94svh;
   background: var(--restaurant-dark-card, #1A1A1A);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transform: translateY(20px);
-  transition: transform 0.3s ease;
+  border-radius: 26px 26px 0 0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: none;
+  transform: translateY(100%);
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 -20px 60px -20px rgba(0, 0, 0, 0.7);
 }
 
 .rm-modal[aria-hidden="false"] .rm-modal__container {
   transform: translateY(0);
 }
 
-/* Desktop: Popup style */
+/* Desktop: centered two-column card */
 @media screen and (min-width: 768px) {
   .rm-modal {
-    padding: 2rem;
     align-items: center;
+    padding: 2rem;
   }
-
   .rm-modal__container {
-    max-width: 480px;
-    height: 85vh;
-    border-radius: 20px;
-    border: 1px solid var(--restaurant-border, #2A2A2A);
+    max-width: 920px;
+    width: 100%;
+    max-height: 88vh;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transform: translateY(24px) scale(0.98);
+    box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
+  }
+  .rm-modal[aria-hidden="false"] .rm-modal__container {
+    transform: translateY(0) scale(1);
   }
 }
 
-/* Close button */
+/* Close */
 .rm-modal__close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0.85rem;
+  right: 0.85rem;
   z-index: 10;
-  background: rgba(0, 0, 0, 0.5);
-  border: none;
+  background: rgba(13, 13, 13, 0.55);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -512,106 +563,216 @@ document.addEventListener('DOMContentLoaded', () => {
   justify-content: center;
   color: #fff;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.3s ease;
 }
 
 .rm-modal__close:hover {
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--restaurant-accent, #F98760);
+  transform: rotate(90deg);
 }
 
-/* Content */
+/* Content layout */
 .rm-modal__content {
   display: flex;
-  flex-direction: column;
-  height: 100%;
+  flex-direction: column;        /* mobile: media over panel */
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
-/* Hero wrapper - takes available space */
-.rm-modal__hero {
+@media screen and (min-width: 768px) {
+  .rm-modal__content {
+    flex-direction: row;          /* desktop: media | panel */
+    height: 88vh;
+    max-height: 88vh;
+  }
+}
+
+/* Media side */
+.rm-modal__media {
   position: relative;
   width: 100%;
-  flex: 1;
-  min-height: 0;
+  flex-shrink: 0;
+  aspect-ratio: 5 / 4;
   overflow: hidden;
   background: #0D0D0D;
 }
 
-/* Hero image - full size, clean */
-.rm-modal__hero-image {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  padding-bottom: 4rem;
+@media screen and (min-width: 768px) {
+  .rm-modal__media {
+    width: 48%;
+    aspect-ratio: auto;
+    height: 100%;
+  }
 }
 
-.rm-modal__hero-image img {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;
+.rm-modal__media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-/* Product info badge - small widget on image */
-.rm-modal__product-overlay {
+/* Mobile drag handle */
+.rm-modal__handle {
   position: absolute;
-  bottom: 0.75rem;
-  left: 0.75rem;
-  right: 0.75rem;
-  padding: 0.6rem 0.85rem;
-  background: rgba(26, 26, 26, 0.95);
-  border: 1px solid var(--restaurant-accent, #F98760);
-  border-radius: 12px;
+  top: 0.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  z-index: 3;
+}
+@media screen and (min-width: 768px) { .rm-modal__handle { display: none; } }
+
+/* ◇ brand tag on the image */
+.rm-modal__media-tag {
+  position: absolute;
+  bottom: 0.85rem;
+  left: 0.85rem;
   z-index: 2;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  backdrop-filter: blur(8px);
+  gap: 0.45em;
+  padding: 0.35rem 0.8rem;
+  background: rgba(13, 13, 13, 0.6);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(249, 135, 96, 0.4);
+  border-radius: 999px;
+  font-family: var(--font-body--family);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.rm-modal__media-diamond { color: var(--restaurant-accent, #F98760); font-size: 0.85em; }
+
+/* Order panel */
+.rm-modal__panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: var(--restaurant-dark-card, #1A1A1A);
 }
 
-.rm-modal__product-overlay-text {
+.rm-modal__panel-scroll {
   flex: 1;
-  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.25rem 1.25rem 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media screen and (min-width: 768px) {
+  .rm-modal__panel-scroll { padding: 2.25rem 2rem 0.75rem; }
+}
+
+/* Head: title + price */
+.rm-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .rm-modal__product-title {
   font-family: var(--font-heading--family);
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: var(--font-heading--weight);
+  font-size: clamp(1.35rem, 4.5vw, 1.85rem);
+  line-height: 1.12;
   color: #fff;
   margin: 0;
-  line-height: 1.2;
+}
+
+.rm-modal__price {
+  font-family: var(--font-heading--family);
+  font-weight: var(--font-heading--weight);
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
+  color: var(--restaurant-accent, #F98760);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex-shrink: 0;
 }
 
 .rm-modal__product-desc {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
-  line-height: 1.3;
-  margin: 0.15rem 0 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-family: var(--font-body--family);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin: 0.85rem 0 0;
 }
 
-.rm-modal__product-price {
-  font-size: 1.1rem;
-  font-weight: 700;
+/* ◇ divider */
+.rm-modal__divider {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 1.35rem 0;
+}
+.rm-modal__divider::before,
+.rm-modal__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(249, 135, 96, 0.3), transparent);
+}
+.rm-modal__divider-d { color: var(--restaurant-accent, #F98760); font-size: 0.7rem; }
+
+/* Quantity stepper */
+.rm-modal__qty-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.35rem;
+}
+.rm-modal__qty-label {
+  font-family: var(--font-body--family);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+.rm-modal__qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 0.2rem;
+  background: rgba(0, 0, 0, 0.25);
+}
+.rm-modal__qty-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.rm-modal__qty-btn:hover {
+  background: rgba(249, 135, 96, 0.15);
   color: var(--restaurant-accent, #F98760);
-  flex-shrink: 0;
+}
+.rm-modal__qty-val {
+  min-width: 28px;
+  text-align: center;
+  font-family: var(--font-body--family);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
 }
 
 /* Add-ons section */
 .rm-modal__addons-section {
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--restaurant-border, #2A2A2A);
+  padding: 0.25rem 0 1.1rem;
   flex-shrink: 0;
 }
 
@@ -619,8 +780,8 @@ document.addEventListener('DOMContentLoaded', () => {
   font-size: 0.85rem;
   font-weight: 600;
   color: #fff;
-  margin: 0 0 0.6rem;
-  padding: 0 1rem;
+  margin: 0 0 0.7rem;
+  padding: 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -638,7 +799,7 @@ document.addEventListener('DOMContentLoaded', () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0 0.5rem;
+  padding: 0;
 }
 
 .rm-modal__carousel {
@@ -783,7 +944,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* Note section */
 .rm-modal__note-section {
-  padding: 0.75rem 1rem;
+  padding: 0.25rem 0 0.5rem;
   flex-shrink: 0;
 }
 
@@ -821,30 +982,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* Footer */
 .rm-modal__footer {
-  padding: 0.75rem 1rem;
-  background: var(--restaurant-dark-card, #1A1A1A);
-  border-top: 1px solid var(--restaurant-border, #2A2A2A);
+  padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(13, 13, 13, 0.6);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 1rem;
   flex-shrink: 0;
+}
+
+@media screen and (min-width: 768px) {
+  .rm-modal__footer { padding: 1.1rem 2rem; }
 }
 
 .rm-modal__total {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0.1rem;
 }
 
 .rm-modal__total-label {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
 }
 
 .rm-modal__total-price {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-family: var(--font-heading--family);
+  font-weight: var(--font-heading--weight);
+  font-size: 1.4rem;
   color: #fff;
 }
 
@@ -868,8 +1036,11 @@ document.addEventListener('DOMContentLoaded', () => {
 .rm-modal__btn--add,
 .rm-modal__btn--full {
   background: var(--restaurant-accent, #F98760);
-  color: #fff;
+  color: #1a0e08;
   flex: 1;
+  padding: 0.95rem 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .rm-modal__btn--add:hover,
@@ -878,12 +1049,12 @@ document.addEventListener('DOMContentLoaded', () => {
   transform: translateY(-2px);
 }
 
-/* Preview footer (home page) */
-.rm-modal__preview-footer {
-  padding: 1.5rem;
+/* Preview footer (home page) — full-width CTA */
+.rm-modal__footer--preview {
+  justify-content: stretch;
 }
 
-.rm-modal__preview-footer .rm-modal__btn--full {
+.rm-modal__footer--preview .rm-modal__btn--full {
   width: 100%;
 }
 
