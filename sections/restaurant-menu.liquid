@@ -50,6 +50,7 @@
             <button
               class="rm-tab{% if tab_idx == 0 %} rm-tab--active{% endif %}"
               data-tab="{{ tab_idx }}"
+              data-collection="{{ block.settings.collection.handle }}"
               type="button"
             >{{ block.settings.tab_label | default: block.settings.title }}</button>
             {%- assign tab_idx = tab_idx | plus: 1 -%}
@@ -66,6 +67,7 @@
         <div
           class="rm-panel{% if panel_idx == 0 %} rm-panel--active{% endif %}"
           data-panel="{{ panel_idx }}"
+          data-collection="{{ collection.handle }}"
           {{ block.shopify_attributes }}
         >
           {%- if collection != blank -%}
@@ -183,17 +185,30 @@
   const tabs = document.querySelectorAll('.rm-tab');
   const panels = document.querySelectorAll('.rm-panel');
 
+  function activateTab(tab) {
+    if (!tab) return;
+    const tabIndex = tab.dataset.tab;
+    tabs.forEach(t => t.classList.remove('rm-tab--active'));
+    panels.forEach(p => p.classList.remove('rm-panel--active'));
+    tab.classList.add('rm-tab--active');
+    document.querySelector(`[data-panel="${tabIndex}"]`)?.classList.add('rm-panel--active');
+    // Bring the active tab into view inside the scroller
+    tab.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+  }
+
   tabs.forEach(tab => {
-    tab.addEventListener('click', function() {
-      const tabIndex = this.dataset.tab;
-
-      tabs.forEach(t => t.classList.remove('rm-tab--active'));
-      panels.forEach(p => p.classList.remove('rm-panel--active'));
-
-      this.classList.add('rm-tab--active');
-      document.querySelector(`[data-panel="${tabIndex}"]`)?.classList.add('rm-panel--active');
-    });
+    tab.addEventListener('click', () => activateTab(tab));
   });
+
+  // Deep-link: /pages/...?collection=<handle> opens that category tab
+  // (used by the home "Стилове" cards).
+  try {
+    const wanted = new URLSearchParams(window.location.search).get('collection');
+    if (wanted) {
+      const match = Array.from(tabs).find(t => t.dataset.collection === wanted);
+      if (match) activateTab(match);
+    }
+  } catch (e) {}
 
   // Product modal triggers
   const productItems = document.querySelectorAll('[data-product-modal-trigger]');
@@ -337,12 +352,28 @@
     overflow-y: auto;
   }
 
-  /* Category tabs */
+  /* Category tabs — single scrollable row (no wrapping badges) */
   .rm-tabs {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     margin-bottom: 2rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 6px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--restaurant-dark, #0D0D0D);
+  }
+
+  .rm-tabs::-webkit-scrollbar { display: none; }
+
+  /* Soft fade hint on the right edge that there is more to scroll */
+  .rm-tabs-wrap {
+    position: relative;
   }
 
   .rm-tab {
@@ -354,11 +385,13 @@
     color: rgba(255,255,255,0.5);
     background: transparent;
     border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 4px;
-    padding: 6px 14px;
+    border-radius: 999px;
+    padding: 8px 16px;
     cursor: pointer;
     transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease;
     white-space: nowrap;
+    flex-shrink: 0;
+    scroll-snap-align: start;
   }
 
   .rm-tab:hover {
@@ -607,6 +640,75 @@
 
   .rm-item:hover::after {
     border-color: rgba(249, 135, 96, 0.3);
+  }
+
+  /* ---- Mobile: tighten the menu so it isn't a tall, sparse column ---- */
+  @media screen and (max-width: 749px) {
+    .restaurant-menu__hero {
+      min-height: 30vh;
+    }
+
+    .restaurant-menu__content {
+      padding: 1rem 1rem 2rem;
+    }
+
+    .rm-tabs {
+      margin-bottom: 1.25rem;
+      gap: 6px;
+    }
+
+    .rm-category-wrapper {
+      padding: 1rem 0.85rem;
+      border-radius: 14px;
+    }
+
+    .rm-cat-heading {
+      margin-bottom: 1rem;
+    }
+
+    .rm-cat-heading__line {
+      width: 18px;
+    }
+
+    .rm-item {
+      gap: 0.75rem;
+      padding: 0.6rem 0;
+    }
+
+    .rm-item--sale {
+      padding: 0.6rem;
+    }
+
+    .rm-item__thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+    }
+
+    .rm-item__name {
+      font-size: 0.9rem;
+      line-height: 1.25;
+    }
+
+    /* Keep the description to a single clamped line so rows stay compact */
+    .rm-item__desc {
+      font-size: 0.75rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .rm-item__add-btn {
+      width: 32px;
+      height: 32px;
+      margin-left: 0.25rem;
+    }
+
+    .rm-item__add-btn svg {
+      width: 20px;
+      height: 20px;
+    }
   }
 {% endstylesheet %}
 
