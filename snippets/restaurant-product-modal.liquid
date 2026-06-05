@@ -180,12 +180,16 @@ class RestaurantProductModal {
   formatMoney(cents) {
     cents = parseInt(cents, 10) || 0;
     const value = (cents / 100).toFixed(2);
-    const format = this.moneyFormat || '{{ '{{' }}amount{{ '}}' }}';
+    // Build the placeholder via concatenation so the Liquid parser never sees
+    // a literal double-brace pair inside this script.
+    const ph = '{' + '{amount}' + '}';
+    const format = this.moneyFormat || ph;
+    const re = (name) => new RegExp('\\{\\{\\s*' + name + '\\s*\\}\\}', 'g');
     return format
-      .replace(/\{\{\s*amount\s*\}\}/g, value)
-      .replace(/\{\{\s*amount_no_decimals\s*\}\}/g, Math.round(cents / 100).toString())
-      .replace(/\{\{\s*amount_with_comma_separator\s*\}\}/g, value.replace('.', ','))
-      .replace(/\{\{\s*amount_no_decimals_with_comma_separator\s*\}\}/g, Math.round(cents / 100).toString());
+      .replace(re('amount_no_decimals_with_comma_separator'), Math.round(cents / 100).toString())
+      .replace(re('amount_no_decimals'), Math.round(cents / 100).toString())
+      .replace(re('amount_with_comma_separator'), value.replace('.', ','))
+      .replace(re('amount'), value);
   }
 
   bindEvents() {
