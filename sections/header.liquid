@@ -68,7 +68,7 @@
   endcapture
 
   capture restaurant_cta
-    render 'header-restaurant-cta'
+    render 'header-restaurant-cta', cta_label: section.settings.drawer_cta_label, cta_url: section.settings.drawer_cta_url
   endcapture
 
   if shop.customer_accounts_enabled

@@ -87,6 +87,7 @@
   border: 1px solid var(--restaurant-accent);
   background: transparent;
   padding: 0.6em 1.4em;
+  border-radius: 10px;
   font-family: var(--font-body--family);
   font-size: 0.8rem;
   font-weight: 500;
@@ -102,6 +103,43 @@
 .restaurant-nav__cta:hover {
   background: var(--restaurant-accent);
   color: #fff;
+}
+
+/* ================================
+ * Solid black header (no transparent flicker)
+ * ================================ */
+
+.header.restaurant-mode {
+  background: var(--restaurant-dark, #0D0D0D) !important;
+  position: sticky !important;
+  top: 0;
+  z-index: var(--layer-overlay, 100);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Cancel the theme's transparent-overlay behaviour that causes the
+   scroll flicker — force the solid (non-inverse) logo + colors. */
+.header.restaurant-mode[transparent] {
+  --header-logo-display: unset !important;
+  --header-logo-inverse-display: none !important;
+  position: sticky !important;
+}
+
+/* Keep the underlay/background opaque through every sticky state */
+.header.restaurant-mode::before,
+.header.restaurant-mode .header__underlay {
+  background: var(--restaurant-dark, #0D0D0D) !important;
+  opacity: 1 !important;
+}
+
+/* ================================
+ * Remove account icon everywhere (for now)
+ * ================================ */
+
+.account-button,
+shopify-account,
+.header-actions__action--account {
+  display: none !important;
 }
 
 /* Hide default header elements in restaurant mode */
@@ -149,7 +187,9 @@
     display: none !important;
   }
 
-  /* Make logo bigger and centered on mobile */
+  /* Make logo bigger and centered on mobile.
+     Size follows the Logo block's "Custom height" setting (--logo-height);
+     falls back to 64px and is capped so it never breaks the bar. */
   .restaurant-mode .header-logo {
     grid-area: center !important;
     justify-self: center;
@@ -157,9 +197,9 @@
 
   .restaurant-mode .header-logo img,
   .restaurant-mode .header-logo svg {
-    height: 48px !important;
+    height: var(--logo-height, 64px) !important;
     width: auto !important;
-    max-height: 48px !important;
+    max-height: 96px !important;
   }
 
   /* Show hamburger menu on mobile */

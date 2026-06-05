@@ -1,1 +1,5 @@
-<a href="/pages/menu" class="restaurant-nav__cta">ПОРЪЧАЙ СЕГА</a>
+{%- liquid
+  assign label = cta_label | default: 'Поръчай сега'
+  assign url = cta_url | default: '/pages/menu'
+-%}
+<a href="{{ url }}" class="restaurant-nav__cta">{{ label }}</a>
