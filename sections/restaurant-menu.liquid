@@ -217,6 +217,7 @@
   // the default hero. Product images are preloaded so the swap is instant and
   // fades in smoothly via CSS (no fetch-on-hover lag, no blank flash).
   let heroOverlay = null;
+  let heroCommitTimer = null;
   const heroCache = new Map();
   const preloadHero = (src) => {
     if (!src || heroCache.has(src)) return;
@@ -260,7 +261,9 @@
       }
     });
 
-    // Hero image crossfade on hover (desktop only)
+    // Hero image crossfade on hover (desktop only). The product image fades
+    // in over the current hero, then is committed to the base image — so the
+    // hero KEEPS the last hovered dish and never snaps back to the default.
     if (isDesktop && heroOverlay) {
       let src = item.getAttribute('data-product-image') || '';
       if (src.startsWith('//')) src = 'https:' + src;
@@ -268,8 +271,19 @@
 
       item.addEventListener('mouseenter', function() {
         if (!src) return;
+        if ((heroImage.getAttribute('src') || '') === src) return; // already showing it
+
+        // Crossfade the product in over whatever the hero currently shows.
         if (heroOverlay.getAttribute('src') !== src) heroOverlay.setAttribute('src', src);
         heroOverlay.classList.add('is-visible');
+
+        // After the fade, bake it into the base image and reset the overlay,
+        // so the hero permanently holds this image (race-safe across items).
+        clearTimeout(heroCommitTimer);
+        heroCommitTimer = setTimeout(function() {
+          heroImage.setAttribute('src', src);
+          heroOverlay.classList.remove('is-visible');
+        }, 450);
       });
     }
   });
