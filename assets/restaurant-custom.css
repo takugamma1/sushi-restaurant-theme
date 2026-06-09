@@ -2362,6 +2362,101 @@ shopify-account,
   color: rgba(255, 255, 255, 0.6);
 }
 
+/* ---- Video lightbox pop-up ---- */
+.rab__vmodal {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.rab__vmodal.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.rab__vmodal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+.rab__vmodal__close {
+  position: absolute;
+  top: clamp(1rem, 3vw, 2rem);
+  right: clamp(1rem, 3vw, 2rem);
+  z-index: 2;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease, transform 0.35s ease, border-color 0.25s ease;
+}
+
+.rab__vmodal__close:hover {
+  background: var(--restaurant-accent);
+  border-color: var(--restaurant-accent);
+  color: #1a0e08;
+  transform: rotate(90deg);
+}
+
+.rab__vmodal__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(1100px, 100%);
+  transform: translateY(18px) scale(0.97);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rab__vmodal.is-open .rab__vmodal__dialog {
+  transform: translateY(0) scale(1);
+}
+
+.rab__vmodal__stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: clamp(12px, 1.5vw, 20px);
+  overflow: hidden;
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9);
+}
+
+.rab__vmodal__stage video,
+.rab__vmodal__stage iframe,
+.rab__vmodal__stage .rab__video-media,
+.rab__vmodal__stage .rab__video-embed {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0;
+  background: #000;
+}
+
+.rab__vmodal__stage video,
+.rab__vmodal__stage .rab__video-media {
+  object-fit: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rab__vmodal { transition: opacity 0.2s ease, visibility 0.2s ease; }
+  .rab__vmodal__dialog { transition: none; }
+}
+
 /* ============ Principles (Roman numerals) ============ */
 
 .rab__principles {

@@ -132,51 +132,58 @@
       </h2>
     </div>
 
-    <div class="rab__collage-grid">
-      <figure class="rab__collage-item rab__collage-item--a">
-        {%- if section.settings.collage_image_1 != blank -%}
-          {{ section.settings.collage_image_1 | image_url: width: 1200 | image_tag: class: 'rab__collage-image', sizes: '50vw', widths: '500,800,1200', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption rab__photo-caption--top-left">— {{ section.settings.collage_caption_1 | default: 'ножът' }}</figcaption>
-      </figure>
+    {%- comment -%} Only render photos that are actually set, in order, so
+       empty slots never leave black gaps. The grid layout adapts to the
+       count (5 → tidy bento, 10 → full gallery-style mosaic). {%- endcomment -%}
+    {%- liquid
+      assign rab_count = 0
+      if section.settings.collage_image_1 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_2 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_3 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_4 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_5 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_6 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_7 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_8 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_9 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_10 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      assign rab_letters = 'a,b,c,d,e,f,g,h,i,j' | split: ','
+      assign rab_i = 0
+      assign rab_img_sizes = '(min-width: 990px) 40vw, 100vw'
+      assign rab_img_widths = '500,900,1300,1600'
+    -%}
 
-      <figure class="rab__collage-item rab__collage-item--b">
-        {%- if section.settings.collage_image_2 != blank -%}
-          {{ section.settings.collage_image_2 | image_url: width: 800 | image_tag: class: 'rab__collage-image', sizes: '25vw', widths: '300,500,800', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption">— {{ section.settings.collage_caption_2 | default: 'мигът' }}</figcaption>
-      </figure>
-
-      <figure class="rab__collage-item rab__collage-item--c">
-        {%- if section.settings.collage_image_3 != blank -%}
-          {{ section.settings.collage_image_3 | image_url: width: 1200 | image_tag: class: 'rab__collage-image', sizes: '50vw', widths: '500,800,1200', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption rab__photo-caption--bottom-right">— {{ section.settings.collage_caption_3 | default: 'рибата' }}</figcaption>
-      </figure>
-
-      <figure class="rab__collage-item rab__collage-item--d">
-        {%- if section.settings.collage_image_4 != blank -%}
-          {{ section.settings.collage_image_4 | image_url: width: 800 | image_tag: class: 'rab__collage-image', sizes: '25vw', widths: '300,500,800', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption">— {{ section.settings.collage_caption_4 | default: 'детайлът' }}</figcaption>
-      </figure>
-
-      <figure class="rab__collage-item rab__collage-item--e">
-        {%- if section.settings.collage_image_5 != blank -%}
-          {{ section.settings.collage_image_5 | image_url: width: 800 | image_tag: class: 'rab__collage-image', sizes: '25vw', widths: '300,500,800', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption rab__photo-caption--bottom-right">— {{ section.settings.collage_caption_5 | default: 'ароматът' }}</figcaption>
-      </figure>
+    <div class="rab__collage-grid rab__collage-grid--{{ rab_count }}">
+      {%- if section.settings.collage_image_1 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_1 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_1 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_1 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_2 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_2 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_2 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_2 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_3 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_3 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_3 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_3 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_4 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_4 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_4 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_4 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_5 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_5 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_5 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_5 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_6 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_6 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_6 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_6 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_7 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_7 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_7 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_7 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_8 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_8 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_8 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_8 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_9 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_9 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_9 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_9 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_10 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_10 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_10 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_10 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
     </div>
   </section>
 
@@ -199,34 +206,36 @@
 
     {%- liquid
       assign has_video = false
-      if section.settings.video != blank or section.settings.video_url != blank
+      if section.settings.video_file_url != blank or section.settings.video != blank or section.settings.video_url != blank
         assign has_video = true
       endif
     -%}
+    {%- capture rab_player_markup -%}
+      {%- if section.settings.video_file_url != blank -%}
+        {%- comment -%} Direct file URL (e.g. Shopify Content → Files CDN) — lazy, only fetched on click {%- endcomment -%}
+        <video class="rab__video-media" controls autoplay playsinline preload="auto"{% if section.settings.video_poster != blank %} poster="{{ section.settings.video_poster | image_url: width: 1800 }}"{% endif %}>
+          <source src="{{ section.settings.video_file_url }}" type="video/mp4">
+        </video>
+      {%- elsif section.settings.video != blank -%}
+        {{ section.settings.video | video_tag: controls: true, autoplay: true, loop: false, muted: false, playsinline: true, class: 'rab__video-media' }}
+      {%- else -%}
+        <div class="rab__video-embed">
+          {{ section.settings.video_url | external_video_tag: class: 'rab__video-media', autoplay: true }}
+        </div>
+      {%- endif -%}
+    {%- endcapture -%}
     <div class="rab__video-frame">
       {%- if section.settings.video_poster != blank and has_video -%}
-        {%- comment -%} Poster + click-to-play {%- endcomment -%}
+        {%- comment -%} Poster + click-to-play (lightweight image first, video on tap) {%- endcomment -%}
         <div class="rab__video-placeholder" data-rab-poster>
           {{ section.settings.video_poster | image_url: width: 1800 | image_tag: class: 'rab__video-poster', sizes: '100vw', widths: '600,1200,1800', loading: 'lazy' }}
           <button type="button" class="rab__video-play" data-rab-play aria-label="Пусни видеото">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="8,5 19,12 8,19"/></svg>
           </button>
         </div>
-        <template data-rab-player>
-          {%- if section.settings.video != blank -%}
-            {{ section.settings.video | video_tag: controls: true, autoplay: true, loop: false, muted: false, playsinline: true, class: 'rab__video-media' }}
-          {%- else -%}
-            <div class="rab__video-embed">
-              {{ section.settings.video_url | external_video_tag: class: 'rab__video-media', autoplay: true }}
-            </div>
-          {%- endif -%}
-        </template>
-      {%- elsif section.settings.video != blank -%}
-        {{ section.settings.video | video_tag: controls: true, autoplay: false, loop: false, muted: false, playsinline: true, class: 'rab__video-media' }}
-      {%- elsif section.settings.video_url != blank -%}
-        <div class="rab__video-embed">
-          {{ section.settings.video_url | external_video_tag: class: 'rab__video-media' }}
-        </div>
+        <template data-rab-player>{{ rab_player_markup }}</template>
+      {%- elsif has_video -%}
+        {{ rab_player_markup }}
       {%- else -%}
         {%- comment -%} Only a poster, no video configured — just the image {%- endcomment -%}
         <div class="rab__video-placeholder">
@@ -374,14 +383,62 @@
 
 <script>
   (function () {
-    // Video poster -> player
+    // Video poster -> open the player in a closable lightbox pop-up.
+    var vModal = null;
+
+    function buildVideoModal() {
+      if (vModal) return vModal;
+      vModal = document.createElement('div');
+      vModal.className = 'rab__vmodal';
+      vModal.setAttribute('aria-hidden', 'true');
+      vModal.innerHTML =
+        '<div class="rab__vmodal__backdrop" data-vmodal-close></div>' +
+        '<button type="button" class="rab__vmodal__close" data-vmodal-close aria-label="Затвори">' +
+          '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+        '</button>' +
+        '<div class="rab__vmodal__dialog"><div class="rab__vmodal__stage" data-vmodal-stage></div></div>';
+      document.body.appendChild(vModal);
+      vModal.querySelectorAll('[data-vmodal-close]').forEach(function (el) {
+        el.addEventListener('click', closeVideoModal);
+      });
+      return vModal;
+    }
+
+    function openVideoModal(tpl) {
+      var m = buildVideoModal();
+      var stage = m.querySelector('[data-vmodal-stage]');
+      stage.innerHTML = '';
+      var clone = tpl.content.cloneNode(true);
+      var vid = clone.querySelector('video');
+      stage.appendChild(clone);
+      document.body.style.overflow = 'hidden';
+      m.setAttribute('aria-hidden', 'false');
+      requestAnimationFrame(function () { m.classList.add('is-open'); });
+      // Start inside the user gesture so audio is allowed.
+      if (vid && typeof vid.play === 'function') { vid.play().catch(function () {}); }
+    }
+
+    function closeVideoModal() {
+      if (!vModal) return;
+      vModal.classList.remove('is-open');
+      vModal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      // Clearing the stage stops playback (video + YouTube/Vimeo iframe alike).
+      var stage = vModal.querySelector('[data-vmodal-stage]');
+      if (stage) stage.innerHTML = '';
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && vModal && vModal.classList.contains('is-open')) closeVideoModal();
+    });
+
     document.querySelectorAll('[data-rab-play]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var poster = btn.closest('[data-rab-poster]');
         var frame = poster && poster.parentElement;
         var tpl = frame && frame.querySelector('[data-rab-player]');
-        if (!poster || !tpl) return;
-        poster.replaceWith(tpl.content.cloneNode(true));
+        if (!tpl) return;
+        openVideoModal(tpl);
       });
     });
 
@@ -391,7 +448,7 @@
     var cells = grid.querySelectorAll('.rab__collage-item');
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var mobile = window.matchMedia('(max-width: 749px)').matches;
-    var stagger = mobile ? 60 : 110;
+    var stagger = mobile ? 40 : 80;
     cells.forEach(function (c, i) { c.style.setProperty('--rab-delay', (i * stagger) + 'ms'); });
 
     if (reduced || !('IntersectionObserver' in window)) {
@@ -401,7 +458,7 @@
 
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) { e.target.classList.toggle('is-visible', e.isIntersecting); });
-    }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
+    }, { threshold: 0.12, rootMargin: mobile ? '0px 0px -8% 0px' : '0px 0px -12% 0px' });
 
     cells.forEach(function (c) { io.observe(c); });
   })();
@@ -575,19 +632,39 @@
       "label": "Heading line 2",
       "default": "хапка по хапка."
     },
-    { "type": "image_picker", "id": "collage_image_1", "label": "Photo 1 (large, top-left)" },
+    { "type": "image_picker", "id": "collage_image_1", "label": "Photo 1 (large feature, top-left)" },
     { "type": "text", "id": "collage_caption_1", "label": "Photo 1 caption", "default": "ножът" },
-    { "type": "image_picker", "id": "collage_image_2", "label": "Photo 2 (small, top-right)" },
+    { "type": "image_picker", "id": "collage_image_2", "label": "Photo 2 (top, 2nd)" },
     { "type": "text", "id": "collage_caption_2", "label": "Photo 2 caption", "default": "мигът" },
-    { "type": "image_picker", "id": "collage_image_3", "label": "Photo 3 (wide, mid-right)" },
+    { "type": "image_picker", "id": "collage_image_3", "label": "Photo 3 (tall, center)" },
     { "type": "text", "id": "collage_caption_3", "label": "Photo 3 caption", "default": "рибата" },
-    { "type": "image_picker", "id": "collage_image_4", "label": "Photo 4 (small, bottom-left)" },
+    { "type": "image_picker", "id": "collage_image_4", "label": "Photo 4 (wide, top-right)" },
     { "type": "text", "id": "collage_caption_4", "label": "Photo 4 caption", "default": "детайлът" },
-    { "type": "image_picker", "id": "collage_image_5", "label": "Photo 5 (square, bottom-right)" },
+    { "type": "image_picker", "id": "collage_image_5", "label": "Photo 5 (right)" },
     { "type": "text", "id": "collage_caption_5", "label": "Photo 5 caption", "default": "ароматът" },
+    { "type": "image_picker", "id": "collage_image_6", "label": "Photo 6 (tall, bottom-left)" },
+    { "type": "text", "id": "collage_caption_6", "label": "Photo 6 caption", "default": "" },
+    { "type": "image_picker", "id": "collage_image_7", "label": "Photo 7 (small, lower-mid-left)" },
+    { "type": "text", "id": "collage_caption_7", "label": "Photo 7 caption", "default": "" },
+    { "type": "image_picker", "id": "collage_image_8", "label": "Photo 8 (small, lower-mid)" },
+    { "type": "text", "id": "collage_caption_8", "label": "Photo 8 caption", "default": "" },
+    { "type": "image_picker", "id": "collage_image_9", "label": "Photo 9 (small, lower-mid-right)" },
+    { "type": "text", "id": "collage_caption_9", "label": "Photo 9 caption", "default": "" },
+    { "type": "image_picker", "id": "collage_image_10", "label": "Photo 10 (wide, bottom-right)" },
+    { "type": "text", "id": "collage_caption_10", "label": "Photo 10 caption", "default": "" },
     {
       "type": "header",
       "content": "Video"
+    },
+    {
+      "type": "paragraph",
+      "content": "Pick ONE. Easiest: 'Video (Shopify upload)' or a YouTube/Vimeo URL (these stream adaptively). To self-host your exact file: upload the .mp4 in Shopify admin → Content → Files, copy its URL, and paste it in 'Direct video URL' below. (Theme assets can't hold video on Shopify.) The video lazy-loads only when the poster is tapped."
+    },
+    {
+      "type": "text",
+      "id": "video_file_url",
+      "label": "Direct video URL (.mp4)",
+      "info": "Paste a direct .mp4 link — e.g. from Shopify Content → Files, Cloudflare/Bunny/Mux, etc."
     },
     {
       "type": "video",
@@ -603,7 +680,7 @@
     {
       "type": "image_picker",
       "id": "video_poster",
-      "label": "Poster image (fallback)"
+      "label": "Poster image (shown before play)"
     },
     {
       "type": "text",
