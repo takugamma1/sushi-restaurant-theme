@@ -235,12 +235,8 @@
       // Insert directly above the base image but BELOW the gradient/title overlay.
       heroWrap.insertBefore(heroOverlay, heroImage.nextSibling);
     }
-    const content = document.querySelector('.restaurant-menu__content');
-    if (content && heroOverlay) {
-      // Revert to the default hero only when the pointer leaves the whole list,
-      // so moving between items just swaps the product image (no flicker).
-      content.addEventListener('mouseleave', () => heroOverlay.classList.remove('is-visible'));
-    }
+    // Note: no revert-on-leave — once a product is hovered the hero keeps
+    // showing the LAST hovered image instead of snapping back to default.
   }
 
   productItems.forEach(item => {
