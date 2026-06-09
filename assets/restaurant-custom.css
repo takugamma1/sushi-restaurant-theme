@@ -2417,7 +2417,11 @@ shopify-account,
 .rab__vmodal__dialog {
   position: relative;
   z-index: 1;
-  width: min(1100px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  max-height: 100%;
   transform: translateY(18px) scale(0.97);
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -2427,29 +2431,65 @@ shopify-account,
 }
 
 .rab__vmodal__stage {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  background: #000;
-  border-radius: clamp(12px, 1.5vw, 20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: clamp(12px, 1.5vw, 18px);
   overflow: hidden;
   box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9);
-}
-
-.rab__vmodal__stage video,
-.rab__vmodal__stage iframe,
-.rab__vmodal__stage .rab__video-media,
-.rab__vmodal__stage .rab__video-embed {
-  position: absolute;
-  inset: 0;
-  width: 100% !important;
-  height: 100% !important;
-  border: 0;
   background: #000;
 }
 
+/* Native <video>: shown at its real aspect (portrait or landscape),
+   as large as fits the viewport — full resolution, no forced crop. */
 .rab__vmodal__stage video,
 .rab__vmodal__stage .rab__video-media {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: calc(100vw - 2 * clamp(1rem, 4vw, 3rem));
+  max-height: calc(100svh - 2 * clamp(1rem, 4vw, 3rem));
   object-fit: contain;
+  background: #000;
+}
+
+/* External embeds (YouTube/Vimeo) keep a 16:9 frame */
+.rab__vmodal__stage .rab__video-embed {
+  position: relative;
+  width: min(calc(100vw - 2 * clamp(1rem, 4vw, 3rem)), calc((100svh - 6rem) * 16 / 9));
+  aspect-ratio: 16 / 9;
+}
+.rab__vmodal__stage .rab__video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Mobile: full-screen player */
+@media screen and (max-width: 749px) {
+  .rab__vmodal { padding: 0; }
+  .rab__vmodal__dialog,
+  .rab__vmodal__stage { width: 100%; height: 100%; }
+  .rab__vmodal__stage { border-radius: 0; }
+  .rab__vmodal__stage video,
+  .rab__vmodal__stage .rab__video-media {
+    width: 100%;
+    height: 100svh;
+    max-width: 100vw;
+    max-height: 100svh;
+    object-fit: contain;
+  }
+  .rab__vmodal__stage .rab__video-embed {
+    width: 100vw;
+  }
+  .rab__vmodal__close {
+    top: max(0.85rem, env(safe-area-inset-top, 0px));
+    right: 0.85rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
