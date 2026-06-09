@@ -683,6 +683,11 @@
       min-height: 30vh;
     }
 
+    /* Cap the hero title to the viewport so it never overflows */
+    .restaurant-menu__hero-title {
+      font-size: clamp(2.25rem, 12vw, var(--rm-heading-size, 48px));
+    }
+
     .restaurant-menu__content {
       padding: 1rem 1rem 2rem;
     }
@@ -699,14 +704,26 @@
 
     .rm-cat-heading {
       margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.4em;
     }
 
+    /* Drop the decorative side lines on mobile so the long category
+       titles have room, and cap the title size so it never overflows. */
     .rm-cat-heading__line {
-      width: 18px;
+      display: none;
+    }
+
+    .rm-cat-heading__text {
+      font-size: clamp(0.95rem, 4.6vw, 1.4rem);
+      letter-spacing: 0.06em;
+      white-space: normal;
+      text-align: center;
+      min-width: 0;
     }
 
     .rm-item {
-      gap: 0.75rem;
+      gap: 0.7rem;
       padding: 0.6rem 0;
     }
 
