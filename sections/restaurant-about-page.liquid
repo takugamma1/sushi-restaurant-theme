@@ -206,15 +206,15 @@
 
     {%- liquid
       assign has_video = false
-      if section.settings.video_asset != blank or section.settings.video != blank or section.settings.video_url != blank
+      if section.settings.video_file_url != blank or section.settings.video != blank or section.settings.video_url != blank
         assign has_video = true
       endif
     -%}
     {%- capture rab_player_markup -%}
-      {%- if section.settings.video_asset != blank -%}
-        {%- comment -%} Self-hosted file in /assets — only fetched on click (lazy) {%- endcomment -%}
+      {%- if section.settings.video_file_url != blank -%}
+        {%- comment -%} Direct file URL (e.g. Shopify Content → Files CDN) — lazy, only fetched on click {%- endcomment -%}
         <video class="rab__video-media" controls autoplay playsinline preload="auto"{% if section.settings.video_poster != blank %} poster="{{ section.settings.video_poster | image_url: width: 1800 }}"{% endif %}>
-          <source src="{{ section.settings.video_asset | asset_url }}" type="video/mp4">
+          <source src="{{ section.settings.video_file_url }}" type="video/mp4">
         </video>
       {%- elsif section.settings.video != blank -%}
         {{ section.settings.video | video_tag: controls: true, autoplay: true, loop: false, muted: false, playsinline: true, class: 'rab__video-media' }}
@@ -614,14 +614,13 @@
     },
     {
       "type": "paragraph",
-      "content": "Best: upload via 'Video (Shopify upload)' or paste a YouTube/Vimeo URL — those stream adaptively. 'Self-hosted file' plays a video from the theme's assets folder (lazy-loaded only when the poster is tapped)."
+      "content": "Pick ONE. Easiest: 'Video (Shopify upload)' or a YouTube/Vimeo URL (these stream adaptively). To self-host your exact file: upload the .mp4 in Shopify admin → Content → Files, copy its URL, and paste it in 'Direct video URL' below. (Theme assets can't hold video on Shopify.) The video lazy-loads only when the poster is tapped."
     },
     {
       "type": "text",
-      "id": "video_asset",
-      "label": "Self-hosted file (assets filename)",
-      "info": "e.g. restaurant-about-video.mp4 — must be uploaded to the theme assets. Loads only when the poster is clicked.",
-      "default": "restaurant-about-video.mp4"
+      "id": "video_file_url",
+      "label": "Direct video URL (.mp4)",
+      "info": "Paste a direct .mp4 link — e.g. from Shopify Content → Files, Cloudflare/Bunny/Mux, etc."
     },
     {
       "type": "video",
