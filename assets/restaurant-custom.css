@@ -2071,6 +2071,11 @@ shopify-account,
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
+  gap: clamp(0.5rem, 0.8vw, 0.9rem);
+}
+
+/* 10 photos → full gallery-style mosaic (identical to .rg__grid) */
+.rab__collage-grid--10 {
   grid-template-rows: repeat(5, minmax(180px, 23vh));
   grid-template-areas:
     "a a b b b c c c d d d d"
@@ -2078,9 +2083,17 @@ shopify-account,
     "f f f g g c c c e e e e"
     "f f f g g h h i i j j j"
     "f f f g g h h i i j j j";
-  gap: clamp(0.5rem, 0.8vw, 0.9rem);
 }
 
+/* 5 photos → tidy full-width bento (big feature + 2x2), no empty tiles */
+.rab__collage-grid--5 {
+  grid-template-rows: repeat(2, minmax(300px, 42vh));
+  grid-template-areas:
+    "a a a a a b b b c c c c"
+    "a a a a a d d d e e e e";
+}
+
+/* Cell → area mapping (used by the 5- and 10-photo layouts) */
 .rab__collage-item--a { grid-area: a; }
 .rab__collage-item--b { grid-area: b; }
 .rab__collage-item--c { grid-area: c; }
@@ -2091,6 +2104,23 @@ shopify-account,
 .rab__collage-item--h { grid-area: h; }
 .rab__collage-item--i { grid-area: i; }
 .rab__collage-item--j { grid-area: j; }
+
+/* Any other count → clean full-width auto bento (first tile larger).
+   Desktop-only so it can't override the mobile spans below. */
+@media screen and (min-width: 750px) {
+  .rab__collage-grid:not(.rab__collage-grid--5):not(.rab__collage-grid--10) {
+    grid-auto-rows: minmax(260px, 38vh);
+    grid-auto-flow: dense;
+  }
+  .rab__collage-grid:not(.rab__collage-grid--5):not(.rab__collage-grid--10) .rab__collage-item {
+    grid-area: auto;
+    grid-column: span 4;
+  }
+  .rab__collage-grid:not(.rab__collage-grid--5):not(.rab__collage-grid--10) .rab__collage-item--a {
+    grid-column: span 8;
+    grid-row: span 2;
+  }
+}
 
 .rab__collage-item {
   position: relative;
@@ -2165,8 +2195,8 @@ shopify-account,
   transform: translateY(0);
 }
 
-/* Mobile — identical to the Gallery: bigger tiles, full-width heroes
-   interleaved with half-width pairs, captions always visible. */
+/* Mobile — bigger tiles, full-width heroes + half-width pairs, captions
+   always visible. Spans adapt to the photo count. */
 @media screen and (max-width: 749px) {
   .rab__collage-grid {
     grid-template-columns: repeat(6, 1fr);
@@ -2176,22 +2206,10 @@ shopify-account,
     gap: 0.5rem;
   }
 
-  .rab__collage-item--a, .rab__collage-item--b, .rab__collage-item--c, .rab__collage-item--d,
-  .rab__collage-item--e, .rab__collage-item--f, .rab__collage-item--g, .rab__collage-item--h,
-  .rab__collage-item--i, .rab__collage-item--j { grid-area: auto; }
-
-  .rab__collage-item--a { grid-column: span 6; grid-row: span 2; }
-  .rab__collage-item--b { grid-column: span 3; grid-row: span 2; }
-  .rab__collage-item--c { grid-column: span 3; grid-row: span 2; }
-  .rab__collage-item--d { grid-column: span 6; grid-row: span 2; }
-  .rab__collage-item--e { grid-column: span 3; grid-row: span 2; }
-  .rab__collage-item--f { grid-column: span 3; grid-row: span 2; }
-  .rab__collage-item--g { grid-column: span 6; grid-row: span 2; }
-  .rab__collage-item--h { grid-column: span 3; grid-row: span 2; }
-  .rab__collage-item--i { grid-column: span 3; grid-row: span 2; }
-  .rab__collage-item--j { grid-column: span 6; grid-row: span 2; }
-
   .rab__collage-item {
+    grid-area: auto;
+    grid-column: span 3;
+    grid-row: span 2;
     transform: translateY(18px) scale(0.98);
     transition:
       opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
@@ -2199,6 +2217,15 @@ shopify-account,
       border-color 0.4s ease;
     transition-delay: var(--rab-delay, 0ms);
   }
+
+  /* 10-photo layout: full-width heroes at a, d, g, j */
+  .rab__collage-grid--10 .rab__collage-item--a,
+  .rab__collage-grid--10 .rab__collage-item--d,
+  .rab__collage-grid--10 .rab__collage-item--g,
+  .rab__collage-grid--10 .rab__collage-item--j { grid-column: span 6; }
+
+  /* 5-photo layout: full-width hero at a, then two pairs */
+  .rab__collage-grid--5 .rab__collage-item--a { grid-column: span 6; }
 
   .rab__collage-caption {
     opacity: 1;

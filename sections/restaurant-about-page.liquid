@@ -132,28 +132,58 @@
       </h2>
     </div>
 
-    <div class="rab__collage-grid">
-      {%- capture rab_cell_a -%}{%- if section.settings.collage_image_1 != blank -%}{{ section.settings.collage_image_1 | image_url: width: 1800 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 45vw, 100vw', widths: '600,1000,1400,1800', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
-      {%- capture rab_cell_b -%}{%- if section.settings.collage_image_2 != blank -%}{{ section.settings.collage_image_2 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 35vw, 100vw', widths: '600,1000,1300,1600', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
-      {%- capture rab_cell_c -%}{%- if section.settings.collage_image_3 != blank -%}{{ section.settings.collage_image_3 | image_url: width: 1800 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 35vw, 100vw', widths: '600,1000,1400,1800', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
-      {%- capture rab_cell_d -%}{%- if section.settings.collage_image_4 != blank -%}{{ section.settings.collage_image_4 | image_url: width: 1800 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 35vw, 100vw', widths: '600,1000,1400,1800', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
-      {%- capture rab_cell_e -%}{%- if section.settings.collage_image_5 != blank -%}{{ section.settings.collage_image_5 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 35vw, 100vw', widths: '600,1000,1300,1600', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
-      {%- capture rab_cell_f -%}{%- if section.settings.collage_image_6 != blank -%}{{ section.settings.collage_image_6 | image_url: width: 1800 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 30vw, 100vw', widths: '600,1000,1400,1800', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
-      {%- capture rab_cell_g -%}{%- if section.settings.collage_image_7 != blank -%}{{ section.settings.collage_image_7 | image_url: width: 1200 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 18vw, 50vw', widths: '400,700,1000,1200', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
-      {%- capture rab_cell_h -%}{%- if section.settings.collage_image_8 != blank -%}{{ section.settings.collage_image_8 | image_url: width: 1200 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 18vw, 50vw', widths: '400,700,1000,1200', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
-      {%- capture rab_cell_i -%}{%- if section.settings.collage_image_9 != blank -%}{{ section.settings.collage_image_9 | image_url: width: 1200 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 18vw, 50vw', widths: '400,700,1000,1200', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
-      {%- capture rab_cell_j -%}{%- if section.settings.collage_image_10 != blank -%}{{ section.settings.collage_image_10 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 30vw, 100vw', widths: '600,1000,1300,1600', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+    {%- comment -%} Only render photos that are actually set, in order, so
+       empty slots never leave black gaps. The grid layout adapts to the
+       count (5 → tidy bento, 10 → full gallery-style mosaic). {%- endcomment -%}
+    {%- liquid
+      assign rab_count = 0
+      if section.settings.collage_image_1 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_2 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_3 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_4 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_5 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_6 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_7 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_8 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_9 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      if section.settings.collage_image_10 != blank
+        assign rab_count = rab_count | plus: 1
+      endif
+      assign rab_letters = 'a,b,c,d,e,f,g,h,i,j' | split: ','
+      assign rab_i = 0
+      assign rab_img_sizes = '(min-width: 990px) 40vw, 100vw'
+      assign rab_img_widths = '500,900,1300,1600'
+    -%}
 
-      <figure class="rab__collage-item rab__collage-item--a">{{ rab_cell_a }}{%- if section.settings.collage_caption_1 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_1 }}</figcaption>{%- endif -%}</figure>
-      <figure class="rab__collage-item rab__collage-item--b">{{ rab_cell_b }}{%- if section.settings.collage_caption_2 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_2 }}</figcaption>{%- endif -%}</figure>
-      <figure class="rab__collage-item rab__collage-item--c">{{ rab_cell_c }}{%- if section.settings.collage_caption_3 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_3 }}</figcaption>{%- endif -%}</figure>
-      <figure class="rab__collage-item rab__collage-item--d">{{ rab_cell_d }}{%- if section.settings.collage_caption_4 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_4 }}</figcaption>{%- endif -%}</figure>
-      <figure class="rab__collage-item rab__collage-item--e">{{ rab_cell_e }}{%- if section.settings.collage_caption_5 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_5 }}</figcaption>{%- endif -%}</figure>
-      <figure class="rab__collage-item rab__collage-item--f">{{ rab_cell_f }}{%- if section.settings.collage_caption_6 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_6 }}</figcaption>{%- endif -%}</figure>
-      <figure class="rab__collage-item rab__collage-item--g">{{ rab_cell_g }}{%- if section.settings.collage_caption_7 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_7 }}</figcaption>{%- endif -%}</figure>
-      <figure class="rab__collage-item rab__collage-item--h">{{ rab_cell_h }}{%- if section.settings.collage_caption_8 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_8 }}</figcaption>{%- endif -%}</figure>
-      <figure class="rab__collage-item rab__collage-item--i">{{ rab_cell_i }}{%- if section.settings.collage_caption_9 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_9 }}</figcaption>{%- endif -%}</figure>
-      <figure class="rab__collage-item rab__collage-item--j">{{ rab_cell_j }}{%- if section.settings.collage_caption_10 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_10 }}</figcaption>{%- endif -%}</figure>
+    <div class="rab__collage-grid rab__collage-grid--{{ rab_count }}">
+      {%- if section.settings.collage_image_1 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_1 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_1 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_1 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_2 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_2 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_2 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_2 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_3 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_3 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_3 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_3 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_4 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_4 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_4 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_4 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_5 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_5 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_5 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_5 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_6 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_6 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_6 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_6 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_7 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_7 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_7 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_7 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_8 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_8 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_8 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_8 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_9 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_9 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_9 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_9 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
+      {%- if section.settings.collage_image_10 != blank -%}{%- assign L = rab_letters[rab_i] -%}<figure class="rab__collage-item rab__collage-item--{{ L }}">{{ section.settings.collage_image_10 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: rab_img_sizes, widths: rab_img_widths, loading: 'lazy' }}{%- if section.settings.collage_caption_10 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_10 }}</figcaption>{%- endif -%}</figure>{%- assign rab_i = rab_i | plus: 1 -%}{%- endif -%}
     </div>
   </section>
 
