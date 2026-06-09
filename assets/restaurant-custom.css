@@ -1650,6 +1650,9 @@ shopify-account,
   background: var(--restaurant-dark);
   color: #fff;
   font-family: var(--font-body--family);
+  /* Contain the last section's bottom margin so it can't collapse out and
+     reveal the white body background between the page and the footer. */
+  overflow: hidden;
 }
 
 /* ============ Shared kicker ============ */
