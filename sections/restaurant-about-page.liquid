@@ -374,6 +374,7 @@
 
 <script>
   (function () {
+    // Video poster -> player
     document.querySelectorAll('[data-rab-play]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var poster = btn.closest('[data-rab-poster]');
@@ -383,6 +384,26 @@
         poster.replaceWith(tpl.content.cloneNode(true));
       });
     });
+
+    // Collage: same staggered scroll-fade as the Gallery page
+    var grid = document.querySelector('.rab__collage-grid');
+    if (!grid) return;
+    var cells = grid.querySelectorAll('.rab__collage-item');
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var mobile = window.matchMedia('(max-width: 749px)').matches;
+    var stagger = mobile ? 60 : 110;
+    cells.forEach(function (c, i) { c.style.setProperty('--rab-delay', (i * stagger) + 'ms'); });
+
+    if (reduced || !('IntersectionObserver' in window)) {
+      cells.forEach(function (c) { c.classList.add('is-visible'); });
+      return;
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { e.target.classList.toggle('is-visible', e.isIntersecting); });
+    }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
+
+    cells.forEach(function (c) { io.observe(c); });
   })();
 </script>
 

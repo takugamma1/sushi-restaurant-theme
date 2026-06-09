@@ -2084,6 +2084,25 @@ shopify-account,
   overflow: hidden;
   border-radius: clamp(16px, 1.4vw, 22px);
   background: var(--restaurant-dark-card);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+
+  /* Gallery-style staggered scroll-fade */
+  opacity: 0;
+  transform: translateY(28px) scale(0.97);
+  transition:
+    opacity 1.15s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.15s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.4s ease;
+  transition-delay: var(--rab-delay, 0ms);
+}
+
+.rab__collage-item.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.rab__collage-item:hover {
+  border-color: rgba(249, 135, 96, 0.35);
 }
 
 .rab__collage-image {
@@ -2091,7 +2110,7 @@ shopify-account,
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 1.1s ease, filter 0.5s ease;
+  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.5s ease;
   filter: saturate(0.96);
 }
 
@@ -2643,6 +2662,12 @@ shopify-account,
   .rab__collage-image,
   .rab__strip-image,
   .rab__btn { animation: none; transition: none; }
+
+  .rab__collage-item {
+    opacity: 1;
+    transform: none;
+    transition: border-color 0.4s ease;
+  }
 }
 
 /* ================================
