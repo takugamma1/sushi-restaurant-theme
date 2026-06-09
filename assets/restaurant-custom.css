@@ -2071,7 +2071,7 @@ shopify-account,
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(5, minmax(120px, 18vh));
+  grid-template-rows: repeat(5, minmax(180px, 23vh));
   grid-template-areas:
     "a a b b b c c c d d d d"
     "a a b b b c c c e e e e"
@@ -2814,7 +2814,7 @@ shopify-account,
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(5, minmax(120px, 18vh));
+  grid-template-rows: repeat(5, minmax(180px, 23vh));
   grid-template-areas:
     "a a b b b c c c d d d d"
     "a a b b b c c c e e e e"
