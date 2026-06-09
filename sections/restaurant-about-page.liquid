@@ -206,34 +206,36 @@
 
     {%- liquid
       assign has_video = false
-      if section.settings.video != blank or section.settings.video_url != blank
+      if section.settings.video_asset != blank or section.settings.video != blank or section.settings.video_url != blank
         assign has_video = true
       endif
     -%}
+    {%- capture rab_player_markup -%}
+      {%- if section.settings.video_asset != blank -%}
+        {%- comment -%} Self-hosted file in /assets — only fetched on click (lazy) {%- endcomment -%}
+        <video class="rab__video-media" controls autoplay playsinline preload="auto"{% if section.settings.video_poster != blank %} poster="{{ section.settings.video_poster | image_url: width: 1800 }}"{% endif %}>
+          <source src="{{ section.settings.video_asset | asset_url }}" type="video/mp4">
+        </video>
+      {%- elsif section.settings.video != blank -%}
+        {{ section.settings.video | video_tag: controls: true, autoplay: true, loop: false, muted: false, playsinline: true, class: 'rab__video-media' }}
+      {%- else -%}
+        <div class="rab__video-embed">
+          {{ section.settings.video_url | external_video_tag: class: 'rab__video-media', autoplay: true }}
+        </div>
+      {%- endif -%}
+    {%- endcapture -%}
     <div class="rab__video-frame">
       {%- if section.settings.video_poster != blank and has_video -%}
-        {%- comment -%} Poster + click-to-play {%- endcomment -%}
+        {%- comment -%} Poster + click-to-play (lightweight image first, video on tap) {%- endcomment -%}
         <div class="rab__video-placeholder" data-rab-poster>
           {{ section.settings.video_poster | image_url: width: 1800 | image_tag: class: 'rab__video-poster', sizes: '100vw', widths: '600,1200,1800', loading: 'lazy' }}
           <button type="button" class="rab__video-play" data-rab-play aria-label="Пусни видеото">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="8,5 19,12 8,19"/></svg>
           </button>
         </div>
-        <template data-rab-player>
-          {%- if section.settings.video != blank -%}
-            {{ section.settings.video | video_tag: controls: true, autoplay: true, loop: false, muted: false, playsinline: true, class: 'rab__video-media' }}
-          {%- else -%}
-            <div class="rab__video-embed">
-              {{ section.settings.video_url | external_video_tag: class: 'rab__video-media', autoplay: true }}
-            </div>
-          {%- endif -%}
-        </template>
-      {%- elsif section.settings.video != blank -%}
-        {{ section.settings.video | video_tag: controls: true, autoplay: false, loop: false, muted: false, playsinline: true, class: 'rab__video-media' }}
-      {%- elsif section.settings.video_url != blank -%}
-        <div class="rab__video-embed">
-          {{ section.settings.video_url | external_video_tag: class: 'rab__video-media' }}
-        </div>
+        <template data-rab-player>{{ rab_player_markup }}</template>
+      {%- elsif has_video -%}
+        {{ rab_player_markup }}
       {%- else -%}
         {%- comment -%} Only a poster, no video configured — just the image {%- endcomment -%}
         <div class="rab__video-placeholder">
@@ -388,7 +390,11 @@
         var frame = poster && poster.parentElement;
         var tpl = frame && frame.querySelector('[data-rab-player]');
         if (!poster || !tpl) return;
-        poster.replaceWith(tpl.content.cloneNode(true));
+        var clone = tpl.content.cloneNode(true);
+        var vid = clone.querySelector('video');
+        poster.replaceWith(clone);
+        // Self-hosted <video>: start it inside the user gesture so sound is allowed.
+        if (vid && typeof vid.play === 'function') { vid.play().catch(function () {}); }
       });
     });
 
@@ -607,6 +613,17 @@
       "content": "Video"
     },
     {
+      "type": "paragraph",
+      "content": "Best: upload via 'Video (Shopify upload)' or paste a YouTube/Vimeo URL — those stream adaptively. 'Self-hosted file' plays a video from the theme's assets folder (lazy-loaded only when the poster is tapped)."
+    },
+    {
+      "type": "text",
+      "id": "video_asset",
+      "label": "Self-hosted file (assets filename)",
+      "info": "e.g. restaurant-about-video.mp4 — must be uploaded to the theme assets. Loads only when the poster is clicked.",
+      "default": "restaurant-about-video.mp4"
+    },
+    {
       "type": "video",
       "id": "video",
       "label": "Video (Shopify upload)"
@@ -620,7 +637,7 @@
     {
       "type": "image_picker",
       "id": "video_poster",
-      "label": "Poster image (fallback)"
+      "label": "Poster image (shown before play)"
     },
     {
       "type": "text",
