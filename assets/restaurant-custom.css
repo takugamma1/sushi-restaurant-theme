@@ -2066,15 +2066,16 @@ shopify-account,
 }
 
 .rab__collage-grid {
-  max-width: 1280px;
+  max-width: 1240px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(3, clamp(150px, 16vw, 215px));
+  grid-template-rows: repeat(2, clamp(215px, 23vw, 310px));
+  /* Big feature on the left + a 2×2 grid of well-proportioned tiles.
+     No 6-wide single-row strips, so every photo gets real showcase space. */
   grid-template-areas:
-    "a a a a a a b b b b b b"
-    "a a a a a a c c c d d d"
-    "e e e e e e c c c d d d";
+    "a a a a a a b b b c c c"
+    "a a a a a a d d d e e e";
   gap: 0.6rem;
 }
 
@@ -2110,17 +2111,19 @@ shopify-account,
 .rab__collage-item--d { grid-area: d; }
 .rab__collage-item--e { grid-area: e; }
 
-/* Mobile: full-width feature photo, then two rows of two. */
+/* Mobile: a tall full-width feature (2 rows, not a thin strip), then
+   two rows of two square-ish tiles. */
 @media screen and (max-width: 749px) {
   .rab__collage-grid {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: auto;
-    grid-auto-rows: clamp(140px, 38vw, 200px);
+    grid-template-rows: none;
+    grid-auto-rows: clamp(115px, 30vw, 165px);
     grid-template-areas:
+      "a a"
       "a a"
       "b c"
       "d e";
-    gap: 0.6rem;
+    gap: 0.5rem;
   }
 
   /* Captions readable at the larger size */
