@@ -183,6 +183,25 @@
   </div>
 </div>
 
+{%- comment -%} Toast: "added to cart" notification {%- endcomment -%}
+<div class="rm-toast" id="rm-toast" role="status" aria-live="polite" aria-hidden="true">
+  <button type="button" class="rm-toast__body" data-toast-open>
+    <span class="rm-toast__check" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </span>
+    <span class="rm-toast__text">
+      <span class="rm-toast__title">Добавено в кошницата</span>
+      <span class="rm-toast__cta">Виж количката
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </span>
+    </span>
+  </button>
+  <button type="button" class="rm-toast__close" data-toast-close aria-label="Затвори">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </button>
+  <span class="rm-toast__progress" aria-hidden="true"></span>
+</div>
+
 <script>
 class RestaurantProductModal {
   constructor() {
@@ -195,8 +214,33 @@ class RestaurantProductModal {
     this.quantity = 1;
     this.carouselPosition = 0;
     this.moneyFormat = {{ shop.money_format | json }};
+    this.toast = document.getElementById('rm-toast');
+    this.toastTimer = null;
 
     this.bindEvents();
+  }
+
+  openDrawer() {
+    const drawer = document.querySelector('cart-drawer-component');
+    if (drawer && typeof drawer.open === 'function') drawer.open();
+  }
+
+  showToast() {
+    if (!this.toast) return;
+    clearTimeout(this.toastTimer);
+    // Restart the enter + progress animations even on rapid re-adds.
+    this.toast.classList.remove('is-visible');
+    void this.toast.offsetWidth;
+    this.toast.classList.add('is-visible');
+    this.toast.setAttribute('aria-hidden', 'false');
+    this.toastTimer = setTimeout(() => this.hideToast(), 2800);
+  }
+
+  hideToast() {
+    if (!this.toast) return;
+    clearTimeout(this.toastTimer);
+    this.toast.classList.remove('is-visible');
+    this.toast.setAttribute('aria-hidden', 'true');
   }
 
   // Format an amount in cents using the shop's money format (respects store currency).
@@ -220,6 +264,14 @@ class RestaurantProductModal {
     this.modal.querySelectorAll('[data-close-modal]').forEach(btn => {
       btn.addEventListener('click', () => this.close());
     });
+
+    // Toast: body opens the cart drawer, the × just dismisses it
+    if (this.toast) {
+      const openBtn = this.toast.querySelector('[data-toast-open]');
+      const closeBtn = this.toast.querySelector('[data-toast-close]');
+      if (openBtn) openBtn.addEventListener('click', () => { this.hideToast(); this.openDrawer(); });
+      if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); this.hideToast(); });
+    }
 
     // Close on escape
     document.addEventListener('keydown', (e) => {
@@ -454,15 +506,12 @@ class RestaurantProductModal {
         }
       }));
 
-      // Show success briefly, then close and open the drawer
+      // Close the modal and show the lightweight toast instead of forcing
+      // the (slow) cart drawer open. The toast opens the drawer only on tap.
       loadingEl.style.display = 'none';
-      successEl.style.display = 'flex';
-
-      setTimeout(() => {
-        this.close();
-        const drawer = document.querySelector('cart-drawer-component');
-        if (drawer && typeof drawer.open === 'function') drawer.open();
-      }, 900);
+      if (successEl) successEl.style.display = 'none';
+      this.close();
+      this.showToast();
 
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -1120,5 +1169,138 @@ document.addEventListener('DOMContentLoaded', () => {
   .rm-modal__carousel-track {
     transition: none;
   }
+}
+
+/* ===== Added-to-cart toast ===== */
+.rm-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  transform: translate(-50%, 20px);
+  z-index: 10000;
+  display: flex;
+  align-items: stretch;
+  min-width: 280px;
+  max-width: calc(100vw - 1.5rem);
+  background: var(--restaurant-dark-card, #1A1A1A);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 18px 50px -12px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.5s ease;
+}
+
+.rm-toast.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+@media screen and (min-width: 768px) {
+  .rm-toast {
+    left: auto;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    transform: translate(0, 20px);
+    max-width: 360px;
+  }
+  .rm-toast.is-visible { transform: translate(0, 0); }
+}
+
+.rm-toast__body {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+  padding: 0.85rem 0.6rem 0.85rem 0.95rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body--family);
+}
+
+.rm-toast__check {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--restaurant-accent, #F98760);
+  color: #1a0e08;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rm-toast__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.rm-toast__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.rm-toast__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  color: var(--restaurant-accent, #F98760);
+}
+
+.rm-toast__close {
+  flex-shrink: 0;
+  width: 42px;
+  background: transparent;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.rm-toast__close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.rm-toast__progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--restaurant-accent, #F98760);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+.rm-toast.is-visible .rm-toast__progress {
+  animation: rm-toast-progress 2.8s linear forwards;
+}
+
+@keyframes rm-toast-progress {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-toast { transition: opacity 0.25s ease, visibility 0.25s ease; }
+  .rm-toast.is-visible .rm-toast__progress { animation: none; }
 }
 </style>
