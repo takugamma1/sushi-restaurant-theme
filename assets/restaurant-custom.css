@@ -2035,7 +2035,7 @@ shopify-account,
 
 .rab__collage {
   background: var(--restaurant-dark);
-  padding: clamp(3.5rem, 8vw, 7rem) clamp(0.75rem, 3vw, 2rem);
+  padding: clamp(3.5rem, 8vw, 7rem) clamp(0.6rem, 1vw, 1.1rem);
 }
 
 .rab__collage-header {
@@ -2065,26 +2065,41 @@ shopify-account,
   margin: 0 0.1em;
 }
 
+/* Identical to the Gallery page (.rg__grid): full-width 10-tile bento. */
 .rab__collage-grid {
-  max-width: 1240px;
+  max-width: none;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(2, clamp(215px, 23vw, 310px));
-  /* Big feature on the left + a 2×2 grid of well-proportioned tiles.
-     No 6-wide single-row strips, so every photo gets real showcase space. */
+  grid-template-rows: repeat(5, minmax(120px, 18vh));
   grid-template-areas:
-    "a a a a a a b b b c c c"
-    "a a a a a a d d d e e e";
-  gap: 0.6rem;
+    "a a b b b c c c d d d d"
+    "a a b b b c c c e e e e"
+    "f f f g g c c c e e e e"
+    "f f f g g h h i i j j j"
+    "f f f g g h h i i j j j";
+  gap: clamp(0.5rem, 0.8vw, 0.9rem);
 }
+
+.rab__collage-item--a { grid-area: a; }
+.rab__collage-item--b { grid-area: b; }
+.rab__collage-item--c { grid-area: c; }
+.rab__collage-item--d { grid-area: d; }
+.rab__collage-item--e { grid-area: e; }
+.rab__collage-item--f { grid-area: f; }
+.rab__collage-item--g { grid-area: g; }
+.rab__collage-item--h { grid-area: h; }
+.rab__collage-item--i { grid-area: i; }
+.rab__collage-item--j { grid-area: j; }
 
 .rab__collage-item {
   position: relative;
+  margin: 0;
   overflow: hidden;
-  border-radius: clamp(16px, 1.4vw, 22px);
+  border-radius: clamp(14px, 1.4vw, 22px);
   background: var(--restaurant-dark-card);
   border: 1px solid rgba(255, 255, 255, 0.04);
+  isolation: isolate;
 
   /* Gallery-style staggered scroll-fade */
   opacity: 0;
@@ -2110,8 +2125,10 @@ shopify-account,
   height: 100%;
   object-fit: cover;
   display: block;
+  position: absolute;
+  inset: 0;
   transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.5s ease;
-  filter: saturate(0.96);
+  filter: saturate(0.95);
 }
 
 .rab__collage-item:hover .rab__collage-image {
@@ -2123,31 +2140,70 @@ shopify-account,
   background: linear-gradient(135deg, #1d1d1d, #131313);
 }
 
-/* Item placements — desktop (explicit areas tile predictably) */
-.rab__collage-item--a { grid-area: a; }
-.rab__collage-item--b { grid-area: b; }
-.rab__collage-item--c { grid-area: c; }
-.rab__collage-item--d { grid-area: d; }
-.rab__collage-item--e { grid-area: e; }
+/* Caption — identical to .rg__caption (hover-reveal on desktop) */
+.rab__collage-caption {
+  position: absolute;
+  bottom: 0.85rem;
+  left: 1rem;
+  z-index: 1;
+  font-family: var(--font-heading--family);
+  font-style: italic;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(13, 13, 13, 0.55);
+  backdrop-filter: blur(6px);
+  padding: 0.25em 0.6em;
+  border-radius: 3px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
 
-/* Mobile: a tall full-width feature (2 rows, not a thin strip), then
-   two rows of two square-ish tiles. */
+.rab__collage-item:hover .rab__collage-caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mobile — identical to the Gallery: bigger tiles, full-width heroes
+   interleaved with half-width pairs, captions always visible. */
 @media screen and (max-width: 749px) {
   .rab__collage-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     grid-template-rows: none;
-    grid-auto-rows: clamp(115px, 30vw, 165px);
-    grid-template-areas:
-      "a a"
-      "a a"
-      "b c"
-      "d e";
+    grid-auto-rows: clamp(155px, 40vw, 230px);
+    grid-template-areas: none;
     gap: 0.5rem;
   }
 
-  /* Captions readable at the larger size */
-  .rab__collage .rab__photo-caption {
-    font-size: 0.8rem;
+  .rab__collage-item--a, .rab__collage-item--b, .rab__collage-item--c, .rab__collage-item--d,
+  .rab__collage-item--e, .rab__collage-item--f, .rab__collage-item--g, .rab__collage-item--h,
+  .rab__collage-item--i, .rab__collage-item--j { grid-area: auto; }
+
+  .rab__collage-item--a { grid-column: span 6; grid-row: span 2; }
+  .rab__collage-item--b { grid-column: span 3; grid-row: span 2; }
+  .rab__collage-item--c { grid-column: span 3; grid-row: span 2; }
+  .rab__collage-item--d { grid-column: span 6; grid-row: span 2; }
+  .rab__collage-item--e { grid-column: span 3; grid-row: span 2; }
+  .rab__collage-item--f { grid-column: span 3; grid-row: span 2; }
+  .rab__collage-item--g { grid-column: span 6; grid-row: span 2; }
+  .rab__collage-item--h { grid-column: span 3; grid-row: span 2; }
+  .rab__collage-item--i { grid-column: span 3; grid-row: span 2; }
+  .rab__collage-item--j { grid-column: span 6; grid-row: span 2; }
+
+  .rab__collage-item {
+    transform: translateY(18px) scale(0.98);
+    transition:
+      opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.4s ease;
+    transition-delay: var(--rab-delay, 0ms);
+  }
+
+  .rab__collage-caption {
+    opacity: 1;
+    transform: translateY(0);
+    font-size: 0.78rem;
   }
 }
 

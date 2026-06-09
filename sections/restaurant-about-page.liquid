@@ -133,50 +133,27 @@
     </div>
 
     <div class="rab__collage-grid">
-      <figure class="rab__collage-item rab__collage-item--a">
-        {%- if section.settings.collage_image_1 != blank -%}
-          {{ section.settings.collage_image_1 | image_url: width: 1200 | image_tag: class: 'rab__collage-image', sizes: '50vw', widths: '500,800,1200', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption rab__photo-caption--top-left">— {{ section.settings.collage_caption_1 | default: 'ножът' }}</figcaption>
-      </figure>
+      {%- capture rab_cell_a -%}{%- if section.settings.collage_image_1 != blank -%}{{ section.settings.collage_image_1 | image_url: width: 1800 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 45vw, 100vw', widths: '600,1000,1400,1800', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+      {%- capture rab_cell_b -%}{%- if section.settings.collage_image_2 != blank -%}{{ section.settings.collage_image_2 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 35vw, 100vw', widths: '600,1000,1300,1600', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+      {%- capture rab_cell_c -%}{%- if section.settings.collage_image_3 != blank -%}{{ section.settings.collage_image_3 | image_url: width: 1800 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 35vw, 100vw', widths: '600,1000,1400,1800', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+      {%- capture rab_cell_d -%}{%- if section.settings.collage_image_4 != blank -%}{{ section.settings.collage_image_4 | image_url: width: 1800 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 35vw, 100vw', widths: '600,1000,1400,1800', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+      {%- capture rab_cell_e -%}{%- if section.settings.collage_image_5 != blank -%}{{ section.settings.collage_image_5 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 35vw, 100vw', widths: '600,1000,1300,1600', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+      {%- capture rab_cell_f -%}{%- if section.settings.collage_image_6 != blank -%}{{ section.settings.collage_image_6 | image_url: width: 1800 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 30vw, 100vw', widths: '600,1000,1400,1800', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+      {%- capture rab_cell_g -%}{%- if section.settings.collage_image_7 != blank -%}{{ section.settings.collage_image_7 | image_url: width: 1200 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 18vw, 50vw', widths: '400,700,1000,1200', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+      {%- capture rab_cell_h -%}{%- if section.settings.collage_image_8 != blank -%}{{ section.settings.collage_image_8 | image_url: width: 1200 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 18vw, 50vw', widths: '400,700,1000,1200', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+      {%- capture rab_cell_i -%}{%- if section.settings.collage_image_9 != blank -%}{{ section.settings.collage_image_9 | image_url: width: 1200 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 18vw, 50vw', widths: '400,700,1000,1200', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
+      {%- capture rab_cell_j -%}{%- if section.settings.collage_image_10 != blank -%}{{ section.settings.collage_image_10 | image_url: width: 1600 | image_tag: class: 'rab__collage-image', sizes: '(min-width: 990px) 30vw, 100vw', widths: '600,1000,1300,1600', loading: 'lazy' }}{%- else -%}<div class="rab__collage-image rab__collage-image--placeholder"></div>{%- endif -%}{%- endcapture -%}
 
-      <figure class="rab__collage-item rab__collage-item--b">
-        {%- if section.settings.collage_image_2 != blank -%}
-          {{ section.settings.collage_image_2 | image_url: width: 800 | image_tag: class: 'rab__collage-image', sizes: '25vw', widths: '300,500,800', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption">— {{ section.settings.collage_caption_2 | default: 'мигът' }}</figcaption>
-      </figure>
-
-      <figure class="rab__collage-item rab__collage-item--c">
-        {%- if section.settings.collage_image_3 != blank -%}
-          {{ section.settings.collage_image_3 | image_url: width: 1200 | image_tag: class: 'rab__collage-image', sizes: '50vw', widths: '500,800,1200', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption rab__photo-caption--bottom-right">— {{ section.settings.collage_caption_3 | default: 'рибата' }}</figcaption>
-      </figure>
-
-      <figure class="rab__collage-item rab__collage-item--d">
-        {%- if section.settings.collage_image_4 != blank -%}
-          {{ section.settings.collage_image_4 | image_url: width: 800 | image_tag: class: 'rab__collage-image', sizes: '25vw', widths: '300,500,800', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption">— {{ section.settings.collage_caption_4 | default: 'детайлът' }}</figcaption>
-      </figure>
-
-      <figure class="rab__collage-item rab__collage-item--e">
-        {%- if section.settings.collage_image_5 != blank -%}
-          {{ section.settings.collage_image_5 | image_url: width: 800 | image_tag: class: 'rab__collage-image', sizes: '25vw', widths: '300,500,800', loading: 'lazy' }}
-        {%- else -%}
-          <div class="rab__collage-image rab__collage-image--placeholder"></div>
-        {%- endif -%}
-        <figcaption class="rab__photo-caption rab__photo-caption--bottom-right">— {{ section.settings.collage_caption_5 | default: 'ароматът' }}</figcaption>
-      </figure>
+      <figure class="rab__collage-item rab__collage-item--a">{{ rab_cell_a }}{%- if section.settings.collage_caption_1 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_1 }}</figcaption>{%- endif -%}</figure>
+      <figure class="rab__collage-item rab__collage-item--b">{{ rab_cell_b }}{%- if section.settings.collage_caption_2 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_2 }}</figcaption>{%- endif -%}</figure>
+      <figure class="rab__collage-item rab__collage-item--c">{{ rab_cell_c }}{%- if section.settings.collage_caption_3 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_3 }}</figcaption>{%- endif -%}</figure>
+      <figure class="rab__collage-item rab__collage-item--d">{{ rab_cell_d }}{%- if section.settings.collage_caption_4 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_4 }}</figcaption>{%- endif -%}</figure>
+      <figure class="rab__collage-item rab__collage-item--e">{{ rab_cell_e }}{%- if section.settings.collage_caption_5 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_5 }}</figcaption>{%- endif -%}</figure>
+      <figure class="rab__collage-item rab__collage-item--f">{{ rab_cell_f }}{%- if section.settings.collage_caption_6 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_6 }}</figcaption>{%- endif -%}</figure>
+      <figure class="rab__collage-item rab__collage-item--g">{{ rab_cell_g }}{%- if section.settings.collage_caption_7 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_7 }}</figcaption>{%- endif -%}</figure>
+      <figure class="rab__collage-item rab__collage-item--h">{{ rab_cell_h }}{%- if section.settings.collage_caption_8 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_8 }}</figcaption>{%- endif -%}</figure>
+      <figure class="rab__collage-item rab__collage-item--i">{{ rab_cell_i }}{%- if section.settings.collage_caption_9 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_9 }}</figcaption>{%- endif -%}</figure>
+      <figure class="rab__collage-item rab__collage-item--j">{{ rab_cell_j }}{%- if section.settings.collage_caption_10 != blank -%}<figcaption class="rab__collage-caption">— {{ section.settings.collage_caption_10 }}</figcaption>{%- endif -%}</figure>
     </div>
   </section>
 
@@ -391,7 +368,7 @@
     var cells = grid.querySelectorAll('.rab__collage-item');
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var mobile = window.matchMedia('(max-width: 749px)').matches;
-    var stagger = mobile ? 60 : 110;
+    var stagger = mobile ? 40 : 80;
     cells.forEach(function (c, i) { c.style.setProperty('--rab-delay', (i * stagger) + 'ms'); });
 
     if (reduced || !('IntersectionObserver' in window)) {
@@ -575,16 +552,26 @@
       "label": "Heading line 2",
       "default": "хапка по хапка."
     },
-    { "type": "image_picker", "id": "collage_image_1", "label": "Photo 1 (large, top-left)" },
+    { "type": "image_picker", "id": "collage_image_1", "label": "Photo 1 (large feature, top-left)" },
     { "type": "text", "id": "collage_caption_1", "label": "Photo 1 caption", "default": "ножът" },
-    { "type": "image_picker", "id": "collage_image_2", "label": "Photo 2 (small, top-right)" },
+    { "type": "image_picker", "id": "collage_image_2", "label": "Photo 2 (top, 2nd)" },
     { "type": "text", "id": "collage_caption_2", "label": "Photo 2 caption", "default": "мигът" },
-    { "type": "image_picker", "id": "collage_image_3", "label": "Photo 3 (wide, mid-right)" },
+    { "type": "image_picker", "id": "collage_image_3", "label": "Photo 3 (tall, center)" },
     { "type": "text", "id": "collage_caption_3", "label": "Photo 3 caption", "default": "рибата" },
-    { "type": "image_picker", "id": "collage_image_4", "label": "Photo 4 (small, bottom-left)" },
+    { "type": "image_picker", "id": "collage_image_4", "label": "Photo 4 (wide, top-right)" },
     { "type": "text", "id": "collage_caption_4", "label": "Photo 4 caption", "default": "детайлът" },
-    { "type": "image_picker", "id": "collage_image_5", "label": "Photo 5 (square, bottom-right)" },
+    { "type": "image_picker", "id": "collage_image_5", "label": "Photo 5 (right)" },
     { "type": "text", "id": "collage_caption_5", "label": "Photo 5 caption", "default": "ароматът" },
+    { "type": "image_picker", "id": "collage_image_6", "label": "Photo 6 (tall, bottom-left)" },
+    { "type": "text", "id": "collage_caption_6", "label": "Photo 6 caption", "default": "" },
+    { "type": "image_picker", "id": "collage_image_7", "label": "Photo 7 (small, lower-mid-left)" },
+    { "type": "text", "id": "collage_caption_7", "label": "Photo 7 caption", "default": "" },
+    { "type": "image_picker", "id": "collage_image_8", "label": "Photo 8 (small, lower-mid)" },
+    { "type": "text", "id": "collage_caption_8", "label": "Photo 8 caption", "default": "" },
+    { "type": "image_picker", "id": "collage_image_9", "label": "Photo 9 (small, lower-mid-right)" },
+    { "type": "text", "id": "collage_caption_9", "label": "Photo 9 caption", "default": "" },
+    { "type": "image_picker", "id": "collage_image_10", "label": "Photo 10 (wide, bottom-right)" },
+    { "type": "text", "id": "collage_caption_10", "label": "Photo 10 caption", "default": "" },
     {
       "type": "header",
       "content": "Video"
