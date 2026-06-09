@@ -225,23 +225,22 @@
       {%- endif -%}
     {%- endcapture -%}
     <div class="rab__video-frame">
-      {%- if section.settings.video_poster != blank and has_video -%}
-        {%- comment -%} Poster + click-to-play (lightweight image first, video on tap) {%- endcomment -%}
+      {%- if has_video -%}
+        {%- comment -%} Always click-to-play in the lightbox pop-up (poster optional;
+           a dark frame + play button is shown when no poster is set). {%- endcomment -%}
         <div class="rab__video-placeholder" data-rab-poster>
-          {{ section.settings.video_poster | image_url: width: 1800 | image_tag: class: 'rab__video-poster', sizes: '100vw', widths: '600,1200,1800', loading: 'lazy' }}
+          {%- if section.settings.video_poster != blank -%}
+            {{ section.settings.video_poster | image_url: width: 1800 | image_tag: class: 'rab__video-poster', sizes: '100vw', widths: '600,1200,1800', loading: 'lazy' }}
+          {%- endif -%}
           <button type="button" class="rab__video-play" data-rab-play aria-label="Пусни видеото">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="8,5 19,12 8,19"/></svg>
           </button>
         </div>
         <template data-rab-player>{{ rab_player_markup }}</template>
-      {%- elsif has_video -%}
-        {{ rab_player_markup }}
-      {%- else -%}
+      {%- elsif section.settings.video_poster != blank -%}
         {%- comment -%} Only a poster, no video configured — just the image {%- endcomment -%}
         <div class="rab__video-placeholder">
-          {%- if section.settings.video_poster != blank -%}
-            {{ section.settings.video_poster | image_url: width: 1800 | image_tag: class: 'rab__video-poster', sizes: '100vw', widths: '600,1200,1800', loading: 'lazy' }}
-          {%- endif -%}
+          {{ section.settings.video_poster | image_url: width: 1800 | image_tag: class: 'rab__video-poster', sizes: '100vw', widths: '600,1200,1800', loading: 'lazy' }}
         </div>
       {%- endif -%}
     </div>
