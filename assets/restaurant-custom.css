@@ -2692,7 +2692,7 @@ shopify-account,
   display: block;
   background: var(--restaurant-dark);
   color: #fff;
-  padding: clamp(3rem, 7vw, 6rem) clamp(0.75rem, 1.2vw, 1.25rem);
+  padding: clamp(2.5rem, 5vw, 4rem) clamp(0.6rem, 1vw, 1.1rem) clamp(2rem, 4vw, 3rem);
   font-family: var(--font-body--family);
 }
 
@@ -2752,20 +2752,20 @@ shopify-account,
   font-weight: 300;
 }
 
-/* --- Bento grid --- */
+/* --- Bento grid — full-width, viewport-tall on desktop --- */
 .rg__grid {
-  max-width: 1500px;
+  max-width: none;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(5, clamp(110px, 11vw, 170px));
+  grid-template-rows: repeat(5, minmax(120px, 18vh));
   grid-template-areas:
     "a a b b b c c c d d d d"
     "a a b b b c c c e e e e"
     "f f f g g c c c e e e e"
     "f f f g g h h i i j j j"
     "f f f g g h h i i j j j";
-  gap: clamp(0.6rem, 1vw, 1rem);
+  gap: clamp(0.5rem, 0.8vw, 0.9rem);
 }
 
 .rg__cell--a { grid-area: a; }
@@ -2896,7 +2896,7 @@ shopify-account,
   .rg__grid {
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: none;
-    grid-auto-rows: clamp(120px, 28vw, 180px);
+    grid-auto-rows: clamp(155px, 40vw, 230px);
     grid-template-areas: none;
     gap: 0.5rem;
   }
@@ -2905,16 +2905,17 @@ shopify-account,
   .rg__cell--e, .rg__cell--f, .rg__cell--g, .rg__cell--h,
   .rg__cell--i, .rg__cell--j { grid-area: auto; }
 
+  /* Bigger tiles: full-width heroes interleaved with half-width pairs */
   .rg__cell--a { grid-column: span 6; grid-row: span 2; }
   .rg__cell--b { grid-column: span 3; grid-row: span 2; }
   .rg__cell--c { grid-column: span 3; grid-row: span 2; }
-  .rg__cell--d { grid-column: span 6; grid-row: span 1; }
+  .rg__cell--d { grid-column: span 6; grid-row: span 2; }
   .rg__cell--e { grid-column: span 3; grid-row: span 2; }
   .rg__cell--f { grid-column: span 3; grid-row: span 2; }
-  .rg__cell--g { grid-column: span 3; grid-row: span 2; }
+  .rg__cell--g { grid-column: span 6; grid-row: span 2; }
   .rg__cell--h { grid-column: span 3; grid-row: span 2; }
-  .rg__cell--i { grid-column: span 3; grid-row: span 1; }
-  .rg__cell--j { grid-column: span 3; grid-row: span 1; }
+  .rg__cell--i { grid-column: span 3; grid-row: span 2; }
+  .rg__cell--j { grid-column: span 6; grid-row: span 2; }
 
   .rg__cell {
     transform: translateY(18px) scale(0.98);
