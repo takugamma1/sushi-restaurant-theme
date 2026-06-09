@@ -213,6 +213,36 @@
   // Product modal triggers
   const productItems = document.querySelectorAll('[data-product-modal-trigger]');
 
+  // Hero image crossfade overlay (desktop): a second layered <img> on top of
+  // the default hero. Product images are preloaded so the swap is instant and
+  // fades in smoothly via CSS (no fetch-on-hover lag, no blank flash).
+  let heroOverlay = null;
+  const heroCache = new Map();
+  const preloadHero = (src) => {
+    if (!src || heroCache.has(src)) return;
+    const im = new Image();
+    im.decoding = 'async';
+    im.src = src;
+    heroCache.set(src, im);
+  };
+  if (isDesktop && heroImage) {
+    const heroWrap = heroImage.closest('.restaurant-menu__hero');
+    if (heroWrap) {
+      heroOverlay = document.createElement('img');
+      heroOverlay.className = 'restaurant-menu__hero-image restaurant-menu__hero-image--swap';
+      heroOverlay.alt = '';
+      heroOverlay.decoding = 'async';
+      // Insert directly above the base image but BELOW the gradient/title overlay.
+      heroWrap.insertBefore(heroOverlay, heroImage.nextSibling);
+    }
+    const content = document.querySelector('.restaurant-menu__content');
+    if (content && heroOverlay) {
+      // Revert to the default hero only when the pointer leaves the whole list,
+      // so moving between items just swaps the product image (no flicker).
+      content.addEventListener('mouseleave', () => heroOverlay.classList.remove('is-visible'));
+    }
+  }
+
   productItems.forEach(item => {
     item.addEventListener('click', function(e) {
       // Prevent if clicking the add button directly
@@ -234,36 +264,16 @@
       }
     });
 
-    // Hero image swap on hover (desktop only)
-    if (isDesktop && heroImage) {
-      let isAnimating = false;
+    // Hero image crossfade on hover (desktop only)
+    if (isDesktop && heroOverlay) {
+      let src = item.getAttribute('data-product-image') || '';
+      if (src.startsWith('//')) src = 'https:' + src;
+      if (src) preloadHero(src);
 
       item.addEventListener('mouseenter', function() {
-        let productImage = this.getAttribute('data-product-image');
-        if (productImage && productImage.startsWith('//')) {
-          productImage = 'https:' + productImage;
-        }
-        if (productImage && productImage.length > 0 && !isAnimating) {
-          isAnimating = true;
-          heroImage.style.opacity = '0';
-          setTimeout(() => {
-            heroImage.src = productImage;
-            heroImage.style.opacity = '1';
-            isAnimating = false;
-          }, 250);
-        }
-      });
-
-      item.addEventListener('mouseleave', function() {
-        if (defaultHeroSrc && defaultHeroSrc.length > 0 && !isAnimating) {
-          isAnimating = true;
-          heroImage.style.opacity = '0';
-          setTimeout(() => {
-            heroImage.src = defaultHeroSrc;
-            heroImage.style.opacity = '1';
-            isAnimating = false;
-          }, 250);
-        }
+        if (!src) return;
+        if (heroOverlay.getAttribute('src') !== src) heroOverlay.setAttribute('src', src);
+        heroOverlay.classList.add('is-visible');
       });
     }
   });
@@ -317,14 +327,27 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
     position: absolute;
     inset: 0;
-    transition: opacity 0.25s ease-in-out;
+  }
+
+  /* Crossfade layer for the hover image swap */
+  .restaurant-menu__hero-image--swap {
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .restaurant-menu__hero-image--swap.is-visible {
+    opacity: 1;
   }
 
   .restaurant-menu__hero-overlay {
     position: absolute;
     inset: 0;
+    z-index: 2;
     background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.15) 50%, transparent 100%);
     display: flex;
     flex-direction: column;
