@@ -47,12 +47,30 @@
         {%- assign tab_idx = 0 -%}
         {%- for block in section.blocks -%}
           {%- if block.type == 'category' -%}
+            {%- assign tab_collection = block.settings.collection -%}
+            {%- assign tab_image = tab_collection.products.first.featured_image | default: tab_collection.image -%}
             <button
               class="rm-tab{% if tab_idx == 0 %} rm-tab--active{% endif %}"
               data-tab="{{ tab_idx }}"
               data-collection="{{ block.settings.collection.handle }}"
               type="button"
-            >{{ block.settings.tab_label | default: block.settings.title }}</button>
+            >
+              <span class="rm-tab__bubble">
+                {%- if tab_image != blank -%}
+                  <img
+                    class="rm-tab__img"
+                    src="{{ tab_image | image_url: width: 160, height: 160, crop: 'center' }}"
+                    alt="{{ block.settings.tab_label | default: block.settings.title | escape }}"
+                    width="72"
+                    height="72"
+                    loading="lazy"
+                  >
+                {%- else -%}
+                  <span class="rm-tab__img rm-tab__img--placeholder"></span>
+                {%- endif -%}
+              </span>
+              <span class="rm-tab__label">{{ block.settings.tab_label | default: block.settings.title }}</span>
+            </button>
             {%- assign tab_idx = tab_idx | plus: 1 -%}
           {%- endif -%}
         {%- endfor -%}
@@ -387,17 +405,17 @@
     overflow-y: auto;
   }
 
-  /* Category tabs — single scrollable row (no wrapping badges) */
+  /* Category tabs — Instagram-style story bubbles in a scrollable carousel */
   .rm-tabs {
     display: flex;
-    gap: 8px;
+    gap: 14px;
     margin-bottom: 2rem;
     flex-wrap: nowrap;
     overflow-x: auto;
     scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding-bottom: 6px;
+    padding: 4px 2px 10px;
     position: sticky;
     top: 0;
     z-index: 5;
@@ -412,32 +430,79 @@
   }
 
   .rm-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 84px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Gradient story ring */
+  .rm-tab__bubble {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    padding: 3px;
+    background: rgba(255, 255, 255, 0.18);
+    box-sizing: border-box;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+
+  .rm-tab__img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    /* inner gap between the ring and the photo */
+    border: 2px solid var(--restaurant-dark, #0D0D0D);
+    background: #2a2a2a;
+  }
+
+  .rm-tab__img--placeholder {
+    background: #2a2a2a;
+  }
+
+  .rm-tab__label {
     font-size: var(--rm-tab-size, 11px);
     font-family: var(--font-body--family);
     font-weight: 500;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 999px;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease;
-    white-space: nowrap;
-    flex-shrink: 0;
-    scroll-snap-align: start;
+    color: rgba(255, 255, 255, 0.55);
+    text-align: center;
+    line-height: 1.2;
+    max-width: 84px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.3s ease;
   }
 
-  .rm-tab:hover {
-    color: rgba(255,255,255,0.8);
-    border-color: rgba(255,255,255,0.3);
+  .rm-tab:hover .rm-tab__bubble {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
   }
 
-  .rm-tab--active {
+  .rm-tab:hover .rm-tab__label {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .rm-tab--active .rm-tab__bubble {
+    background: linear-gradient(135deg, var(--restaurant-accent, #F98760), #f9b873);
+  }
+
+  .rm-tab--active .rm-tab__label {
     color: var(--restaurant-accent, #F98760);
-    border-color: var(--restaurant-accent, #F98760);
-    background: rgba(249, 135, 96, 0.08);
+    font-weight: 600;
   }
 
   /* Panels */
@@ -694,7 +759,23 @@
 
     .rm-tabs {
       margin-bottom: 1.25rem;
-      gap: 6px;
+      gap: 12px;
+    }
+
+    .rm-tab {
+      width: 72px;
+    }
+
+    .rm-tab__bubble {
+      width: 62px;
+      height: 62px;
+      padding: 2.5px;
+    }
+
+    .rm-tab__label {
+      max-width: 72px;
+      font-size: 10px;
+      letter-spacing: 0.02em;
     }
 
     .rm-category-wrapper {
