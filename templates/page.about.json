@@ -46,6 +46,12 @@
         "collage_caption_4": "Завършек",
         "collage_image_5": "shopify://shop_images/Screenshot_2026-05-16_170919.png",
         "collage_caption_5": "Наслада",
+        "collage_caption_6": "",
+        "collage_caption_7": "",
+        "collage_caption_8": "",
+        "collage_caption_9": "",
+        "collage_caption_10": "",
+        "video_file_url": "",
         "video": "shopify://files/videos/restaurant-about-video.mp4",
         "video_url": "",
         "video_poster": "shopify://shop_images/1767969736740725.jpg",
@@ -136,7 +142,8 @@
       ],
       "name": "Contact Grid & Footer",
       "settings": {
-        "follow_heading": "ПОСЛЕДВАЙТЕ НИ",
+        "hero_image": "shopify://shop_images/Screenshot_2026-05-16_170734.png",
+        "follow_heading": "СУШИ БАР МАНГО",
         "hours_title": "РАБОТНО ВРЕМЕ",
         "hours_mon": "16:00 - 22:30",
         "hours_tue": "16:00 - 22:30",
@@ -152,8 +159,9 @@
         "social_facebook": "",
         "social_instagram": "",
         "social_twitter": "",
+        "footer_logo": "shopify://shop_images/Group_24.png",
         "footer_logo_height": 56,
-        "footer_menu": "",
+        "footer_menu": "main-menu",
         "color_scheme": ""
       }
     }
