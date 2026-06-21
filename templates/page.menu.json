@@ -12,22 +12,12 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
-        "category_nLp68D": {
+        "category_7iJDCe": {
           "type": "category",
           "settings": {
-            "title": "АЛКОХОЛНИ НАПИТКИ",
+            "title": "СЕТОВЕ",
             "tab_label": "",
-            "collection": "алкохолни-напитки",
-            "max_products": 10,
-            "sale_badge_text": "Най-продаван"
-          }
-        },
-        "category_afd99j": {
-          "type": "category",
-          "settings": {
-            "title": "БЕЗАЛКОХОЛНИ НАПИТКИ",
-            "tab_label": "",
-            "collection": "безалкохолни-напитки",
+            "collection": "сетове",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -78,16 +68,6 @@
             "title": "СОСОВЕ ЗА СУШИ",
             "tab_label": "",
             "collection": "сосове-за-суши",
-            "max_products": 10,
-            "sale_badge_text": "Най-продаван"
-          }
-        },
-        "category_7iJDCe": {
-          "type": "category",
-          "settings": {
-            "title": "СЕТОВЕ",
-            "tab_label": "",
-            "collection": "сетове",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -171,17 +151,35 @@
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
+        },
+        "category_afd99j": {
+          "type": "category",
+          "settings": {
+            "title": "БЕЗАЛКОХОЛНИ НАПИТКИ",
+            "tab_label": "",
+            "collection": "безалкохолни-напитки",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
+        "category_nLp68D": {
+          "type": "category",
+          "settings": {
+            "title": "АЛКОХОЛНИ НАПИТКИ",
+            "tab_label": "",
+            "collection": "алкохолни-напитки",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
         }
       },
       "block_order": [
-        "category_nLp68D",
-        "category_afd99j",
+        "category_7iJDCe",
         "category_dnh78J",
         "category_RRzetk",
         "category_QdArVJ",
         "category_HDbFjR",
         "category_e9xfwh",
-        "category_7iJDCe",
         "category_9DmcKe",
         "category_qBT8XW",
         "category_m4hGPP",
@@ -189,7 +187,9 @@
         "category_mango",
         "category_rGzUMD",
         "category_PKENkY",
-        "category_new"
+        "category_new",
+        "category_afd99j",
+        "category_nLp68D"
       ],
       "settings": {
         "hero_image": "shopify://shop_images/Screenshot_2026-05-16_135237.png",
