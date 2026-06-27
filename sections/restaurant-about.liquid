@@ -5,7 +5,7 @@
       {%- if section.settings.media_type == 'video' and section.settings.video != blank -%}
         {{ section.settings.video
           | video_tag:
-            autoplay: true, loop: true, controls: false, muted: true,
+            autoplay: true, loop: true, controls: false, muted: true, playsinline: true,
             class: 'ra__media'
         }}
       {%- elsif section.settings.image != blank -%}
@@ -56,7 +56,7 @@
             {%- if block.settings.media_type == 'video' and block.settings.video != blank -%}
               {{ block.settings.video
                 | video_tag:
-                  autoplay: true, loop: true, controls: false, muted: true,
+                  autoplay: true, loop: true, controls: false, muted: true, playsinline: true,
                   class: 'ra__card-img'
               }}
             {%- elsif block.settings.image != blank -%}
