@@ -1,0 +1,235 @@
+{%- doc -%}
+  Working-hours order gate.
+
+  Blocks ordering (add to cart / add to order / checkout) outside business hours
+  and shows a styled Bulgarian popup. The time check uses the STORE timezone
+  (Europe/Sofia) — NOT the visitor's device time — so it is correct for customers
+  in any country, and it follows daylight-saving automatically.
+
+  To change the hours or timezone, edit the three values below.
+{%- enddoc -%}
+
+{%- liquid
+  assign wh_open = '11:00'
+  assign wh_close = '21:55'
+  assign wh_tz = 'Europe/Sofia'
+-%}
+
+<dialog
+  id="working-hours-modal"
+  class="dialog-modal working-hours-modal color-{{ settings.popover_color_scheme }}"
+  role="alertdialog"
+  aria-labelledby="working-hours-heading"
+  aria-describedby="working-hours-text"
+>
+  <div class="working-hours-modal__inner">
+    <button
+      type="button"
+      class="working-hours-modal__close button-unstyled"
+      data-wh-close
+      aria-label="Затваряне"
+    >
+      <span class="svg-wrapper">{{- 'icon-close.svg' | inline_asset_content -}}</span>
+    </button>
+
+    <span class="working-hours-modal__icon" aria-hidden="true">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"></circle>
+        <polyline points="12 7 12 12 15.5 14"></polyline>
+      </svg>
+    </span>
+
+    <h2 id="working-hours-heading" class="working-hours-modal__heading">В момента сме затворени</h2>
+
+    <p id="working-hours-text" class="working-hours-modal__text">
+      Можете да направите поръчка само в работното ни време:<br>
+      <strong class="working-hours-modal__hours">{{ wh_open }} – {{ wh_close }} ч.</strong><br>
+      Заповядайте отново малко по-късно. Благодарим ви!
+    </p>
+
+    <button type="button" class="button working-hours-modal__cta" data-wh-close>
+      Разбрах
+    </button>
+  </div>
+</dialog>
+
+{%- comment -%}
+  Inline (classic, non-module) script so the capture-phase listeners register
+  BEFORE the theme's deferred ES-module event delegation (component.js binds
+  on:click via a document-level capture listener). That ordering lets us
+  stopImmediatePropagation and block the add-to-cart / checkout actions.
+{%- endcomment -%}
+<script>
+  (function () {
+    'use strict';
+
+    var CFG = { open: {{ wh_open | json }}, close: {{ wh_close | json }}, tz: {{ wh_tz | json }} };
+
+    function toMin(value) {
+      var parts = String(value).split(':');
+      return (parseInt(parts[0], 10) || 0) * 60 + (parseInt(parts[1], 10) || 0);
+    }
+
+    var OPEN_MIN = toMin(CFG.open);
+    var CLOSE_MIN = toMin(CFG.close);
+
+    // Current time in the STORE's timezone (handles DST automatically).
+    function storeMinutes() {
+      try {
+        var parts = new Intl.DateTimeFormat('en-GB', {
+          timeZone: CFG.tz, hour: '2-digit', minute: '2-digit', hour12: false
+        }).formatToParts(new Date());
+        var h = 0, m = 0;
+        for (var i = 0; i < parts.length; i++) {
+          if (parts[i].type === 'hour') h = parseInt(parts[i].value, 10) || 0;
+          else if (parts[i].type === 'minute') m = parseInt(parts[i].value, 10) || 0;
+        }
+        if (h === 24) h = 0;
+        return h * 60 + m;
+      } catch (e) {
+        var d = new Date();
+        return d.getHours() * 60 + d.getMinutes();
+      }
+    }
+
+    function isOpen() {
+      var t = storeMinutes();
+      return (CLOSE_MIN >= OPEN_MIN) ? (t >= OPEN_MIN && t <= CLOSE_MIN) : (t >= OPEN_MIN || t <= CLOSE_MIN);
+    }
+
+    var ORDER_SELECTOR = 'button[name="add"], add-to-cart-component button, button[name="checkout"], #checkout, .cart__checkout-button, [data-order-action]';
+
+    function getModal() { return document.getElementById('working-hours-modal'); }
+
+    function showModal() {
+      var d = getModal();
+      if (!d) return;
+      try {
+        if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); }
+        else d.setAttribute('open', '');
+      } catch (e) { d.setAttribute('open', ''); }
+    }
+
+    function closeModal() {
+      var d = getModal();
+      if (!d) return;
+      try { if (typeof d.close === 'function') d.close(); } catch (e) {}
+      d.removeAttribute('open');
+    }
+
+    function block(event) {
+      if (isOpen()) return;
+      var hit = event.target && event.target.closest ? event.target.closest(ORDER_SELECTOR) : null;
+      if (!hit && event.type === 'submit' && event.target && event.target.querySelector) {
+        if (event.target.querySelector('button[name="add"], button[name="checkout"]')) hit = event.target;
+      }
+      if (!hit) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      showModal();
+    }
+
+    // Capture phase => runs before the theme's delegated handlers.
+    document.addEventListener('click', block, true);
+    document.addEventListener('submit', block, true);
+
+    // Close: X button, "Разбрах" button, or backdrop click.
+    document.addEventListener('click', function (event) {
+      if (event.target && event.target.closest && event.target.closest('[data-wh-close]')) {
+        event.preventDefault();
+        closeModal();
+        return;
+      }
+      var d = getModal();
+      if (d && d.open && event.target === d) closeModal();
+    });
+
+    // Express checkout buttons (Shop Pay / PayPal) are iframes we can't intercept,
+    // so hide them while closed to prevent bypassing the gate.
+    function syncState() {
+      document.documentElement.classList.toggle('sushi-after-hours', !isOpen());
+    }
+    syncState();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', syncState);
+    setInterval(syncState, 30000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) syncState(); });
+  })();
+</script>
+
+{% stylesheet %}
+  .working-hours-modal {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    border: none;
+    width: min(92vw, 30rem);
+    padding: 0;
+  }
+
+  .working-hours-modal__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--gap-md, 1rem);
+    padding: clamp(1.75rem, 5vw, 2.75rem) clamp(1.25rem, 5vw, 2rem);
+  }
+
+  .working-hours-modal__close {
+    position: absolute;
+    top: var(--gap-sm, 0.5rem);
+    right: var(--gap-sm, 0.5rem);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border: 0;
+    background: transparent;
+    color: var(--color-foreground);
+    cursor: pointer;
+    line-height: 0;
+    opacity: 0.7;
+    transition: opacity var(--animation-speed, 0.2s) var(--animation-easing, ease);
+  }
+
+  .working-hours-modal__close:hover { opacity: 1; }
+  .working-hours-modal__close .svg-wrapper { display: inline-flex; width: 1.25rem; height: 1.25rem; }
+
+  .working-hours-modal__icon {
+    display: inline-flex;
+    color: var(--color-primary, var(--color-foreground));
+  }
+
+  .working-hours-modal__heading {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    color: var(--color-foreground-heading, var(--color-foreground));
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+    line-height: 1.2;
+  }
+
+  .working-hours-modal__text {
+    margin: 0;
+    font-family: var(--font-body--family);
+    color: var(--color-foreground-muted, var(--color-foreground));
+    line-height: 1.55;
+  }
+
+  .working-hours-modal__hours {
+    display: inline-block;
+    margin: 0.4rem 0;
+    font-size: 1.2em;
+    letter-spacing: 0.02em;
+    color: var(--color-foreground-heading, var(--color-foreground));
+  }
+
+  .working-hours-modal__cta {
+    margin-top: var(--gap-sm, 0.5rem);
+    min-width: 9rem;
+  }
+
+  html.sushi-after-hours .additional-checkout-buttons,
+  html.sushi-after-hours [data-shopify="dynamic-checkout-cart"] {
+    display: none !important;
+  }
+{% endstylesheet %}
