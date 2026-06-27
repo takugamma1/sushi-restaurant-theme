@@ -137,50 +137,13 @@
           </div>
         {%- endif -%}
 
-        <div class="rp__qty-row">
-          <span class="rp__qty-label">{{ section.settings.qty_label | default: 'Количество' }}</span>
-          <div class="rp__qty" data-qty>
-            <button type="button" class="rp__qty-btn" data-qty-decrement aria-label="Decrease quantity">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </button>
-            <input type="number" class="rp__qty-input" value="1" min="1" inputmode="numeric" aria-label="Quantity">
-            <button type="button" class="rp__qty-btn" data-qty-increment aria-label="Increase quantity">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </button>
-          </div>
-        </div>
-
         <div class="rp__cta-row">
-          <a href="{{ menu_page_url }}" class="rp__cta rp__cta--ghost">
-            <span class="rp__cta-label">{{ section.settings.cta_menu_label | default: 'ВИЖ МЕНЮТО' }}</span>
+          <a href="{{ menu_page_url }}" class="rp__cta rp__cta--solid">
+            <span class="rp__cta-label">{{ section.settings.cta_menu_label | default: 'ПОРЪЧАЙ ОТ МЕНЮТО' }}</span>
             <span class="rp__cta-arrow" aria-hidden="true">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </span>
           </a>
-
-          <button
-            type="button"
-            class="rp__cta rp__cta--solid"
-            data-rp-add-to-cart
-            data-variant-id="{{ current_variant.id }}"
-            data-redirect-url="{{ menu_page_url }}"
-            {% unless current_variant.available %}disabled{% endunless %}
-          >
-            <span class="rp__cta-label" data-cta-label-default>
-              {%- if current_variant.available -%}
-                {{ section.settings.cta_add_label | default: 'ДОБАВИ КЪМ ПОРЪЧКА' }}
-              {%- else -%}
-                {{ 'products.product.sold_out' | t | default: 'ИЗЧЕРПАН' }}
-              {%- endif -%}
-            </span>
-            <span class="rp__cta-label rp__cta-label--loading" hidden>
-              <span class="rp__spinner" aria-hidden="true"></span>
-              {{ section.settings.cta_loading_label | default: 'ДОБАВЯНЕ...' }}
-            </span>
-            <span class="rp__cta-arrow" aria-hidden="true">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </span>
-          </button>
         </div>
 
         {%- if section.settings.show_meta -%}

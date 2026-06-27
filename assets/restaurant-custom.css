@@ -1417,6 +1417,11 @@ shopify-account,
   }
 }
 
+/* Menu-only product CTA: a single button spans the full width */
+.rp__cta-row:has(> :only-child) {
+  grid-template-columns: 1fr;
+}
+
 .rp__cta {
   position: relative;
   display: inline-flex;
