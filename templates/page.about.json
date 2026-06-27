@@ -124,14 +124,14 @@
         "footer_link_JMaafa": {
           "type": "footer_link",
           "settings": {
-            "label": "Licensing",
+            "label": "Политика за поверителност",
             "link": ""
           }
         },
         "footer_link_bGhfnQ": {
           "type": "footer_link",
           "settings": {
-            "label": "Styleguide",
+            "label": "Общи условия",
             "link": ""
           }
         }
@@ -163,7 +163,6 @@
         "social_facebook": "https://www.facebook.com/sushibarmango",
         "social_instagram": "https://www.instagram.com/sushibar_mango/?hl=bg",
         "social_twitter": "",
-        "footer_logo": "shopify://shop_images/Group_24.png",
         "footer_logo_height": 56,
         "footer_menu": "main-menu",
         "color_scheme": ""
