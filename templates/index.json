@@ -457,41 +457,41 @@
           "type": "instagram_image",
           "settings": {
             "image": "shopify://shop_images/Screenshot_2026-05-16_133636.png",
-            "link": ""
+            "link": "https://www.instagram.com/sushibar_mango/"
           }
         },
         "instagram_image_E4WGGt": {
           "type": "instagram_image",
           "settings": {
             "image": "shopify://shop_images/1767969736108336.jpg",
-            "link": ""
+            "link": "https://www.instagram.com/sushibar_mango/"
           }
         },
         "instagram_image_gWg3tn": {
           "type": "instagram_image",
           "settings": {
             "image": "shopify://shop_images/Screenshot_2026-05-16_134318.png",
-            "link": ""
+            "link": "https://www.instagram.com/sushibar_mango/"
           }
         },
         "instagram_image_nJp7fe": {
           "type": "instagram_image",
           "settings": {
             "image": "shopify://shop_images/Screenshot_2026-05-16_134640.png",
-            "link": ""
+            "link": "https://www.instagram.com/sushibar_mango/"
           }
         },
         "footer_link_rMiEzU": {
           "type": "footer_link",
           "settings": {
-            "label": "Licensing",
+            "label": "Политика за поверителност",
             "link": ""
           }
         },
         "footer_link_UCHxCx": {
           "type": "footer_link",
           "settings": {
-            "label": "Styleguide",
+            "label": "Общи условия",
             "link": ""
           }
         }
@@ -509,12 +509,12 @@
         "hero_image": "shopify://shop_images/Screenshot_2026-05-16_134242.png",
         "follow_heading": "СУШИ БАР  МАНГО",
         "hours_title": "РАБОТНО ВРЕМЕ",
-        "hours_mon": "16:00 - 22:30",
-        "hours_tue": "16:00 - 22:30",
-        "hours_wed": "16:00 - 22:30",
-        "hours_thu": "16:00 - 22:30",
-        "hours_fri": "16:00 - 22:30",
-        "hours_weekend": "16:00 - 22:30",
+        "hours_mon": "11:00 - 22:00",
+        "hours_tue": "11:00 - 22:00",
+        "hours_wed": "11:00 - 22:00",
+        "hours_thu": "11:00 - 22:00",
+        "hours_fri": "11:00 - 22:00",
+        "hours_weekend": "11:00 - 22:00",
         "map_address": "g.k. BrizPrimorski, ul. \"Doctor Nikolay Kolarov 1, 9010 Varna",
         "map_link": "https://maps.app.goo.gl/3HaperFWjvsfHCJy8",
         "address": "g.k. BrizPrimorski, ul. \"Doctor Nikolay Kolarov 1, 9010 Varna",
