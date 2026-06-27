@@ -12,6 +12,16 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_bTdAxh": {
+          "type": "category",
+          "settings": {
+            "title": "Гьози и скариди",
+            "tab_label": "",
+            "collection": "топли-предложения",
+            "max_products": 20,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_7iJDCe": {
           "type": "category",
           "settings": {
@@ -174,6 +184,7 @@
         }
       },
       "block_order": [
+        "category_bTdAxh",
         "category_7iJDCe",
         "category_dnh78J",
         "category_RRzetk",
