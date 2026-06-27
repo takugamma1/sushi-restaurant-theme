@@ -485,7 +485,7 @@
           "type": "footer_link",
           "settings": {
             "label": "Политика за поверителност",
-            "link": ""
+            "link": "shopify://pages/политика-за-поверителност"
           }
         },
         "footer_link_UCHxCx": {
