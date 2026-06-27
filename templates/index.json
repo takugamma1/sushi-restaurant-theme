@@ -487,13 +487,6 @@
             "label": "Политика за поверителност",
             "link": "shopify://pages/политика-за-поверителност"
           }
-        },
-        "footer_link_UCHxCx": {
-          "type": "footer_link",
-          "settings": {
-            "label": "Общи условия",
-            "link": ""
-          }
         }
       },
       "block_order": [
@@ -501,8 +494,7 @@
         "instagram_image_E4WGGt",
         "instagram_image_gWg3tn",
         "instagram_image_nJp7fe",
-        "footer_link_rMiEzU",
-        "footer_link_UCHxCx"
+        "footer_link_rMiEzU"
       ],
       "name": "Contact Grid & Footer",
       "settings": {
