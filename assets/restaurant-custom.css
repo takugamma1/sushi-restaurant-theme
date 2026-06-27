@@ -663,6 +663,13 @@ shopify-account,
   white-space: nowrap;
 }
 
+/* Larger working hours on desktop */
+@media screen and (min-width: 990px) {
+  .restaurant-hours__row {
+    font-size: 1.05rem;
+  }
+}
+
 /* ================================
  * Contact Info Card
  * ================================ */

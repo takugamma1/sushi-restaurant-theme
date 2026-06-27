@@ -5,17 +5,22 @@
 {%- enddoc -%}
 
 {%- liquid
-  assign nav_1_label = section.settings.nav_1_label | default: 'Начало'
+  comment
+    Labels intentionally have NO Liquid `default` so that clearing a link field
+    in the theme editor actually removes that item (the section schema still
+    pre-fills sensible defaults on first use). URLs keep a fallback for safety.
+  endcomment
+  assign nav_1_label = section.settings.nav_1_label
   assign nav_1_url = section.settings.nav_1_url | default: '/'
-  assign nav_2_label = section.settings.nav_2_label | default: 'Меню'
+  assign nav_2_label = section.settings.nav_2_label
   assign nav_2_url = section.settings.nav_2_url | default: '/pages/menu'
-  assign nav_3_label = section.settings.nav_3_label | default: 'Комбота'
+  assign nav_3_label = section.settings.nav_3_label
   assign nav_3_url = section.settings.nav_3_url | default: '/pages/combos'
-  assign nav_4_label = section.settings.nav_4_label | default: 'Ревюта'
+  assign nav_4_label = section.settings.nav_4_label
   assign nav_4_url = section.settings.nav_4_url | default: '/pages/reviews'
-  assign nav_5_label = section.settings.nav_5_label | default: 'За нас'
+  assign nav_5_label = section.settings.nav_5_label
   assign nav_5_url = section.settings.nav_5_url | default: '/pages/about'
-  assign nav_6_label = section.settings.nav_6_label | default: 'Контакти'
+  assign nav_6_label = section.settings.nav_6_label
   assign nav_6_url = section.settings.nav_6_url | default: '/pages/contact'
   assign cta_label = section.settings.drawer_cta_label | default: 'Поръчай сега'
   assign cta_url = section.settings.drawer_cta_url | default: '/pages/menu'
