@@ -157,12 +157,31 @@
 </script>
 
 {% stylesheet %}
-  .working-hours-modal {
+  /* `dialog.` prefix raises specificity above the theme's base `.dialog-modal`
+     rules (incl. its mobile full-screen override) so this stays a compact,
+     centered card on every screen size. */
+  dialog.working-hours-modal {
     background-color: var(--color-background);
     color: var(--color-foreground);
     border: none;
     width: min(92vw, 30rem);
+    max-width: min(92vw, 30rem);
+    height: auto;
+    max-height: min(90dvh, 42rem);
+    margin: auto;
     padding: 0;
+    border-radius: var(--style-border-radius-popover, 14px);
+  }
+
+  @media screen and (max-width: 749px) {
+    dialog.working-hours-modal {
+      width: min(92vw, 26rem);
+      max-width: min(92vw, 26rem);
+      height: auto;
+      max-height: 85dvh;
+      padding: 0;
+      border-radius: var(--style-border-radius-popover, 16px);
+    }
   }
 
   .working-hours-modal__inner {
