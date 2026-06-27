@@ -125,14 +125,7 @@
           "type": "footer_link",
           "settings": {
             "label": "Политика за поверителност",
-            "link": ""
-          }
-        },
-        "footer_link_bGhfnQ": {
-          "type": "footer_link",
-          "settings": {
-            "label": "Общи условия",
-            "link": ""
+            "link": "shopify://pages/политика-за-поверителност"
           }
         }
       },
@@ -141,8 +134,7 @@
         "instagram_image_hNazzR",
         "instagram_image_bbBdqX",
         "instagram_image_jtNaWy",
-        "footer_link_JMaafa",
-        "footer_link_bGhfnQ"
+        "footer_link_JMaafa"
       ],
       "name": "Contact Grid & Footer",
       "settings": {
