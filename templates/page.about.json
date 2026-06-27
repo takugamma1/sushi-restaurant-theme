@@ -97,28 +97,28 @@
           "type": "instagram_image",
           "settings": {
             "image": "shopify://shop_images/Screenshot_2026-05-16_133636.png",
-            "link": ""
+            "link": "https://www.instagram.com/sushibar_mango/?hl=bg"
           }
         },
         "instagram_image_hNazzR": {
           "type": "instagram_image",
           "settings": {
             "image": "shopify://shop_images/Screenshot_2026-05-16_133530.png",
-            "link": ""
+            "link": "https://www.instagram.com/sushibar_mango/?hl=bg"
           }
         },
         "instagram_image_bbBdqX": {
           "type": "instagram_image",
           "settings": {
             "image": "shopify://shop_images/sushi_1.jpg",
-            "link": ""
+            "link": "https://www.instagram.com/sushibar_mango/?hl=bg"
           }
         },
         "instagram_image_jtNaWy": {
           "type": "instagram_image",
           "settings": {
             "image": "shopify://shop_images/Screenshot_2026-02-22_at_15.25.40.png",
-            "link": ""
+            "link": "https://www.instagram.com/sushibar_mango/?hl=bg"
           }
         },
         "footer_link_JMaafa": {
@@ -149,19 +149,19 @@
         "hero_image": "shopify://shop_images/Screenshot_2026-05-16_170734.png",
         "follow_heading": "СУШИ БАР МАНГО",
         "hours_title": "РАБОТНО ВРЕМЕ",
-        "hours_mon": "16:00 - 22:30",
-        "hours_tue": "16:00 - 22:30",
-        "hours_wed": "16:00 - 22:30",
-        "hours_thu": "16:00 - 22:30",
-        "hours_fri": "16:00 - 22:30",
-        "hours_weekend": "16:00 - 22:30",
-        "map_address": "23 Greenfield Avenue, Prague",
-        "map_link": "",
-        "address": "23 Greenfield Avenue, Prague 120 00",
-        "phone": "+49 1234 567890",
-        "email": "email@example.com",
-        "social_facebook": "",
-        "social_instagram": "",
+        "hours_mon": "11:00 - 22:00",
+        "hours_tue": "11:00 - 22:00",
+        "hours_wed": "11:00 - 22:00",
+        "hours_thu": "11:00 - 22:00",
+        "hours_fri": "11:00 - 22:00",
+        "hours_weekend": "11:00 - 22:00",
+        "map_address": "g.k. BrizPrimorski, ul. \"Doctor Nikolay Kolarov 1, 9010 Varna",
+        "map_link": "https://maps.app.goo.gl/QqHHwGd1wv7vXZNZA",
+        "address": "g.k. BrizPrimorski, ul. \"Doctor Nikolay Kolarov 1, 9010 Varna",
+        "phone": "+359 878861022",
+        "email": "sushibarmango@gmail.com",
+        "social_facebook": "https://www.facebook.com/sushibarmango",
+        "social_instagram": "https://www.instagram.com/sushibar_mango/?hl=bg",
         "social_twitter": "",
         "footer_logo": "shopify://shop_images/Group_24.png",
         "footer_logo_height": 56,
