@@ -23,13 +23,14 @@
         "submit_label": "ИЗПРАТИ",
         "success_text": "Благодарим! Съобщението е изпратено — ще се свържем с вас скоро.",
         "address_label": "Адрес",
-        "address": "ул. Пример 23, София",
+        "address": "g.k. BrizPrimorski, ul. \"Doctor Nikolay Kolarov 1, 9010 Varna",
         "phone_label": "Телефон",
-        "phone": "+359 88 888 8888",
+        "phone": "+359 87 886 1022",
         "email_label": "Имейл",
-        "email": "hello@mangosushi.bg",
+        "email": "sushibarmango@gmail.com",
         "hours_label": "Работно време",
-        "hours": "Пон–Нед · 11:00 – 22:30",
+        "hours": "Пон–Нед · 11:00 – 22:00",
+        "map_embed": "",
         "back_label": "Към менюто",
         "menu_url": "/pages/меню-суши-манго"
       }
