@@ -128,7 +128,7 @@
           class="cart-drawer__heading h4 cart-drawer__heading--empty"
           id="cart-drawer-heading-empty"
         >
-          {{ 'content.your_cart_is_empty' | t }}
+          Количката ви е празна
         </h2>
 
         <div class="cart-drawer__items">
@@ -186,7 +186,7 @@
                   class="cart-drawer__heading h4"
                   id="cart-drawer-heading"
                 >
-                  {{ 'content.cart_title' | t }}
+                  Количка
                   {% render 'cart-bubble' %}
                 </h2>
 
@@ -216,12 +216,7 @@
                 <div
                   class="cart-drawer__summary"
                 >
-                  <div class="cart-pickup-promo" role="note">
-                    <span class="cart-pickup-promo__badge">-10%</span>
-                    <span class="cart-pickup-promo__text">
-                      Изберете <strong>взимане от място</strong> при плащане и получавате <strong>10% отстъпка</strong>!
-                    </span>
-                  </div>
+                  {% render 'cart-fulfillment', section_id: section.id %}
                   {% render 'cart-summary', section_id: section.id %}
                 </div>
               </scroll-hint>

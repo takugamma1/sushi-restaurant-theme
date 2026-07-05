@@ -10,7 +10,7 @@
   <div class="cart-totals__original-container cart-primary-typography">
     {%- if cart.cart_level_discount_applications.size > 0 -%}
       <span class="cart-totals__item cart-totals__original">
-        <span class="cart-totals__original-label">{{ 'content.cart_subtotal' | t }}</span>
+        <span class="cart-totals__original-label">Междинна сума</span>
         <span
           class="cart-totals__original-value cart-secondary-typography"
           data-testid="cart-subtotal-value"
@@ -21,7 +21,7 @@
       <ul
         class="cart-discounts"
         role="list"
-        aria-label="{{ 'content.discounts' | t }}"
+        aria-label="Отстъпки"
       >
         {%- for discount in cart.cart_level_discount_applications -%}
           <li class="cart-discounts__item">
@@ -62,7 +62,7 @@
             >
               <summary class="cart-note__summary">
                 <span class="cart-note__label cart-primary-typography">
-                  {{ 'content.seller_note' | t }}
+                  Бележка към поръчката
                 </span>
 
                 <span class="cart-totals__icon">
@@ -75,7 +75,7 @@
                   for="cart-note"
                   class="visually-hidden"
                 >
-                  {{- 'content.seller_note' | t -}}
+                  Бележка към поръчката
                 </label>
                 <textarea
                   form="cart-form"
@@ -121,7 +121,7 @@
             {% endif %}
           >
             <summary class="cart-discount__summary">
-              <span class="cart-discount__label cart-primary-typography">{{ 'content.discount' | t }}</span>
+              <span class="cart-discount__label cart-primary-typography">Отстъпка</span>
 
               <span class="cart-totals__icon">
                 {{- 'icon-plus.svg' | inline_asset_content -}}
@@ -145,7 +145,7 @@
                         for="cart-discount"
                         class="visually-hidden"
                       >
-                        {{- 'accessibility.discount' | t -}}
+                        Код за отстъпка
                       </label>
                       <input
                         id="cart-discount"
@@ -153,14 +153,14 @@
                         type="text"
                         name="discount"
                         size="8"
-                        placeholder="{{ 'content.discount_code' | t }}"
+                        placeholder="Код за отстъпка"
                         required
                       >
                       <button
                         type="submit"
                         class="button cart-discount__button"
                       >
-                        {{ 'actions.apply' | t }}
+                        Приложи
                       </button>
                     </form>
                   </div>
@@ -176,13 +176,13 @@
                       class="cart-discount__error-text cart-primary-typography hidden"
                       ref="cartDiscountErrorDiscountCode"
                     >
-                      {{ 'content.discount_code_error' | t: code: 'test' }}
+                      Този код за отстъпка не е валиден
                     </small>
                     <small
                       class="cart-discount__error-text cart-primary-typography hidden"
                       ref="cartDiscountErrorShipping"
                     >
-                      {{ 'content.shipping_discount_error' | t }}
+                      Кодът ще се приложи при плащането, ако е валиден за доставка
                     </small>
                   </div>
                   <ul class="cart-discount__codes">
@@ -228,7 +228,7 @@
       class="cart-totals__item cart-totals__total"
       role="status"
     >
-      <span class="cart-totals__total-label cart-primary-typography">{{ 'content.cart_estimated_total' | t }}</span>
+      <span class="cart-totals__total-label cart-primary-typography">Общо</span>
       <text-component
         ref="cartTotal"
         value="{{ total_price | strip_html }}"
@@ -253,19 +253,31 @@
   </div>
 </div>
 
+{%- liquid
+  # Delivery orders need a pin-drop address before checkout unlocks.
+  assign cf_mode = cart.attributes['Получаване'] | default: 'Доставка'
+  assign cf_blocked = false
+  if cf_mode != 'Вземане от място' and cart.attributes['Адрес за доставка'] == blank
+    assign cf_blocked = true
+  endif
+-%}
 <div class="cart__ctas">
   <button
     type="submit"
     id="checkout"
-    class="cart__checkout-button button"
+    class="cart__checkout-button button{% if cf_blocked %} cart__checkout-button--blocked{% endif %}"
     name="checkout"
     {% if cart == empty %}
       disabled
     {% endif %}
+    {% if cf_blocked %}
+      aria-disabled="true"
+      data-cf-blocked
+    {% endif %}
     form="cart-form"
   >
     <span class="button-text">
-      {{ 'content.checkout' | t }}
+      Към плащане
     </span>
   </button>
 

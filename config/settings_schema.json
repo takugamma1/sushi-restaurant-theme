@@ -1819,6 +1819,12 @@
         "step": 1,
         "unit": "px",
         "default": 0
+      },
+      {
+        "type": "text",
+        "id": "cf_storefront_token",
+        "label": "Storefront API token (адрес към checkout)",
+        "info": "Публичен Storefront API токен на приложението — нужен, за да се прехвърля адресът от картата към checkout полетата."
       }
     ]
   },
