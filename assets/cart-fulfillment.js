@@ -105,11 +105,33 @@ function cartToken() {
   return match ? decodeURIComponent(match[1]) : null;
 }
 
-async function pushAddressToCheckout(address) {
+/**
+ * Sync the checkout with the drawer choice via the Storefront API:
+ * - preselects the delivery method (PICK_UP / DELIVERY)
+ * - prefills the shipping address for delivery orders
+ */
+async function syncBuyerIdentity({ method, address }) {
   const state = getState();
-  if (!state?.storefrontToken || !address?.address1) return;
+  if (!state?.storefrontToken) return;
   const token = cartToken();
   if (!token) return;
+
+  const buyerIdentity = { countryCode: 'BG' };
+  if (method) {
+    buyerIdentity.preferences = { delivery: { deliveryMethod: [method] } };
+  }
+  if (address?.address1) {
+    buyerIdentity.deliveryAddressPreferences = [
+      {
+        deliveryAddress: {
+          address1: address.address1,
+          city: address.city || '',
+          zip: address.zip || '',
+          country: 'Bulgaria',
+        },
+      },
+    ];
+  }
 
   try {
     await fetch(`${window.Shopify?.routes?.root || '/'}api/2025-07/graphql.json`, {
@@ -126,19 +148,7 @@ async function pushAddressToCheckout(address) {
         }`,
         variables: {
           cartId: `gid://shopify/Cart/${token}`,
-          buyerIdentity: {
-            countryCode: 'BG',
-            deliveryAddressPreferences: [
-              {
-                deliveryAddress: {
-                  address1: address.address1,
-                  city: address.city || '',
-                  zip: address.zip || '',
-                  country: 'Bulgaria',
-                },
-              },
-            ],
-          },
+          buyerIdentity,
         },
       }),
     });
@@ -176,6 +186,7 @@ async function setMode(mode) {
       if (!applied) {
         showError('Отстъпката PICKUP10 не е активна — създайте я в Shopify Admin → Discounts.');
       }
+      syncBuyerIdentity({ method: 'PICK_UP' });
     } else {
       const saved = savedAddress();
       await updateCart(
@@ -191,8 +202,9 @@ async function setMode(mode) {
         state.sectionId
       );
       if (saved) {
-        pushAddressToCheckout(saved);
+        syncBuyerIdentity({ method: 'DELIVERY', address: saved });
       } else {
+        syncBuyerIdentity({ method: 'DELIVERY' });
         openMap();
       }
     }
@@ -384,7 +396,7 @@ async function confirmAddress() {
       },
       state.sectionId
     );
-    pushAddressToCheckout(resolved);
+    syncBuyerIdentity({ method: 'DELIVERY', address: resolved });
     getDialog()?.close();
   } catch (_) {
     showError('Адресът не се записа — опитайте отново.');
