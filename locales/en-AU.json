@@ -1,0 +1,96 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "shopify": {
+    "checkout": {
+      "tips": {
+        "title": "Driver tip",
+        "add_tip": "Add tip",
+        "description": "Add a tip for your delivery driver",
+        "message": " "
+      },
+      "general": {
+        "continue_to_shipping_method": "Continue to delivery methods",
+        "back_to_shipping_method": "Return to delivery method",
+        "edit_shipping_address": "Edit delivery address",
+        "edit_shipping_method": "Edit delivery method"
+      },
+      "review": {
+        "blocks": {
+          "shipping_address_title": "Deliver to"
+        }
+      },
+      "contact": {
+        "shipping_address_title": "Delivery address"
+      },
+      "delivery_options": {
+        "shipping_address": "Delivery Address"
+      },
+      "order_summary": {
+        "free_shipping_discount_label": "Free delivery",
+        "discount_requires_customer_notice": "Please submit your delivery information to apply the {{code}} discount code",
+        "shipping_information_does_not_meet_discount_requirements_notice": "Your delivery information does not meet the requirements for the {{code}} discount code",
+        "shipping_label": "Delivery"
+      },
+      "shipping": {
+        "shipping_method_title": " ",
+        "delivery_title": "Delivery",
+        "waiting_on_rate_notice": "Please wait while we fetch available delivery rates...",
+        "no_rates_for_cart_or_destination_notice": "There are no delivery methods available for your cart or destination.",
+        "no_rates_for_country_notice": "We do not offer delivery to {{country}}.",
+        "please_enter_your_shipping_information_notice": "Please enter your delivery information"
+      },
+      "payment": {
+        "same_billing_address_label": "Same as delivery address"
+      },
+      "shipping_errors": {
+        "shipping_method": "Your cart has been modified and the delivery rate you previously selected no longer applies. Please select a new rate."
+      },
+      "thank_you": {
+        "shipping_information_title": "Delivery information",
+        "shipping_address_title": "Delivery address",
+        "shipping_method_title": "Delivery method",
+        "marker": {
+          "shipping": "Delivery address",
+          "current": "Current delivery location"
+        },
+        "track_shipment": "Track delivery",
+        "confirmed_description_html": "We have accepted your order, and we are getting it ready. A confirmation email has been sent to {{ email }}. Come back to this page for updates on your delivery status.",
+        "no_tracking_number": "There is no tracking number for this delivery.",
+        "unfulfilled_items_title": "Preparing for delivery",
+        "unfulfilled_items_description": "We are currently preparing these items for delivery.",
+        "fulfillment": {
+          "unfulfilled_table_title": "Items preparing for delivery",
+          "fulfilled_table_title": "Items in this delivery"
+        },
+        "login_title": "Login to view all delivery details",
+        "failed_title": "We could not deliver your order",
+        "delivered_description_html": "Your order has been delivered to the address you provided. If you haven't received it, or if you have any other problems, please {{ contact_us }}.",
+        "delivered_title": "Your order has been delivered",
+        "attempted_delivery_description_html": "An attempt was made to deliver your order but it was unsuccessful. Please {{ contact_us }} to arrange another delivery attempt.",
+        "attempted_delivery_title": "An attempt was made to deliver your order",
+        "out_for_delivery_description_html": "Your order is on the delivery truck - expect it to arrive today. If you still haven't received it in the next 2 days, please {{ contact_us }}.",
+        "out_for_delivery_title": "Your order is out for delivery",
+        "in_transit_description": "Come back to this page for updates on your delivery status.",
+        "in_transit_title": "Your order is on the way",
+        "confirmed_title": "Your delivery is confirmed",
+        "order_updates_subscribe_to_email_notifications": "Get delivery updates by email",
+        "order_updates_subscribe_to_phone_notifications": "Get delivery updates by email or SMS",
+        "order_updates_subscribe_to_email_or_phone_notifications": "Get delivery updates by SMS"
+      }
+    },
+    "notices": {
+      "cart": {
+        "shipping_address_not_required": "This cart does not require delivery",
+        "shipping_address_invalid": "Invalid delivery address"
+      }
+    }
+  }
+}

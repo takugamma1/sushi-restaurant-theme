@@ -1,0 +1,75 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "shopify": {
+    "checkout": {
+      "contact": {
+        "phone_label": "Your phone number",
+        "optional_phone_label": "Your phone number (optional)",
+        "phone_placeholder": "Your phone number",
+        "optional_phone_placeholder": "Your phone number (optional)",
+        "shipping_address_title": "Pickup address",
+        "first_name_label": "Your first name",
+        "optional_first_name_label": "Your first name (optional)",
+        "first_name_placeholder": "Your first name (optional)",
+        "optional_first_name_placeholder": "Your first name",
+        "last_name_label": "Your last name",
+        "optional_last_name_label": "Your last name (optional)",
+        "last_name_placeholder": "Your last name",
+        "optional_last_name_placeholder": "Your last name (optional)"
+      },
+      "delivery_options": {
+        "shipping_address": "Pickup Address",
+        "pick_up_in_one_hour": " ",
+        "pick_up_in_two_hours": " ",
+        "pick_up_in_four_hours": " ",
+        "pick_up_in_twenty_four_hours": " ",
+        "pick_up_in_two_to_four_days": " ",
+        "pick_up_in_five_or_more_days": " ",
+        "pick_up_in_zero_to_two_hours": " ",
+        "pick_up_in_two_to_four_hours": " ",
+        "pick_up_immediately": " ",
+        "pick_up_next_day": " "
+      },
+      "thank_you": {
+        "marker": {
+          "shipping": "Pickup address",
+          "current": "Pickup address"
+        },
+        "shipping_address_title": "Pickup address",
+        "order_updates_subscribe_to_email_notifications": "Get pickup updates by email",
+        "order_updates_subscribe_to_phone_notifications": "Get pickup updates by email or SMS",
+        "order_updates_subscribe_to_email_or_phone_notifications": "Get pickup updates by SMS"
+      },
+      "general": {
+        "continue_to_shipping_method": "Continue",
+        "back_to_shipping_method": "Back",
+        "edit_shipping_address": "Edit",
+        "edit_shipping_method": "Edit"
+      },
+      "order_summary": {
+        "free_shipping_discount_label": "Free pickup",
+        "shipping_label": "Store Pickup"
+      },
+      "shipping": {
+        "delivery_title": "Pickup Address",
+        "shipping_method_title": "Pickup Method",
+        "waiting_on_rate_notice": "Please wait while we fetch available pickup rates...",
+        "no_rates_for_cart_or_destination_notice": "Pickup is not available for your cart or destination.",
+        "no_rates_for_country_notice": "We do not offer pickups in {{ country }}.",
+        "please_enter_your_shipping_information_notice": "Please go back to the shopping cart page and choose a pickup location."
+      },
+      "payment": {
+        "same_billing_address_label": "Please use the option below ⬇"
+      },
+      "shipping_title": "Store Pickup"
+    }
+  }
+}
