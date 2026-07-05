@@ -452,6 +452,25 @@ document.addEventListener(
       event.preventDefault();
       event.stopPropagation();
       openMap();
+      return;
+    }
+
+    // Unblocked checkout: ALWAYS sync method + address onto the cart first,
+    // then continue to checkout. Guarantees prefill even for stale carts.
+    const checkoutButton = event.target.closest('button#checkout, button[name="checkout"]');
+    if (checkoutButton && root()) {
+      event.preventDefault();
+      event.stopPropagation();
+      const state = getState();
+      const pickup = state?.mode === MODE_PICKUP;
+      const sync = syncBuyerIdentity({
+        method: pickup ? 'PICK_UP' : 'DELIVERY',
+        address: pickup ? null : savedAddress(),
+      });
+      // Never hang checkout on a slow network: 2.5s cap.
+      Promise.race([sync, new Promise((resolve) => setTimeout(resolve, 2500))]).finally(() => {
+        window.location.assign('/checkout');
+      });
     }
   },
   { capture: true }
@@ -472,3 +491,15 @@ if (!customElements.get('cart-fulfillment')) {
 
 // Move the dialog out of the morphing drawer as soon as the module loads.
 getDialog();
+
+// Background sync on load, so even express-pay paths see the drawer state.
+{
+  const state = getState();
+  if (state) {
+    const pickup = state.mode === MODE_PICKUP;
+    syncBuyerIdentity({
+      method: pickup ? 'PICK_UP' : 'DELIVERY',
+      address: pickup ? null : savedAddress(),
+    });
+  }
+}
