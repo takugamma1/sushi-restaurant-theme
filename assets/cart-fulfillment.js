@@ -153,17 +153,22 @@ async function syncBuyerIdentity({ method, address }) {
 
 /* ── mode switching ──────────────────────────────────── */
 
+function existingDiscountCodes() {
+  return Array.from(document.querySelectorAll('.cart-discount__pill'))
+    .map((pill) => pill.dataset.discountCode)
+    .filter(Boolean);
+}
+
 async function setMode(mode) {
   const state = getState();
   if (!state || state.mode === mode || busy) return;
   busy = true;
 
-  // Discount handling lives in the Bird Pickup & Delivery app (reacts to the
-  // ACTUAL delivery method chosen in checkout) — the drawer no longer touches
-  // discount codes, it only records the mode and preselects it in checkout.
+  const codes = existingDiscountCodes().filter((code) => code.toUpperCase() !== state.discountCode.toUpperCase());
+
   try {
     if (mode === MODE_PICKUP) {
-      await updateCart(
+      const data = await updateCart(
         {
           attributes: {
             'Получаване': MODE_PICKUP,
@@ -171,9 +176,16 @@ async function setMode(mode) {
             'Пощенски код': '',
             'Координати': '',
           },
+          discount: [...codes, state.discountCode].join(','),
         },
         state.sectionId
       );
+      const applied = (data.discount_codes || []).some(
+        (d) => d.code.toUpperCase() === state.discountCode.toUpperCase() && d.applicable
+      );
+      if (!applied) {
+        showError('Отстъпката не се приложи — опитайте отново.');
+      }
       syncBuyerIdentity({ method: 'PICK_UP' });
     } else {
       const saved = savedAddress();
@@ -185,6 +197,7 @@ async function setMode(mode) {
             'Пощенски код': saved ? saved.zip : '',
             'Координати': saved ? `${saved.lat}, ${saved.lng}` : '',
           },
+          discount: codes.join(','),
         },
         state.sectionId
       );
