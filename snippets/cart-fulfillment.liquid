@@ -1,0 +1,349 @@
+{%- doc -%}
+  Cart fulfillment chooser: Доставка (delivery) vs Вземане от място (pickup, −10%).
+
+  - Pickup: applies the PICKUP10 discount code (must exist in Admin → Discounts).
+  - Delivery: requires a precise address chosen via a Google Maps pin-drop dialog;
+    saves address + postcode + coordinates as cart attributes (they land on the order)
+    and prefills the checkout shipping address.
+
+  @param {string} section_id - section id used for cart section morphing.
+{%- enddoc -%}
+
+{%- liquid
+  assign mode = cart.attributes['Получаване'] | default: 'Доставка'
+  assign saved_address = cart.attributes['Адрес за доставка']
+  assign saved_zip = cart.attributes['Пощенски код']
+-%}
+
+<cart-fulfillment
+  class="cart-fulfillment"
+  data-section-id="{{ section_id }}"
+  data-mode="{{ mode | escape }}"
+  data-address="{{ saved_address | escape }}"
+  data-zip="{{ saved_zip | escape }}"
+  data-maps-key="AIzaSyDQ5_8gH7ejFp3O4yRp9BO-ZLAKa4NGnt0"
+  data-discount-code="PICKUP10"
+>
+  <p class="cart-fulfillment__label">НАЧИН НА ПОЛУЧАВАНЕ</p>
+
+  <div class="cart-fulfillment__toggle" role="radiogroup" aria-label="Начин на получаване">
+    <button
+      type="button"
+      class="cart-fulfillment__option{% if mode != 'Вземане от място' %} cart-fulfillment__option--active{% endif %}"
+      data-cf-mode="Доставка"
+      role="radio"
+      aria-checked="{% if mode != 'Вземане от място' %}true{% else %}false{% endif %}"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="18.5" cy="17.5" r="2.5"/><path d="M8 17.5h7M5.5 17.5 8 9h4l3.5 8.5M12 9V6h3"/></svg>
+      <span>Доставка</span>
+    </button>
+    <button
+      type="button"
+      class="cart-fulfillment__option{% if mode == 'Вземане от място' %} cart-fulfillment__option--active{% endif %}"
+      data-cf-mode="Вземане от място"
+      role="radio"
+      aria-checked="{% if mode == 'Вземане от място' %}true{% else %}false{% endif %}"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>
+      <span>Вземане от място</span>
+      <span class="cart-fulfillment__badge">−10%</span>
+    </button>
+  </div>
+
+  <div class="cart-fulfillment__body" data-cf-body>
+    {%- if mode == 'Вземане от място' -%}
+      <p class="cart-fulfillment__note cart-fulfillment__note--ok">
+        ✓ Отстъпка −10% приложена. Ще приготвим поръчката за вземане от ресторанта.
+      </p>
+    {%- else -%}
+      {%- if saved_address != blank -%}
+        <div class="cart-fulfillment__address">
+          <span class="cart-fulfillment__address-icon" aria-hidden="true">📍</span>
+          <span class="cart-fulfillment__address-text">
+            {{ saved_address }}
+            {%- if saved_zip != blank %} · п.к. {{ saved_zip }}{% endif -%}
+          </span>
+          <button type="button" class="cart-fulfillment__change" data-cf-open-map>Промени</button>
+        </div>
+      {%- else -%}
+        <button type="button" class="cart-fulfillment__pick button" data-cf-open-map>
+          <span aria-hidden="true">📍</span>
+          <span>Посочи адрес на картата</span>
+        </button>
+        <p class="cart-fulfillment__hint">
+          Изберете точния адрес с пин на картата — така доставката пристига без грешки.
+        </p>
+      {%- endif -%}
+    {%- endif -%}
+    <p class="cart-fulfillment__error" data-cf-error hidden></p>
+  </div>
+</cart-fulfillment>
+
+{%- comment -%} Map dialog lives at drawer level; created once, reused. {%- endcomment -%}
+<dialog id="cf-map-dialog" class="cf-map" aria-labelledby="cf-map-title">
+  <div class="cf-map__inner">
+    <div class="cf-map__head">
+      <h3 id="cf-map-title" class="cf-map__title">Посочете адрес за доставка</h3>
+      <button type="button" class="cf-map__close button-unstyled" data-cf-map-close aria-label="Затвори">✕</button>
+    </div>
+
+    <input
+      id="cf-map-search"
+      class="cf-map__search"
+      type="text"
+      placeholder="Търсене на адрес…"
+      autocomplete="off"
+    >
+
+    <div id="cf-map-canvas" class="cf-map__canvas">
+      <div class="cf-map__loading">Зареждане на картата…</div>
+    </div>
+
+    <p class="cf-map__hint">Преместете <strong>пина</strong> точно върху вашия вход.</p>
+
+    <div class="cf-map__resolved" data-cf-resolved hidden>
+      <span data-cf-resolved-text></span>
+    </div>
+
+    <div class="cf-map__actions">
+      <button type="button" class="cf-map__locate button-unstyled" data-cf-locate title="Моето местоположение">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>
+        <span>Моето местоположение</span>
+      </button>
+      <button type="button" class="cf-map__confirm button" data-cf-confirm disabled>
+        Потвърди адреса
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<script type="module" src="{{ 'cart-fulfillment.js' | asset_url }}"></script>
+
+{% stylesheet %}
+  /* Wider cart drawer (still a drawer) */
+  .cart-drawer__dialog {
+    width: min(520px, 100%);
+    max-width: min(520px, 100%);
+  }
+
+  /* ── Fulfillment block ─────────────────────────────── */
+  .cart-fulfillment {
+    display: block;
+    padding: var(--padding-md) 0 var(--padding-sm);
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  .cart-fulfillment__label {
+    margin: 0 0 var(--margin-xs);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+  }
+
+  .cart-fulfillment__toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .cart-fulfillment__option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.7rem 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--color-foreground);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+  }
+
+  .cart-fulfillment__option--active {
+    border-color: #f98760;
+    background: rgba(249, 135, 96, 0.1);
+    color: #f98760;
+  }
+
+  .cart-fulfillment__badge {
+    font-size: 0.66rem;
+    font-weight: 700;
+    padding: 0.1rem 0.35rem;
+    border-radius: 999px;
+    background: #f98760;
+    color: #1a0e08;
+  }
+
+  .cart-fulfillment__body { margin-top: 0.65rem; }
+
+  .cart-fulfillment__note {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  .cart-fulfillment__note--ok { color: #7fc98b; }
+
+  .cart-fulfillment__hint {
+    margin: 0.45rem 0 0;
+    font-size: 0.72rem;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+  }
+
+  .cart-fulfillment__pick {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-block: 0.8rem;
+  }
+
+  .cart-fulfillment__address {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px dashed var(--color-border);
+    border-radius: 10px;
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  .cart-fulfillment__address-text { flex: 1; }
+
+  .cart-fulfillment__change {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #f98760;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .cart-fulfillment__error {
+    margin: 0.5rem 0 0;
+    font-size: 0.74rem;
+    color: #e66;
+  }
+
+  /* ── Map dialog ────────────────────────────────────── */
+  dialog.cf-map {
+    border: 1px solid var(--color-border, #2a2a2a);
+    border-radius: 16px;
+    padding: 0;
+    width: min(560px, calc(100vw - 2rem));
+    background: var(--color-background, #141414);
+    color: var(--color-foreground, #fff);
+  }
+
+  dialog.cf-map::backdrop { background: rgb(0 0 0 / 0.6); }
+
+  .cf-map__inner { padding: 1.1rem 1.1rem 1rem; }
+
+  .cf-map__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  .cf-map__title {
+    margin: 0;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+  }
+
+  .cf-map__close {
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0.4rem;
+    cursor: pointer;
+    opacity: 0.7;
+  }
+  .cf-map__close:hover { opacity: 1; }
+
+  .cf-map__search {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    margin-bottom: 0.65rem;
+    border: 1px solid var(--color-border, #2a2a2a);
+    border-radius: 10px;
+    background: var(--color-input-background, #1a1a1a);
+    color: var(--color-input-text, #fff);
+    font-size: 0.85rem;
+  }
+
+  .cf-map__canvas {
+    width: 100%;
+    height: min(46vh, 340px);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #1a1a1a;
+    position: relative;
+  }
+
+  .cf-map__loading {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 0.8rem;
+    color: #8a8a8a;
+  }
+
+  .cf-map__hint {
+    margin: 0.55rem 0 0;
+    font-size: 0.72rem;
+    color: rgb(var(--color-foreground-rgb, 255 255 255) / 0.6);
+  }
+
+  .cf-map__resolved {
+    margin-top: 0.55rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 10px;
+    background: rgba(249, 135, 96, 0.1);
+    border: 1px solid rgba(249, 135, 96, 0.35);
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  .cf-map__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 0.8rem;
+  }
+
+  .cf-map__locate {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.74rem;
+    cursor: pointer;
+    opacity: 0.8;
+  }
+  .cf-map__locate:hover { opacity: 1; }
+
+  .cf-map__confirm { padding-inline: 1.4rem; }
+  .cf-map__confirm:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  @media screen and (max-width: 600px) {
+    dialog.cf-map {
+      width: calc(100vw - 1rem);
+      margin: auto;
+    }
+    .cf-map__canvas { height: 44vh; }
+    .cf-map__actions { flex-direction: column-reverse; align-items: stretch; }
+    .cf-map__confirm { width: 100%; }
+    .cf-map__locate { justify-content: center; }
+  }
+{% endstylesheet %}

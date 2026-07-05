@@ -39,7 +39,7 @@
   {% if cart.empty? or force_empty %}
     {%- if shop.customer_accounts_enabled and customer == null -%}
       <p>
-        {{ 'actions.log_in_html' | t: link: routes.account_login_url }}
+        Имате профил? <a href="{{ routes.account_login_url }}">Влезте</a>, за да поръчвате по-бързо.
       </p>
     {%- endif -%}
 
@@ -48,7 +48,7 @@
       href="{{ settings.empty_cart_button_link | default: routes.all_products_collection_url }}"
     >
       <span class="button-text">
-        {{ 'actions.continue_shopping' | t }}
+        Разгледай менюто
       </span>
     </a>
   {%- else -%}
@@ -321,7 +321,7 @@
                     <button
                       class="button cart-items__remove"
                       type="button"
-                      aria-label="{{ 'accessibility.remove_item' | t: title: item.title | escape }}"
+                      aria-label="Премахни {{ item.title | escape }}"
                       on:click="/onLineItemRemove/{{ item.index | plus: 1 }}"
                       {% assign can_remove = item.instructions.can_remove | default: true, allow_false: true %}
                       {% if can_remove == false %}
@@ -329,7 +329,7 @@
                       {% endif %}
                     >
                       {{- 'icon-delete.svg' | inline_asset_content -}}
-                      <span class="visually-hidden">{{ 'accessibility.remove' | t }}</span>
+                      <span class="visually-hidden">Премахни</span>
                     </button>
                   </div>
                 </td>
