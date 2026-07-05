@@ -189,9 +189,9 @@ async function setMode(mode) {
         state.sectionId
       );
       if (saved) {
-        syncBuyerIdentity({ method: 'DELIVERY', address: saved });
+        syncBuyerIdentity({ method: 'SHIPPING', address: saved });
       } else {
-        syncBuyerIdentity({ method: 'DELIVERY' });
+        syncBuyerIdentity({ method: 'SHIPPING' });
         openMap();
       }
     }
@@ -383,7 +383,7 @@ async function confirmAddress() {
       },
       state.sectionId
     );
-    syncBuyerIdentity({ method: 'DELIVERY', address: resolved });
+    syncBuyerIdentity({ method: 'SHIPPING', address: resolved });
     getDialog()?.close();
   } catch (_) {
     showError('Адресът не се записа — опитайте отново.');
@@ -451,7 +451,7 @@ document.addEventListener(
       const state = getState();
       const pickup = state?.mode === MODE_PICKUP;
       const sync = syncBuyerIdentity({
-        method: pickup ? 'PICK_UP' : 'DELIVERY',
+        method: pickup ? 'PICK_UP' : 'SHIPPING',
         address: pickup ? null : savedAddress(),
       });
       // Never hang checkout on a slow network: 2.5s cap.
@@ -485,7 +485,7 @@ getDialog();
   if (state) {
     const pickup = state.mode === MODE_PICKUP;
     syncBuyerIdentity({
-      method: pickup ? 'PICK_UP' : 'DELIVERY',
+      method: pickup ? 'PICK_UP' : 'SHIPPING',
       address: pickup ? null : savedAddress(),
     });
   }
