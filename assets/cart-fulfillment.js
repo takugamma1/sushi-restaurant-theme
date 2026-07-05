@@ -78,12 +78,6 @@ function showError(message) {
   el.hidden = false;
 }
 
-function existingDiscountCodes() {
-  return Array.from(document.querySelectorAll('.cart-discount__pill'))
-    .map((pill) => pill.dataset.discountCode)
-    .filter(Boolean);
-}
-
 async function updateCart({ attributes, discount }, sectionId) {
   const body = { sections: [sectionId] };
   if (attributes) body.attributes = attributes;
@@ -164,11 +158,12 @@ async function setMode(mode) {
   if (!state || state.mode === mode || busy) return;
   busy = true;
 
-  const codes = existingDiscountCodes().filter((code) => code.toUpperCase() !== state.discountCode.toUpperCase());
-
+  // Discount handling lives in the Bird Pickup & Delivery app (reacts to the
+  // ACTUAL delivery method chosen in checkout) — the drawer no longer touches
+  // discount codes, it only records the mode and preselects it in checkout.
   try {
     if (mode === MODE_PICKUP) {
-      const data = await updateCart(
+      await updateCart(
         {
           attributes: {
             'Получаване': MODE_PICKUP,
@@ -176,16 +171,9 @@ async function setMode(mode) {
             'Пощенски код': '',
             'Координати': '',
           },
-          discount: [...codes, state.discountCode].join(','),
         },
         state.sectionId
       );
-      const applied = (data.discount_codes || []).some(
-        (d) => d.code.toUpperCase() === state.discountCode.toUpperCase() && d.applicable
-      );
-      if (!applied) {
-        showError('Отстъпката PICKUP10 не е активна — създайте я в Shopify Admin → Discounts.');
-      }
       syncBuyerIdentity({ method: 'PICK_UP' });
     } else {
       const saved = savedAddress();
@@ -197,7 +185,6 @@ async function setMode(mode) {
             'Пощенски код': saved ? saved.zip : '',
             'Координати': saved ? `${saved.lat}, ${saved.lng}` : '',
           },
-          discount: codes.join(','),
         },
         state.sectionId
       );
