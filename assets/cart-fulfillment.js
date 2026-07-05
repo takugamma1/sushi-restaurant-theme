@@ -3,10 +3,12 @@ import { morphSection } from '@theme/section-renderer';
 
 /**
  * Cart fulfillment: Доставка / Вземане от място (−10%),
- * Google Maps pin-drop address capture, checkout prefill.
+ * Google Maps pin-drop address capture, checkout gating + prefill.
  *
- * State of record = cart attributes (rendered server-side into <cart-fulfillment> data attrs).
- * localStorage keeps the structured address pieces for checkout prefill.
+ * State of record = cart attributes (rendered server-side into <cart-fulfillment> data attrs,
+ * re-rendered on every section morph). localStorage keeps structured pieces for prefill.
+ *
+ * The map <dialog> is moved to <body> on first use so section morphs never destroy the map.
  */
 
 const LS_KEY = 'mango_delivery_address';
@@ -14,17 +16,20 @@ const MODE_DELIVERY = 'Доставка';
 const MODE_PICKUP = 'Вземане от място';
 
 const VARNA = { lat: 43.2141, lng: 27.9147 };
+// Bias search results to the Varna area
+const VARNA_BOUNDS = { south: 43.1, west: 27.75, north: 43.35, east: 28.1 };
 
 let mapsLoading = null;
 let map = null;
 let marker = null;
 let geocoder = null;
 let resolved = null; // { formatted, address1, city, zip, lat, lng }
+let searchTimer = null;
+let busy = false;
 
 /* ── helpers ─────────────────────────────────────────── */
 
 const root = () => document.querySelector('cart-fulfillment');
-const dialog = () => document.getElementById('cf-map-dialog');
 
 function getState() {
   const el = root();
@@ -36,7 +41,26 @@ function getState() {
     zip: el.dataset.zip || '',
     mapsKey: el.dataset.mapsKey,
     discountCode: el.dataset.discountCode || 'PICKUP10',
+    storefrontToken: el.dataset.storefrontToken || '',
   };
+}
+
+/**
+ * The dialog is rendered inside the (morphing) drawer section. Keep exactly one
+ * instance, attached to <body>, so morphs never kill the live map.
+ */
+function getDialog() {
+  const all = Array.from(document.querySelectorAll('dialog.cf-map'));
+  if (all.length === 0) return null;
+  let bodyDialog = all.find((d) => d.parentElement === document.body);
+  if (!bodyDialog) {
+    bodyDialog = all[0];
+    document.body.appendChild(bodyDialog);
+  }
+  all.forEach((d) => {
+    if (d !== bodyDialog) d.remove();
+  });
+  return bodyDialog;
 }
 
 function savedAddress() {
@@ -60,9 +84,6 @@ function existingDiscountCodes() {
     .filter(Boolean);
 }
 
-/**
- * One round-trip: update cart attributes (+ discount codes) and morph the drawer section.
- */
 async function updateCart({ attributes, discount }, sectionId) {
   const body = { sections: [sectionId] };
   if (attributes) body.attributes = attributes;
@@ -77,13 +98,63 @@ async function updateCart({ attributes, discount }, sectionId) {
   return data;
 }
 
+/* ── Storefront API: put the address on the cart so checkout is prefilled ── */
+
+function cartToken() {
+  const match = document.cookie.match(/(?:^|;\s*)cart=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+async function pushAddressToCheckout(address) {
+  const state = getState();
+  if (!state?.storefrontToken || !address?.address1) return;
+  const token = cartToken();
+  if (!token) return;
+
+  try {
+    await fetch(`${window.Shopify?.routes?.root || '/'}api/2025-07/graphql.json`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': state.storefrontToken,
+      },
+      body: JSON.stringify({
+        query: `mutation cfBuyer($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
+          cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
+            userErrors { field message }
+          }
+        }`,
+        variables: {
+          cartId: `gid://shopify/Cart/${token}`,
+          buyerIdentity: {
+            countryCode: 'BG',
+            deliveryAddressPreferences: [
+              {
+                deliveryAddress: {
+                  address1: address.address1,
+                  city: address.city || '',
+                  zip: address.zip || '',
+                  country: 'Bulgaria',
+                },
+              },
+            ],
+          },
+        },
+      }),
+    });
+  } catch (_) {
+    /* non-fatal: attributes still carry the address */
+  }
+}
+
 /* ── mode switching ──────────────────────────────────── */
 
 async function setMode(mode) {
   const state = getState();
-  if (!state || state.mode === mode) return;
+  if (!state || state.mode === mode || busy) return;
+  busy = true;
 
-  const codes = existingDiscountCodes().filter((code) => code !== state.discountCode);
+  const codes = existingDiscountCodes().filter((code) => code.toUpperCase() !== state.discountCode.toUpperCase());
 
   try {
     if (mode === MODE_PICKUP) {
@@ -119,10 +190,16 @@ async function setMode(mode) {
         },
         state.sectionId
       );
-      if (!saved) openMap();
+      if (saved) {
+        pushAddressToCheckout(saved);
+      } else {
+        openMap();
+      }
     }
   } catch (_) {
     showError('Нещо се обърка — опитайте отново.');
+  } finally {
+    busy = false;
   }
 }
 
@@ -134,7 +211,7 @@ function loadMaps(key) {
   mapsLoading = new Promise((resolve, reject) => {
     window.__cfMapsReady = () => resolve();
     const s = document.createElement('script');
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&language=bg&region=BG&callback=__cfMapsReady`;
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&language=bg&region=BG&callback=__cfMapsReady`;
     s.async = true;
     s.onerror = () => reject(new Error('maps_load_failed'));
     document.head.appendChild(s);
@@ -144,7 +221,7 @@ function loadMaps(key) {
 
 async function openMap() {
   const state = getState();
-  const dlg = dialog();
+  const dlg = getDialog();
   if (!state || !dlg) return;
 
   dlg.showModal();
@@ -152,17 +229,17 @@ async function openMap() {
   try {
     await loadMaps(state.mapsKey);
   } catch (_) {
-    dlg.querySelector('.cf-map__loading').textContent = 'Картата не можа да се зареди.';
+    const loading = dlg.querySelector('.cf-map__loading');
+    if (loading) loading.textContent = 'Картата не можа да се зареди. Проверете API ключа.';
     return;
   }
 
   const saved = savedAddress();
   const start = saved ? { lat: saved.lat, lng: saved.lng } : VARNA;
+  const canvas = dlg.querySelector('#cf-map-canvas');
 
-  if (!map) {
-    const canvas = document.getElementById('cf-map-canvas');
+  if (!map || !canvas.contains(map.getDiv())) {
     canvas.querySelector('.cf-map__loading')?.remove();
-
     map = new google.maps.Map(canvas, {
       center: start,
       zoom: saved ? 17 : 13,
@@ -171,31 +248,12 @@ async function openMap() {
       clickableIcons: false,
     });
     geocoder = new google.maps.Geocoder();
-    marker = new google.maps.Marker({
-      map,
-      position: start,
-      draggable: true,
-      title: 'Вашият адрес',
-    });
+    marker = new google.maps.Marker({ map, position: start, draggable: true, title: 'Вашият адрес' });
 
     marker.addListener('dragend', () => resolvePosition(marker.getPosition()));
     map.addListener('click', (e) => {
       marker.setPosition(e.latLng);
       resolvePosition(e.latLng);
-    });
-
-    const input = document.getElementById('cf-map-search');
-    const autocomplete = new google.maps.places.Autocomplete(input, {
-      componentRestrictions: { country: 'bg' },
-      fields: ['geometry', 'formatted_address', 'address_components'],
-    });
-    autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      if (!place.geometry) return;
-      map.panTo(place.geometry.location);
-      map.setZoom(17);
-      marker.setPosition(place.geometry.location);
-      applyGeocode(place, place.geometry.location);
     });
   } else {
     map.setCenter(start);
@@ -206,10 +264,60 @@ async function openMap() {
   if (saved) {
     resolved = saved;
     renderResolved();
-  } else if (state.address) {
-    // Cart attribute exists but localStorage is gone — re-resolve current pin.
-    resolvePosition(marker.getPosition());
   }
+}
+
+/* ── address search (Geocoding API — exact street results) ── */
+
+function onSearchInput(input) {
+  clearTimeout(searchTimer);
+  const query = input.value.trim();
+  if (query.length < 3) {
+    renderSuggestions([]);
+    return;
+  }
+  searchTimer = setTimeout(() => {
+    if (!geocoder) return;
+    geocoder.geocode(
+      {
+        address: query,
+        region: 'bg',
+        componentRestrictions: { country: 'BG' },
+        bounds: VARNA_BOUNDS,
+      },
+      (results, status) => {
+        if (status !== 'OK' || !results) {
+          renderSuggestions([]);
+          return;
+        }
+        renderSuggestions(results.slice(0, 5));
+      }
+    );
+  }, 350);
+}
+
+function renderSuggestions(results) {
+  const list = getDialog()?.querySelector('[data-cf-suggestions]');
+  if (!list) return;
+  list.innerHTML = '';
+  list.hidden = results.length === 0;
+  results.forEach((result) => {
+    const li = document.createElement('li');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'cf-map__suggestion';
+    btn.textContent = result.formatted_address;
+    btn.addEventListener('click', () => {
+      list.hidden = true;
+      const location = result.geometry.location;
+      map.panTo(location);
+      map.setZoom(17);
+      marker.setPosition(location);
+      applyGeocode(result, location);
+    });
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
 }
 
 function resolvePosition(latLng) {
@@ -227,22 +335,26 @@ function applyGeocode(result, latLng) {
   });
 
   const street = [parts.route, parts.street_number].filter(Boolean).join(' ');
+  const lat = typeof latLng.lat === 'function' ? latLng.lat() : latLng.lat;
+  const lng = typeof latLng.lng === 'function' ? latLng.lng() : latLng.lng;
+
   resolved = {
     formatted: result.formatted_address || street,
     address1: street || result.formatted_address || '',
     city: parts.locality || parts.postal_town || parts.administrative_area_level_1 || '',
     zip: parts.postal_code || '',
-    lat: +(typeof latLng.lat === 'function' ? latLng.lat() : latLng.lat).toFixed(6),
-    lng: +(typeof latLng.lng === 'function' ? latLng.lng() : latLng.lng).toFixed(6),
+    lat: +lat.toFixed(6),
+    lng: +lng.toFixed(6),
   };
   renderResolved();
 }
 
 function renderResolved() {
-  const box = dialog()?.querySelector('[data-cf-resolved]');
-  const text = dialog()?.querySelector('[data-cf-resolved-text]');
-  const confirm = dialog()?.querySelector('[data-cf-confirm]');
-  if (!box || !text || !confirm) return;
+  const dlg = getDialog();
+  const box = dlg?.querySelector('[data-cf-resolved]');
+  const text = dlg?.querySelector('[data-cf-resolved-text]');
+  const confirm = dlg?.querySelector('[data-cf-confirm]');
+  if (!box || !text || !confirm || !resolved) return;
 
   box.hidden = false;
   text.textContent = resolved.zip
@@ -253,7 +365,8 @@ function renderResolved() {
 
 async function confirmAddress() {
   const state = getState();
-  if (!state || !resolved) return;
+  if (!state || !resolved || busy) return;
+  busy = true;
 
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(resolved));
@@ -271,9 +384,12 @@ async function confirmAddress() {
       },
       state.sectionId
     );
-    dialog()?.close();
+    pushAddressToCheckout(resolved);
+    getDialog()?.close();
   } catch (_) {
     showError('Адресът не се записа — опитайте отново.');
+  } finally {
+    busy = false;
   }
 }
 
@@ -288,60 +404,59 @@ function locateMe() {
   });
 }
 
-/* ── checkout interception + prefill ─────────────────── */
-
-function onCheckoutClick(event) {
-  const button = event.target.closest('button#checkout, button[name="checkout"]');
-  if (!button) return;
-
-  const state = getState();
-  if (!state) return; // fulfillment UI not on this page — leave checkout alone
-
-  if (state.mode === MODE_PICKUP) return; // discount already on the cart
-
-  const saved = savedAddress();
-  if (!state.address && !saved) {
-    // Delivery without an address: open the map instead of checking out.
-    event.preventDefault();
-    event.stopPropagation();
-    openMap();
-    return;
-  }
-
-  if (saved && saved.address1) {
-    // Redirect with prefilled shipping address (attributes are already on the cart).
-    event.preventDefault();
-    event.stopPropagation();
-    const params = new URLSearchParams({
-      'checkout[shipping_address][address1]': saved.address1,
-      'checkout[shipping_address][city]': saved.city || '',
-      'checkout[shipping_address][zip]': saved.zip || '',
-      'checkout[shipping_address][country]': 'Bulgaria',
-    });
-    window.location.assign(`/checkout?${params.toString()}`);
-  }
-  // else: no structured pieces — let the normal submit proceed (address is on the order via attributes).
-}
-
-/* ── wiring (event delegation survives section morphs) ── */
+/* ── wiring (delegation survives morphs) ─────────────── */
 
 document.addEventListener(
   'click',
   (event) => {
     const modeButton = event.target.closest('[data-cf-mode]');
     if (modeButton) {
+      event.preventDefault();
       setMode(modeButton.dataset.cfMode);
       return;
     }
-    if (event.target.closest('[data-cf-open-map]')) return openMap();
-    if (event.target.closest('[data-cf-map-close]')) return dialog()?.close();
-    if (event.target.closest('[data-cf-confirm]')) return confirmAddress();
-    if (event.target.closest('[data-cf-locate]')) return locateMe();
-    onCheckoutClick(event);
+    if (event.target.closest('[data-cf-open-map]')) {
+      event.preventDefault();
+      openMap();
+      return;
+    }
+    if (event.target.closest('[data-cf-map-close]')) {
+      getDialog()?.close();
+      return;
+    }
+    if (event.target.closest('[data-cf-confirm]')) {
+      confirmAddress();
+      return;
+    }
+    if (event.target.closest('[data-cf-locate]')) {
+      locateMe();
+      return;
+    }
+
+    // Blocked checkout (delivery without address): open the map instead.
+    const blocked = event.target.closest('[data-cf-blocked]');
+    if (blocked) {
+      if (!getDialog()) return; // no fulfillment UI on this page — leave checkout alone
+      event.preventDefault();
+      event.stopPropagation();
+      openMap();
+    }
   },
   { capture: true }
 );
 
+document.addEventListener('input', (event) => {
+  if (event.target?.id === 'cf-map-search') onSearchInput(event.target);
+});
+
+// Prevent the search field from submitting anything on Enter.
+document.addEventListener('keydown', (event) => {
+  if (event.target?.id === 'cf-map-search' && event.key === 'Enter') event.preventDefault();
+});
+
 if (!customElements.get('cart-fulfillment')) {
   customElements.define('cart-fulfillment', class extends HTMLElement {});
 }
+
+// Move the dialog out of the morphing drawer as soon as the module loads.
+getDialog();

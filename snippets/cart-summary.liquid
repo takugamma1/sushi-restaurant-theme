@@ -253,14 +253,26 @@
   </div>
 </div>
 
+{%- liquid
+  # Delivery orders need a pin-drop address before checkout unlocks.
+  assign cf_mode = cart.attributes['Получаване'] | default: 'Доставка'
+  assign cf_blocked = false
+  if cf_mode != 'Вземане от място' and cart.attributes['Адрес за доставка'] == blank
+    assign cf_blocked = true
+  endif
+-%}
 <div class="cart__ctas">
   <button
     type="submit"
     id="checkout"
-    class="cart__checkout-button button"
+    class="cart__checkout-button button{% if cf_blocked %} cart__checkout-button--blocked{% endif %}"
     name="checkout"
     {% if cart == empty %}
       disabled
+    {% endif %}
+    {% if cf_blocked %}
+      aria-disabled="true"
+      data-cf-blocked
     {% endif %}
     form="cart-form"
   >

@@ -23,6 +23,7 @@
   data-zip="{{ saved_zip | escape }}"
   data-maps-key="AIzaSyDQ5_8gH7ejFp3O4yRp9BO-ZLAKa4NGnt0"
   data-discount-code="PICKUP10"
+  data-storefront-token="{{ settings.cf_storefront_token | default: '' }}"
 >
   <p class="cart-fulfillment__label">НАЧИН НА ПОЛУЧАВАНЕ</p>
 
@@ -73,6 +74,9 @@
         <p class="cart-fulfillment__hint">
           Изберете точния адрес с пин на картата — така доставката пристига без грешки.
         </p>
+        <p class="cart-fulfillment__hint cart-fulfillment__hint--warn">
+          ⚠ Бутонът „Към плащане“ се отключва след като посочите адрес.
+        </p>
       {%- endif -%}
     {%- endif -%}
     <p class="cart-fulfillment__error" data-cf-error hidden></p>
@@ -87,13 +91,16 @@
       <button type="button" class="cf-map__close button-unstyled" data-cf-map-close aria-label="Затвори">✕</button>
     </div>
 
-    <input
-      id="cf-map-search"
-      class="cf-map__search"
-      type="text"
-      placeholder="Търсене на адрес…"
-      autocomplete="off"
-    >
+    <div class="cf-map__search-wrap">
+      <input
+        id="cf-map-search"
+        class="cf-map__search"
+        type="text"
+        placeholder="Търсене на адрес (ул., номер, град)…"
+        autocomplete="off"
+      >
+      <ul class="cf-map__suggestions" data-cf-suggestions hidden></ul>
+    </div>
 
     <div id="cf-map-canvas" class="cf-map__canvas">
       <div class="cf-map__loading">Зареждане на картата…</div>
@@ -194,6 +201,15 @@
     color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
   }
 
+  .cart-fulfillment__hint--warn { color: #f0b070; }
+
+  /* Checkout locked until an address is chosen (delivery) */
+  .cart__checkout-button--blocked {
+    opacity: 0.45;
+    filter: grayscale(0.4);
+    cursor: not-allowed;
+  }
+
   .cart-fulfillment__pick {
     width: 100%;
     display: inline-flex;
@@ -270,15 +286,55 @@
   }
   .cf-map__close:hover { opacity: 1; }
 
+  .cf-map__search-wrap {
+    position: relative;
+    margin-bottom: 0.65rem;
+  }
+
   .cf-map__search {
     width: 100%;
     padding: 0.65rem 0.8rem;
-    margin-bottom: 0.65rem;
     border: 1px solid var(--color-border, #2a2a2a);
     border-radius: 10px;
     background: var(--color-input-background, #1a1a1a);
     color: var(--color-input-text, #fff);
     font-size: 0.85rem;
+  }
+
+  .cf-map__suggestions {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 5;
+    margin: 0;
+    padding: 0.25rem;
+    list-style: none;
+    background: var(--color-background, #141414);
+    border: 1px solid var(--color-border, #2a2a2a);
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgb(0 0 0 / 0.45);
+    max-height: 210px;
+    overflow: auto;
+  }
+
+  .cf-map__suggestion {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-radius: 7px;
+    padding: 0.5rem 0.6rem;
+    color: var(--color-foreground, #fff);
+    font-size: 0.78rem;
+    line-height: 1.35;
+    cursor: pointer;
+  }
+
+  .cf-map__suggestion:hover {
+    background: rgba(249, 135, 96, 0.12);
+    color: #f98760;
   }
 
   .cf-map__canvas {
