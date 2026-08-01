@@ -3433,3 +3433,369 @@ shopify-account,
 }
 
 .rcf__back:hover .rcf__back-arrow { transform: translateX(-3px); }
+
+/* ================================
+ * Restaurant Careers (rcw)
+ * ================================ */
+
+.shopify-section:has(.rcw) {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: var(--restaurant-dark) !important;
+}
+
+.rcw {
+  background: var(--restaurant-dark);
+  color: #fff;
+  padding: clamp(3rem, 7vw, 6rem) clamp(1rem, 4vw, 3rem);
+  font-family: var(--font-body--family);
+}
+
+.rcw__inner { max-width: 1200px; margin: 0 auto; }
+
+.rcw__header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: clamp(2rem, 4vw, 3.5rem);
+}
+
+.rcw__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--restaurant-accent);
+}
+
+.rcw__kicker-mark { font-size: 0.7em; }
+
+.rcw__title {
+  font-family: var(--font-heading--family);
+  font-weight: var(--font-heading--weight);
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.rcw__title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--restaurant-accent);
+  text-transform: uppercase;
+  margin-left: 0.06em;
+}
+
+.rcw__intro {
+  max-width: 540px;
+  margin: 0;
+  font-family: var(--font-heading--family);
+  font-style: italic;
+  font-size: clamp(0.98rem, 1.2vw, 1.1rem);
+  line-height: 1.6;
+  color: rgba(255,255,255,0.72);
+  font-weight: 300;
+}
+
+/* Layout: photo first in DOM = mobile banner on top;
+   on desktop it moves to the right column (sticky) */
+.rcw__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.25rem, 2.5vw, 2.5rem);
+  align-items: start;
+}
+
+.rcw__media { min-width: 0; }
+
+.rcw__photo {
+  width: 100%;
+  display: block;
+  border-radius: clamp(18px, 2vw, 28px);
+  border: 1px solid rgba(255,255,255,0.06);
+  object-fit: cover;
+  aspect-ratio: 16 / 9;
+}
+
+.rcw__photo--placeholder {
+  background: var(--restaurant-dark-card);
+  aspect-ratio: 16 / 9;
+  height: auto;
+}
+
+.rcw__photo-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--restaurant-muted);
+  text-align: center;
+}
+
+@media screen and (min-width: 900px) {
+  .rcw__grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+  .rcw__media {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: 110px;
+  }
+  .rcw__main { grid-column: 1; grid-row: 1; }
+  .rcw__photo { aspect-ratio: 3 / 4; }
+}
+
+.rcw__main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+/* Job cards */
+.rcw__jobs {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.rcw__job {
+  background: var(--restaurant-dark-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: clamp(18px, 2vw, 28px);
+  padding: clamp(1.4rem, 2.5vw, 2rem);
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.rcw__job:hover {
+  border-color: rgba(249,135,96,0.4);
+  transform: translateY(-2px);
+}
+
+.rcw__job-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.rcw__job-title {
+  font-family: var(--font-heading--family);
+  font-weight: var(--font-heading--weight);
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  text-transform: uppercase;
+  margin: 0;
+  color: #fff;
+}
+
+.rcw__job-badge {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--restaurant-accent);
+  border: 1px solid rgba(249,135,96,0.45);
+  border-radius: 999px;
+  padding: 0.4em 1em;
+  white-space: nowrap;
+}
+
+.rcw__job-desc {
+  margin: 0.8rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.7);
+  max-width: 56ch;
+}
+
+.rcw__job-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.25rem 0 0;
+  padding: 1.1rem 0 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.rcw__job-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.rcw__job-meta dt {
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--restaurant-accent);
+}
+
+.rcw__job-meta dd {
+  margin: 0;
+  font-family: var(--font-heading--family);
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  color: #fff;
+}
+
+.rcw__job-apply {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: color 0.25s ease, gap 0.25s ease;
+}
+
+.rcw__job-apply:hover { color: var(--restaurant-accent); gap: 0.95rem; }
+
+.rcw__job-apply-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid var(--restaurant-accent);
+  color: var(--restaurant-accent);
+  transition: transform 0.25s ease;
+}
+
+.rcw__job-apply:hover .rcw__job-apply-arrow { transform: translateX(3px); }
+
+/* Form */
+.rcw__form-card {
+  background: var(--restaurant-dark-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: clamp(18px, 2vw, 28px);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  scroll-margin-top: 120px;
+}
+
+.rcw__form-title {
+  font-family: var(--font-heading--family);
+  font-weight: var(--font-heading--weight);
+  font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+  text-transform: uppercase;
+  margin: 0 0 1.25rem;
+  color: #fff;
+}
+
+.rcw__form { display: flex; flex-direction: column; gap: 1.1rem; }
+
+.rcw__field-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.1rem;
+}
+
+@media screen and (min-width: 600px) {
+  .rcw__field-row { grid-template-columns: 1fr 1fr; }
+}
+
+.rcw__field { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.rcw__label {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+}
+
+.rcw__input {
+  width: 100%;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem;
+  color: #fff;
+  font-family: var(--font-body--family);
+  font-size: 0.95rem;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.rcw__input::placeholder { color: rgba(255,255,255,0.35); }
+
+.rcw__input:focus {
+  outline: none;
+  border-color: var(--restaurant-accent);
+  background: rgba(0,0,0,0.4);
+}
+
+.rcw__select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23F98760' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1.1rem center;
+  padding-right: 2.6rem;
+  cursor: pointer;
+}
+
+.rcw__select option { background: var(--restaurant-dark-card); color: #fff; }
+
+.rcw__textarea { resize: vertical; min-height: 120px; }
+
+.rcw__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  background: var(--restaurant-accent);
+  color: #1a0e08;
+  border: 1px solid var(--restaurant-accent);
+  font-family: var(--font-body--family);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.rcw__submit:hover { background: var(--restaurant-accent-hover); transform: translateY(-1px); }
+
+.rcw__submit-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  transition: transform 0.3s ease;
+}
+
+.rcw__submit:hover .rcw__submit-arrow { transform: translateX(3px); }
+
+.rcw__success {
+  background: rgba(249,135,96,0.12);
+  border: 1px solid rgba(249,135,96,0.35);
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.9rem;
+}
+
+.rcw__errors {
+  color: #ffb4a0;
+  font-size: 0.85rem;
+}
+
+.rcw__errors ul { margin: 0; padding-left: 1.2rem; }

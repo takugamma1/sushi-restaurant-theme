@@ -1,0 +1,200 @@
+<div class="rcw">
+  <div class="rcw__inner">
+
+    <header class="rcw__header">
+      <span class="rcw__kicker">
+        <span class="rcw__kicker-mark" aria-hidden="true">◇</span>
+        {{ section.settings.kicker | default: 'КАРИЕРИ' }}
+      </span>
+      <h1 class="rcw__title">
+        {{ section.settings.title_a | default: 'Стани част от' }}
+        <em>{{ section.settings.title_em | default: 'екипа.' }}</em>
+      </h1>
+      {%- if section.settings.intro != blank -%}
+        <p class="rcw__intro">{{ section.settings.intro }}</p>
+      {%- endif -%}
+    </header>
+
+    <div class="rcw__grid">
+
+      {%- comment -%} Photo — right column on desktop, top banner on mobile {%- endcomment -%}
+      <aside class="rcw__media">
+        {%- if section.settings.image != blank -%}
+          {{ section.settings.image | image_url: width: 1200 | image_tag: class: 'rcw__photo', widths: '480, 720, 960, 1200', alt: section.settings.image.alt | default: 'Екипът на Суши Манго' }}
+        {%- else -%}
+          {{ 'lifestyle-1' | placeholder_svg_tag: 'rcw__photo rcw__photo--placeholder' }}
+        {%- endif -%}
+        {%- if section.settings.photo_note != blank -%}
+          <p class="rcw__photo-note">{{ section.settings.photo_note }}</p>
+        {%- endif -%}
+      </aside>
+
+      <div class="rcw__main">
+
+        {%- comment -%} Open positions {%- endcomment -%}
+        {%- if section.blocks.size > 0 -%}
+          <div class="rcw__jobs">
+            {%- for block in section.blocks -%}
+              <article class="rcw__job" {{ block.shopify_attributes }}>
+                <div class="rcw__job-top">
+                  <h2 class="rcw__job-title">{{ block.settings.title }}</h2>
+                  {%- if block.settings.badge != blank -%}
+                    <span class="rcw__job-badge">{{ block.settings.badge }}</span>
+                  {%- endif -%}
+                </div>
+                {%- if block.settings.description != blank -%}
+                  <p class="rcw__job-desc">{{ block.settings.description }}</p>
+                {%- endif -%}
+                <dl class="rcw__job-meta">
+                  <div class="rcw__job-meta-item">
+                    <dt>{{ section.settings.experience_label | default: 'Опит' }}</dt>
+                    <dd>{{ block.settings.experience }}</dd>
+                  </div>
+                  <div class="rcw__job-meta-item">
+                    <dt>{{ section.settings.salary_label | default: 'Заплата' }}</dt>
+                    <dd>{{ block.settings.salary }}</dd>
+                  </div>
+                </dl>
+                <a class="rcw__job-apply" href="#rcw-form" data-rcw-apply="{{ block.settings.title | escape }}">
+                  {{ section.settings.apply_label | default: 'Кандидатствай' }}
+                  <span class="rcw__job-apply-arrow" aria-hidden="true">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </span>
+                </a>
+              </article>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Application / questions form {%- endcomment -%}
+        <div class="rcw__form-card" id="rcw-form">
+          <h3 class="rcw__form-title">{{ section.settings.form_title | default: 'Кандидатствай или ни попитай' }}</h3>
+          {%- form 'contact', class: 'rcw__form' -%}
+            {%- if form.posted_successfully? -%}
+              <p class="rcw__success">{{ section.settings.success_text | default: 'Благодарим! Получихме съобщението ти — ще се свържем с теб скоро.' }}</p>
+            {%- endif -%}
+
+            {%- if form.errors -%}
+              <div class="rcw__errors">
+                {{ form.errors | default_errors }}
+              </div>
+            {%- endif -%}
+
+            <div class="rcw__field-row">
+              <div class="rcw__field">
+                <label class="rcw__label" for="rcw-name">{{ section.settings.label_name | default: 'Име' }}</label>
+                <input class="rcw__input" type="text" id="rcw-name" name="contact[name]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}" autocomplete="name" required>
+              </div>
+              <div class="rcw__field">
+                <label class="rcw__label" for="rcw-phone">{{ section.settings.label_phone | default: 'Телефон' }}</label>
+                <input class="rcw__input" type="tel" id="rcw-phone" name="contact[phone]" value="{% if form.phone %}{{ form.phone }}{% endif %}" autocomplete="tel">
+              </div>
+            </div>
+
+            <div class="rcw__field-row">
+              <div class="rcw__field">
+                <label class="rcw__label" for="rcw-email">{{ section.settings.label_email | default: 'Имейл' }}</label>
+                <input class="rcw__input" type="email" id="rcw-email" name="contact[email]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" autocomplete="email" required>
+              </div>
+              {%- if section.blocks.size > 0 -%}
+                <div class="rcw__field">
+                  <label class="rcw__label" for="rcw-position">{{ section.settings.label_position | default: 'Позиция' }}</label>
+                  <select class="rcw__input rcw__select" id="rcw-position" name="contact[Позиция]">
+                    <option value="{{ section.settings.position_general | default: 'Общ въпрос' }}">{{ section.settings.position_general | default: 'Общ въпрос' }}</option>
+                    {%- for block in section.blocks -%}
+                      <option value="{{ block.settings.title | escape }}">{{ block.settings.title }}</option>
+                    {%- endfor -%}
+                  </select>
+                </div>
+              {%- endif -%}
+            </div>
+
+            <div class="rcw__field">
+              <label class="rcw__label" for="rcw-message">{{ section.settings.label_message | default: 'Разкажи ни за себе си / въпрос' }}</label>
+              <textarea class="rcw__input rcw__textarea" id="rcw-message" name="contact[body]" rows="5" required>{% if form.body %}{{ form.body }}{% endif %}</textarea>
+            </div>
+
+            <button type="submit" class="rcw__submit">
+              <span>{{ section.settings.submit_label | default: 'ИЗПРАТИ' }}</span>
+              <span class="rcw__submit-arrow" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </span>
+            </button>
+          {%- endform -%}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var select = document.getElementById('rcw-position');
+    if (!select) return;
+    document.querySelectorAll('[data-rcw-apply]').forEach(function (link) {
+      link.addEventListener('click', function () {
+        var value = link.getAttribute('data-rcw-apply');
+        for (var i = 0; i < select.options.length; i++) {
+          if (select.options[i].value === value) { select.selectedIndex = i; break; }
+        }
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Restaurant Careers",
+  "tag": "section",
+  "class": "restaurant-careers-section",
+  "enabled_on": { "templates": ["page"] },
+  "settings": [
+    { "type": "header", "content": "Header" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "КАРИЕРИ" },
+    { "type": "text", "id": "title_a", "label": "Title — regular", "default": "Стани част от" },
+    { "type": "text", "id": "title_em", "label": "Title — italic accent", "default": "екипа." },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Търсим хора, които обичат добрата храна и добрия екип. Виж отворените позиции или просто ни пиши." },
+    { "type": "header", "content": "Photo" },
+    { "type": "image_picker", "id": "image", "label": "Photo (right side / mobile banner)" },
+    { "type": "text", "id": "photo_note", "label": "Caption under photo" },
+    { "type": "header", "content": "Job card labels" },
+    { "type": "text", "id": "experience_label", "label": "Experience label", "default": "Опит" },
+    { "type": "text", "id": "salary_label", "label": "Salary label", "default": "Заплата" },
+    { "type": "text", "id": "apply_label", "label": "Apply link label", "default": "Кандидатствай" },
+    { "type": "header", "content": "Form" },
+    { "type": "text", "id": "form_title", "label": "Form title", "default": "Кандидатствай или ни попитай" },
+    { "type": "text", "id": "label_name", "label": "Name label", "default": "Име" },
+    { "type": "text", "id": "label_phone", "label": "Phone label", "default": "Телефон" },
+    { "type": "text", "id": "label_email", "label": "Email label", "default": "Имейл" },
+    { "type": "text", "id": "label_position", "label": "Position label", "default": "Позиция" },
+    { "type": "text", "id": "position_general", "label": "General option in position select", "default": "Общ въпрос" },
+    { "type": "text", "id": "label_message", "label": "Message label", "default": "Разкажи ни за себе си / въпрос" },
+    { "type": "text", "id": "submit_label", "label": "Submit label", "default": "ИЗПРАТИ" },
+    { "type": "text", "id": "success_text", "label": "Success message", "default": "Благодарим! Получихме съобщението ти — ще се свържем с теб скоро." }
+  ],
+  "blocks": [
+    {
+      "type": "job",
+      "name": "Позиция",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Позиция", "default": "Суши майстор" },
+        { "type": "text", "id": "badge", "label": "Бадж (напр. Пълен работен ден)", "default": "Пълен работен ден" },
+        { "type": "textarea", "id": "description", "label": "Кратко описание" },
+        { "type": "text", "id": "experience", "label": "Опит", "default": "1+ година" },
+        { "type": "text", "id": "salary", "label": "Заплата", "default": "По договаряне" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Restaurant Careers",
+      "category": "t:categories.storytelling",
+      "blocks": [
+        { "type": "job" },
+        { "type": "job" }
+      ]
+    }
+  ]
+}
+{% endschema %}
