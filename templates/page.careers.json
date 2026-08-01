@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
@@ -12,35 +21,18 @@
             "experience": "1+ година в кухня",
             "salary": "По договаряне"
           }
-        },
-        "job_helper": {
-          "type": "job",
-          "settings": {
-            "title": "Помощник-готвач",
-            "badge": "Пълен работен ден",
-            "description": "Подготовка на продукти, поддържане на работното място и подкрепа на суши майсторите в пиковите часове.",
-            "experience": "Не е задължителен — обучаваме",
-            "salary": "По договаряне"
-          }
-        },
-        "job_courier": {
-          "type": "job",
-          "settings": {
-            "title": "Куриер / Доставчик",
-            "badge": "Гъвкаво време",
-            "description": "Доставки в района на Варна в часовете 11:00 – 22:00. Собствен автомобил или скутер е предимство.",
-            "experience": "Шофьорска книжка кат. B",
-            "salary": "По договаряне + бакшиши"
-          }
         }
       },
-      "block_order": ["job_sushi", "job_helper", "job_courier"],
+      "block_order": [
+        "job_sushi"
+      ],
       "settings": {
         "kicker": "КАРИЕРИ",
         "title_a": "Стани част от",
         "title_em": "екипа.",
         "intro": "Търсим хора, които обичат добрата храна и добрия екип. Виж отворените позиции или просто ни пиши.",
         "image": "shopify://shop_images/sushi_1.jpg",
+        "photo_note": "",
         "experience_label": "Опит",
         "salary_label": "Заплата",
         "apply_label": "Кандидатствай",
@@ -56,5 +48,7 @@
       }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }
