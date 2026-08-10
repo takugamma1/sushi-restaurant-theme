@@ -88,7 +88,10 @@ async function updateCart({ attributes, discount }, sectionId) {
   const data = await response.json();
 
   const html = data.sections && data.sections[sectionId];
-  if (html) morphSection(sectionId, html);
+  // 'hydration' morphs only [data-hydration-key] targets (the drawer body), like the
+  // theme's own cart code does — a 'full' morph of the header section clobbers the
+  // open <dialog> (the server HTML has no `open` attribute) and freezes the drawer.
+  if (html) morphSection(sectionId, html, 'hydration');
   return data;
 }
 
@@ -159,10 +162,23 @@ function existingDiscountCodes() {
     .filter(Boolean);
 }
 
+/** Paint the toggle immediately (optimistic) — the morph confirms it from server truth. */
+function paintToggle(mode) {
+  const el = root();
+  if (!el) return;
+  el.querySelectorAll('[data-cf-mode]').forEach((button) => {
+    const active = button.dataset.cfMode === mode;
+    button.classList.toggle('cart-fulfillment__option--active', active);
+    button.setAttribute('aria-checked', String(active));
+  });
+}
+
 async function setMode(mode) {
   const state = getState();
   if (!state || state.mode === mode || busy) return;
   busy = true;
+  paintToggle(mode);
+  root()?.setAttribute('aria-busy', 'true');
 
   const codes = existingDiscountCodes().filter((code) => code.toUpperCase() !== state.discountCode.toUpperCase());
 
@@ -209,9 +225,11 @@ async function setMode(mode) {
       }
     }
   } catch (_) {
+    paintToggle(state.mode); // revert the optimistic paint
     showError('Нещо се обърка — опитайте отново.');
   } finally {
     busy = false;
+    root()?.removeAttribute('aria-busy');
   }
 }
 

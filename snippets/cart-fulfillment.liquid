@@ -158,22 +158,42 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
-    padding: 0.7rem 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.45rem;
+    min-height: 44px;
+    padding: 0.55rem 0.4rem;
     border: 1px solid var(--color-border);
     border-radius: 12px;
     background: transparent;
     color: var(--color-foreground);
     font-size: 0.78rem;
     font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
     cursor: pointer;
     transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
   }
+
+  .cart-fulfillment__option svg { flex-shrink: 0; }
 
   .cart-fulfillment__option--active {
     border-color: #f98760;
     background: rgba(249, 135, 96, 0.1);
     color: #f98760;
+    box-shadow: inset 0 0 0 1px #f98760;
+  }
+
+  /* While the cart call is in flight: keep the optimistic state visible, block double taps */
+  .cart-fulfillment[aria-busy='true'] .cart-fulfillment__toggle,
+  .cart-fulfillment[aria-busy='true'] [data-cf-body] {
+    opacity: 0.55;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  @media screen and (max-width: 420px) {
+    /* Narrow drawer: icons steal the room the labels need */
+    .cart-fulfillment__option svg { display: none; }
   }
 
   .cart-fulfillment__badge {
