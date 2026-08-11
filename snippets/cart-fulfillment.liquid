@@ -124,7 +124,12 @@
   </div>
 </dialog>
 
-<script type="module" src="{{ 'cart-fulfillment.js' | asset_url }}"></script>
+{%- comment -%}
+  NOTE: no <script> tag here on purpose. This snippet only renders when the cart
+  has items, and when it arrives via a section morph (first item added) injected
+  <script> tags never execute. The module is loaded unconditionally from
+  header-actions.liquid instead.
+{%- endcomment -%}
 
 {% stylesheet %}
   /* Wider cart drawer (still a drawer) */

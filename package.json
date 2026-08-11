@@ -1,0 +1,11 @@
+{
+  "name": "sushi-restaurant-theme",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --import ./tests/setup.mjs --test \"tests/**/*.test.mjs\""
+  },
+  "devDependencies": {
+    "jsdom": "^26.0.0"
+  }
+}

@@ -224,6 +224,14 @@
           </cart-items-component>
         </div>
       </dialog>
+
+      {%- comment -%}
+        Must load even when the cart is empty: the fulfillment UI arrives later via
+        a section morph (after the first add-to-cart), and scripts injected by a
+        morph never execute. The module wires everything through event delegation,
+        so loading it up front makes the toggle work without a page refresh.
+      {%- endcomment -%}
+      <script type="module" src="{{ 'cart-fulfillment.js' | asset_url }}"></script>
     </cart-drawer-component>
   {% else %}
     <a
