@@ -22,22 +22,22 @@
             "sale_badge_text": "Най-продаван"
           }
         },
+        "category_mango": {
+          "type": "category",
+          "settings": {
+            "title": "МАНГО МЕНЮ",
+            "tab_label": "",
+            "collection": "манго-меню",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_dnh78J": {
           "type": "category",
           "settings": {
             "title": "ХОСОМАКИ",
             "tab_label": "",
             "collection": "хосомаки",
-            "max_products": 10,
-            "sale_badge_text": "Най-продаван"
-          }
-        },
-        "category_RRzetk": {
-          "type": "category",
-          "settings": {
-            "title": "ФУТОМАКИ",
-            "tab_label": "",
-            "collection": "футомаки",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -49,6 +49,16 @@
             "tab_label": "",
             "collection": "урамаки",
             "max_products": 20,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
+        "category_RRzetk": {
+          "type": "category",
+          "settings": {
+            "title": "ФУТОМАКИ",
+            "tab_label": "",
+            "collection": "футомаки",
+            "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
         },
@@ -122,16 +132,6 @@
             "sale_badge_text": "Най-продаван"
           }
         },
-        "category_mango": {
-          "type": "category",
-          "settings": {
-            "title": "МАНГО МЕНЮ",
-            "tab_label": "",
-            "collection": "манго-меню",
-            "max_products": 10,
-            "sale_badge_text": "Най-продаван"
-          }
-        },
         "category_rGzUMD": {
           "type": "category",
           "settings": {
@@ -195,9 +195,10 @@
       },
       "block_order": [
         "category_7iJDCe",
+        "category_mango",
         "category_dnh78J",
-        "category_RRzetk",
         "category_QdArVJ",
+        "category_RRzetk",
         "category_HDbFjR",
         "category_e9xfwh",
         "category_bTdAxh",
@@ -205,7 +206,6 @@
         "category_qBT8XW",
         "category_m4hGPP",
         "category_kfWXVh",
-        "category_mango",
         "category_rGzUMD",
         "category_PKENkY",
         "category_new",
