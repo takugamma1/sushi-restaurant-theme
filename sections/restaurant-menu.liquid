@@ -48,7 +48,8 @@
         {%- for block in section.blocks -%}
           {%- if block.type == 'category' -%}
             {%- assign tab_collection = block.settings.collection -%}
-            {%- assign tab_image = tab_collection.products.first.featured_image | default: tab_collection.image -%}
+            {%- comment -%} Admin-set collection image wins; first product photo is only the fallback. {%- endcomment -%}
+            {%- assign tab_image = tab_collection.featured_image -%}
             <button
               class="rm-tab{% if tab_idx == 0 %} rm-tab--active{% endif %}"
               data-tab="{{ tab_idx }}"

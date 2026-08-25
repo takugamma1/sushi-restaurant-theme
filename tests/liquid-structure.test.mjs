@@ -33,6 +33,18 @@ test('header-actions loads cart-fulfillment.js unconditionally with the drawer',
   assert.ok(scriptAt > dialogEnd && scriptAt < drawerEnd, 'script tag must be outside the cart.empty? branches');
 });
 
+test('menu page category tabs prefer the admin-set collection image', () => {
+  const menu = read('sections/restaurant-menu.liquid');
+  assert.ok(
+    menu.includes('assign tab_image = tab_collection.featured_image'),
+    'tab image must come from collection.featured_image (admin image first, product photo as fallback)'
+  );
+  assert.ok(
+    !menu.includes('tab_collection.products.first.featured_image | default: tab_collection.image'),
+    'first-product image must not take priority over the admin collection image'
+  );
+});
+
 test('cart updates from the fulfillment module use the hydration morph', () => {
   const js = read('assets/cart-fulfillment.js');
   assert.ok(js.includes("morphSection(sectionId, html, 'hydration')"), "a 'full' morph breaks the open drawer dialog");
