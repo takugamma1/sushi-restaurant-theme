@@ -12,22 +12,22 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
-        "category_dinner2": {
-          "type": "category",
-          "settings": {
-            "title": "ВЕЧЕРЯ ЗА ДВАМА",
-            "tab_label": "",
-            "collection": "вечеря-за-двама",
-            "max_products": 10,
-            "sale_badge_text": "Най-продаван"
-          }
-        },
         "category_7iJDCe": {
           "type": "category",
           "settings": {
             "title": "СЕТОВЕ",
             "tab_label": "",
             "collection": "сетове",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
+        "category_dinner2": {
+          "type": "category",
+          "settings": {
+            "title": "ВЕЧЕРЯ ЗА ДВАМА",
+            "tab_label": "",
+            "collection": "вечеря-за-двама",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -226,7 +226,7 @@
         "category_nLp68D"
       ],
       "settings": {
-        "hero_image": "shopify://shop_images/Screenshot_2026-05-16_135237.png",
+        "hero_image": "shopify://shop_images/bundle.png",
         "hero_heading": "НАШЕТО МЕНЮ",
         "hero_subheading": "Най-доброто суши в града",
         "cta_label": "",
