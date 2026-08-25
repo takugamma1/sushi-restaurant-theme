@@ -12,6 +12,16 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_dinner2": {
+          "type": "category",
+          "settings": {
+            "title": "ВЕЧЕРЯ ЗА ДВАМА",
+            "tab_label": "",
+            "collection": "вечеря-за-двама",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_7iJDCe": {
           "type": "category",
           "settings": {
@@ -196,6 +206,7 @@
       },
       "block_order": [
         "category_7iJDCe",
+        "category_dinner2",
         "category_mango",
         "category_dnh78J",
         "category_QdArVJ",
