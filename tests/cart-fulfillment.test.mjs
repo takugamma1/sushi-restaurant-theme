@@ -173,6 +173,20 @@ test('a second click while a request is in flight is ignored (no double submit)'
   assert.equal(fetchCalls.length, 1);
 });
 
+test('combo-only cart: pickup keeps working and explains the discount exclusion', async () => {
+  renderFulfillment();
+  // Shopify accepts the code but nothing qualifies (PICKUP10 excludes the combos).
+  fetchResponder = () => Promise.resolve(okCartResponse({ discount_codes: [{ code: 'PICKUP10', applicable: false }] }));
+
+  click(button(MODE_PICKUP));
+  await flush();
+
+  assert.equal(isActive(MODE_PICKUP), true, 'pickup mode still switches');
+  const error = document.querySelector('[data-cf-error]');
+  assert.equal(error.hidden, false);
+  assert.ok(error.textContent.includes('Вечеря за двама'), 'message explains the combo exclusion');
+});
+
 test('failed cart update reverts the optimistic paint and shows an error', async () => {
   renderFulfillment();
   fetchResponder = () => Promise.resolve({ ok: false, json: async () => ({}) });

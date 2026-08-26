@@ -196,11 +196,15 @@ async function setMode(mode) {
         },
         state.sectionId
       );
-      const applied = (data.discount_codes || []).some(
-        (d) => d.code.toUpperCase() === state.discountCode.toUpperCase() && d.applicable
+      const entry = (data.discount_codes || []).find(
+        (d) => d.code.toUpperCase() === state.discountCode.toUpperCase()
       );
-      if (!applied) {
+      if (!entry) {
         showError('Отстъпката не се приложи — опитайте отново.');
+      } else if (!entry.applicable) {
+        // Code accepted but nothing in the cart qualifies (e.g. combo-only cart:
+        // PICKUP10 excludes „Вечеря за двама“). Inform, don't alarm.
+        showError('Отстъпката −10% не важи за комбо предложенията „Вечеря за двама“ — прилага се само за останалите продукти.');
       }
       syncBuyerIdentity({ method: 'PICK_UP' });
     } else {
