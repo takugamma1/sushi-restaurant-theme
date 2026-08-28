@@ -34,8 +34,8 @@
   <svg viewBox="0 0 18 12" xmlns="http://www.w3.org/2000/svg"><rect width="18" height="4" fill="#fff"/><rect y="4" width="18" height="4" fill="#0039A6"/><rect y="8" width="18" height="4" fill="#D52B1E"/></svg>
 {%- endcapture -%}
 
-{%- if context == 'dropdown' -%}
-  <details class="lang-dd" data-lang-dd>
+{%- if context == 'dropdown' or context == 'sticky' -%}
+  <details class="lang-dd{% if context == 'sticky' %} lang-dd--sticky{% endif %}" data-lang-dd>
     <summary class="lang-dd__current" aria-label="Смяна на езика / Change language">
       <span class="lang-switcher__flag" aria-hidden="true">
         {%- case localization.language.iso_code -%}
@@ -199,11 +199,51 @@
     color: var(--restaurant-accent, #f98760);
   }
 
-  /* Mobile uses the drawer row instead */
+  /* Header dropdown is desktop-only; mobile gets the sticky button + drawer row */
   @media screen and (max-width: 749px) {
-    .lang-dd {
+    .lang-dd:not(.lang-dd--sticky) {
       display: none !important;
     }
+  }
+
+  /* ── Mobile floating sticky button ── */
+  .lang-dd--sticky {
+    display: none;
+    position: fixed;
+    right: 0.9rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    z-index: 40;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .lang-dd--sticky {
+      display: block;
+    }
+  }
+
+  .lang-dd--sticky .lang-dd__current {
+    gap: 0.45rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    background: rgb(20 18 16 / 0.92);
+    border: 1px solid rgb(255 255 255 / 0.16);
+    color: #fff;
+    opacity: 1;
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .lang-dd--sticky .lang-switcher__flag svg {
+    width: 20px;
+    height: 13px;
+  }
+
+  /* Opens upward from the floating button */
+  .lang-dd--sticky .lang-dd__menu {
+    top: auto;
+    bottom: calc(100% + 8px);
   }
 
   /* ── Inline row (mobile drawer) ── */

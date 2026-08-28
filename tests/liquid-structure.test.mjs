@@ -58,9 +58,14 @@ test('language switcher: dropdown by the order button, row in the drawer, nav st
     !read('snippets/header-restaurant-nav.liquid').includes('language-switcher'),
     'centered nav must not contain the switcher (menu items stay centered)'
   );
+  assert.ok(
+    read('sections/header.liquid').includes("render 'language-switcher', context: 'sticky'"),
+    'header must render the mobile sticky floating language button'
+  );
   const sw = read('snippets/language-switcher.liquid');
   assert.ok(sw.includes('localization.available_languages'), 'switcher lists published languages dynamically');
   assert.ok(sw.includes('remove_first: current_root'), 'switcher strips the current locale prefix from the path');
+  assert.ok(sw.includes('lang-dd--sticky'), 'sticky variant exists');
 });
 
 test('cart updates from the fulfillment module use the hydration morph', () => {

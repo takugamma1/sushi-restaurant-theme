@@ -409,6 +409,9 @@
   {% endif %}
 </header-component>
 
+{%- comment -%} Mobile-only floating language button (position: fixed). {%- endcomment -%}
+{% render 'language-switcher', context: 'sticky' %}
+
 <script
   src="{{ 'header.js' | asset_url }}"
   type="module"
