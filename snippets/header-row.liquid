@@ -86,6 +86,7 @@
             {% when 'drawer_search' %}
               {{ drawer_search }}
             {% when 'actions' %}
+              {% render 'language-switcher', context: 'dropdown' %}
               {{ restaurant_cta }}
               {{ actions }}
           {% endcase %}

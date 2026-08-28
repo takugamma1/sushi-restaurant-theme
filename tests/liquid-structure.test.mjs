@@ -45,14 +45,18 @@ test('menu page category tabs prefer the admin-set collection image', () => {
   );
 });
 
-test('language switcher is wired into desktop nav and mobile drawer', () => {
+test('language switcher: dropdown by the order button, row in the drawer, nav stays clean', () => {
   assert.ok(
-    read('snippets/header-restaurant-nav.liquid').includes("render 'language-switcher'"),
-    'desktop nav must render the language switcher'
+    read('snippets/header-row.liquid').includes("render 'language-switcher', context: 'dropdown'"),
+    'actions column (next to the order CTA) must render the dropdown variant'
   );
   assert.ok(
-    read('snippets/header-restaurant-drawer.liquid').includes("render 'language-switcher'"),
-    'mobile drawer must render the language switcher'
+    read('snippets/header-restaurant-drawer.liquid').includes("render 'language-switcher', context: 'drawer'"),
+    'mobile drawer must render the row variant'
+  );
+  assert.ok(
+    !read('snippets/header-restaurant-nav.liquid').includes('language-switcher'),
+    'centered nav must not contain the switcher (menu items stay centered)'
   );
   const sw = read('snippets/language-switcher.liquid');
   assert.ok(sw.includes('localization.available_languages'), 'switcher lists published languages dynamically');
