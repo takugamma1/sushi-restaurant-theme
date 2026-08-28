@@ -56,7 +56,7 @@
             "text_LWt8Pz": {
               "type": "text",
               "settings": {
-                "text": "<h2>Join our email list</h2>",
+                "text": "<h2>Абонирайте се за нашия бюлетин</h2>",
                 "width": "100%",
                 "max_width": "normal",
                 "alignment": "left",
@@ -81,7 +81,7 @@
             "text_f9CFLH": {
               "type": "text",
               "settings": {
-                "text": "<p>Get exclusive deals and early access to new products.</p>",
+                "text": "<p>Получавайте ексклузивни оферти и новини първи.</p>",
                 "width": "100%",
                 "max_width": "normal",
                 "alignment": "left",
@@ -124,7 +124,7 @@
             "input_type_preset": "paragraph",
             "style_class": "button-unstyled",
             "display_type": "arrow",
-            "label": "Sign up",
+            "label": "Абонирай се",
             "integrated_button": true,
             "button_type_preset": "paragraph",
             "padding-block-start": 0,
