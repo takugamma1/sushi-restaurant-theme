@@ -1,0 +1,93 @@
+{%- doc -%}
+  Compact language switcher (БГ · EN · RU) linking to the current page in each
+  published language. Pure anchors — no JS: Shopify serves each locale under
+  its own URL prefix (bg = domain default "/", en = "/en", ru = "/ru").
+
+  @param {string} [context] - 'drawer' for the mobile drawer variant styling.
+{%- enddoc -%}
+
+{%- liquid
+  # Strip the current locale prefix from the path so we can rebuild the same
+  # page URL under each language's own root.
+  assign base_path = request.path
+  assign current_root = localization.language.root_url
+  if current_root != blank and current_root != '/'
+    assign head = base_path | slice: 0, current_root.size
+    if head == current_root
+      assign base_path = base_path | remove_first: current_root
+    endif
+  endif
+  if base_path == blank
+    assign base_path = '/'
+  endif
+-%}
+
+<nav
+  class="lang-switcher{% if context == 'drawer' %} lang-switcher--drawer{% endif %}"
+  aria-label="Език / Language"
+>
+  {%- for language in localization.available_languages -%}
+    {%- assign root = language.root_url -%}
+    {%- if root == '/' -%}{%- assign root = '' -%}{%- endif -%}
+    <a
+      href="{{ root }}{{ base_path }}"
+      class="lang-switcher__item{% if language.iso_code == localization.language.iso_code %} lang-switcher__item--active{% endif %}"
+      lang="{{ language.iso_code }}"
+      hreflang="{{ language.iso_code }}"
+      {% if language.iso_code == localization.language.iso_code %}aria-current="true"{% endif %}
+    >
+      {{- language.iso_code | upcase -}}
+    </a>
+    {%- unless forloop.last -%}
+      <span class="lang-switcher__sep" aria-hidden="true">·</span>
+    {%- endunless -%}
+  {%- endfor -%}
+</nav>
+
+{% stylesheet %}
+  .lang-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .lang-switcher__item {
+    color: var(--color-foreground);
+    opacity: 0.55;
+    text-decoration: none;
+    font-family: var(--font-body--family);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    padding: 0.15rem 0.1rem;
+    transition: opacity 0.25s ease, color 0.25s ease;
+  }
+
+  .lang-switcher__item:hover {
+    opacity: 1;
+  }
+
+  .lang-switcher__item--active {
+    opacity: 1;
+    color: var(--restaurant-accent, #f98760);
+    pointer-events: none;
+  }
+
+  .lang-switcher__sep {
+    opacity: 0.35;
+    font-size: 0.7rem;
+    user-select: none;
+  }
+
+  /* Mobile drawer variant: larger tap targets, centered row */
+  .lang-switcher--drawer {
+    justify-content: center;
+    gap: 0.9rem;
+    padding: 1.1rem 0 0.4rem;
+  }
+
+  .lang-switcher--drawer .lang-switcher__item {
+    font-size: 0.95rem;
+    padding: 0.4rem 0.5rem;
+  }
+{% endstylesheet %}

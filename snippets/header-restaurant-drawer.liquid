@@ -112,6 +112,8 @@
         </ul>
       </nav>
 
+      {% render 'language-switcher', context: 'drawer' %}
+
       {%- if cta_label != blank -%}
         <div class="restaurant-drawer-cta">
           <a href="{{ cta_url }}" class="restaurant-drawer-cta__button" on:click="/close">

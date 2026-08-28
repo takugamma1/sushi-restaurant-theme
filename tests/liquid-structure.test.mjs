@@ -45,6 +45,20 @@ test('menu page category tabs prefer the admin-set collection image', () => {
   );
 });
 
+test('language switcher is wired into desktop nav and mobile drawer', () => {
+  assert.ok(
+    read('snippets/header-restaurant-nav.liquid').includes("render 'language-switcher'"),
+    'desktop nav must render the language switcher'
+  );
+  assert.ok(
+    read('snippets/header-restaurant-drawer.liquid').includes("render 'language-switcher'"),
+    'mobile drawer must render the language switcher'
+  );
+  const sw = read('snippets/language-switcher.liquid');
+  assert.ok(sw.includes('localization.available_languages'), 'switcher lists published languages dynamically');
+  assert.ok(sw.includes('remove_first: current_root'), 'switcher strips the current locale prefix from the path');
+});
+
 test('cart updates from the fulfillment module use the hydration morph', () => {
   const js = read('assets/cart-fulfillment.js');
   assert.ok(js.includes("morphSection(sectionId, html, 'hydration')"), "a 'full' morph breaks the open drawer dialog");
