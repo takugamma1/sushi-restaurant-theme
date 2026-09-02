@@ -254,11 +254,19 @@
 </div>
 
 {%- liquid
-  # Delivery orders need a pin-drop address before checkout unlocks.
+  # Delivery orders need a pin-drop address AND a chopsticks count before
+  # checkout unlocks. The reason tells the drawer JS what to prompt for.
   assign cf_mode = cart.attributes['Получаване'] | default: 'Доставка'
   assign cf_blocked = false
-  if cf_mode != 'Вземане от място' and cart.attributes['Адрес за доставка'] == blank
-    assign cf_blocked = true
+  assign cf_blocked_reason = ''
+  if cf_mode != 'Вземане от място'
+    if cart.attributes['Адрес за доставка'] == blank
+      assign cf_blocked = true
+      assign cf_blocked_reason = 'address'
+    elsif cart.attributes['Клечки'] == blank
+      assign cf_blocked = true
+      assign cf_blocked_reason = 'sticks'
+    endif
   endif
 -%}
 <div class="cart__ctas">
@@ -273,6 +281,7 @@
     {% if cf_blocked %}
       aria-disabled="true"
       data-cf-blocked
+      data-cf-blocked-reason="{{ cf_blocked_reason }}"
     {% endif %}
     form="cart-form"
   >

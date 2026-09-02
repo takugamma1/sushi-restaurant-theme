@@ -84,6 +84,50 @@
     {%- endif -%}
     <p class="cart-fulfillment__error" data-cf-error hidden></p>
   </div>
+
+  {%- liquid
+    # Chopsticks / cutlery count. Saved as cart attribute „Клечки“ (lands on the
+    # order). Required before checkout for delivery, optional for pickup.
+    assign sticks_value = cart.attributes['Клечки'] | append: ''
+    assign sticks_num = sticks_value | plus: 0
+    assign sticks_is_custom = false
+    if sticks_value != blank and sticks_num > 4
+      assign sticks_is_custom = true
+    endif
+  -%}
+  <div class="cart-sticks" data-cf-sticks>
+    <p class="cart-fulfillment__label">
+      КЛЕЧКИ / ПРИБОРИ (БРОЙ)
+      {%- if mode != 'Вземане от място' %} <span class="cart-sticks__required" title="Задължително при доставка">*</span>{% endif -%}
+    </p>
+    <div class="cart-sticks__row" role="group" aria-label="Брой клечки">
+      {%- for n in (1..4) -%}
+        {%- assign n_str = n | append: '' -%}
+        <button
+          type="button"
+          class="cart-sticks__option{% if sticks_value == n_str %} cart-sticks__option--active{% endif %}"
+          data-sticks-value="{{ n }}"
+          aria-pressed="{% if sticks_value == n_str %}true{% else %}false{% endif %}"
+        >{{ n }}</button>
+      {%- endfor -%}
+      <input
+        class="cart-sticks__custom{% if sticks_is_custom %} cart-sticks__custom--active{% endif %}"
+        type="number"
+        min="1"
+        max="99"
+        step="1"
+        inputmode="numeric"
+        placeholder="друго"
+        value="{% if sticks_is_custom %}{{ sticks_value }}{% endif %}"
+        data-sticks-custom
+        aria-label="Друг брой клечки"
+      >
+    </div>
+    {%- if mode != 'Вземане от място' and sticks_value == blank -%}
+      <p class="cart-fulfillment__hint">Изберете брой — задължително при доставка.</p>
+    {%- endif -%}
+    <p class="cart-fulfillment__error" data-sticks-error hidden></p>
+  </div>
 </cart-fulfillment>
 
 {%- comment -%} Map dialog lives at drawer level; created once, reused. {%- endcomment -%}
@@ -214,6 +258,60 @@
   }
 
   .cart-fulfillment__body { margin-top: 0.65rem; }
+
+  /* ── Chopsticks / cutlery count ────────────────────── */
+  .cart-sticks {
+    margin-top: 0.9rem;
+    padding-top: 0.8rem;
+    border-block-start: 1px dashed var(--color-border);
+  }
+
+  .cart-sticks__required { color: #f98760; }
+
+  .cart-sticks__row {
+    display: flex;
+    align-items: stretch;
+    gap: 0.45rem;
+  }
+
+  .cart-sticks__option,
+  .cart-sticks__custom {
+    height: 42px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--color-foreground);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+  }
+
+  .cart-sticks__option {
+    flex: 1 1 0;
+    cursor: pointer;
+  }
+
+  .cart-sticks__option:hover { border-color: rgba(249, 135, 96, 0.6); }
+
+  .cart-sticks__option--active,
+  .cart-sticks__custom--active {
+    border-color: #f98760;
+    background: rgba(249, 135, 96, 0.12);
+    color: #f98760;
+  }
+
+  .cart-sticks__custom {
+    flex: 1.4 1 0;
+    min-width: 4.2rem;
+    padding: 0 0.6rem;
+    text-align: center;
+    -moz-appearance: textfield;
+  }
+
+  .cart-sticks__custom::-webkit-outer-spin-button,
+  .cart-sticks__custom::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .cart-sticks__custom::placeholder { color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text)); }
 
   .cart-fulfillment__note {
     margin: 0;

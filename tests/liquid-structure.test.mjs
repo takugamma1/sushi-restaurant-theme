@@ -68,6 +68,15 @@ test('language switcher: dropdown by the order button, row in the drawer, nav st
   assert.ok(sw.includes('lang-dd--sticky'), 'sticky variant exists');
 });
 
+test('chopsticks widget is rendered and gates delivery checkout server-side', () => {
+  const snippet = read('snippets/cart-fulfillment.liquid');
+  assert.ok(snippet.includes('data-cf-sticks'), 'fulfillment block renders the chopsticks widget');
+  assert.ok(snippet.includes("cart.attributes['Клечки']"), 'widget reads the Клечки cart attribute');
+  const summary = read('snippets/cart-summary.liquid');
+  assert.ok(summary.includes("cart.attributes['Клечки'] == blank"), 'checkout is blocked when delivery has no chopsticks count');
+  assert.ok(summary.includes('data-cf-blocked-reason'), 'blocked button carries the reason for the drawer JS');
+});
+
 test('cart updates from the fulfillment module use the hydration morph', () => {
   const js = read('assets/cart-fulfillment.js');
   assert.ok(js.includes("morphSection(sectionId, html, 'hydration')"), "a 'full' morph breaks the open drawer dialog");

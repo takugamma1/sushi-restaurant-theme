@@ -237,6 +237,57 @@ async function setMode(mode) {
   }
 }
 
+/* ── chopsticks / cutlery count ──────────────────────── */
+
+const STICKS_ATTR = 'Клечки';
+
+function paintSticks(value) {
+  const el = root();
+  if (!el) return;
+  const str = String(value);
+  el.querySelectorAll('[data-sticks-value]').forEach((button) => {
+    const active = button.dataset.sticksValue === str;
+    button.classList.toggle('cart-sticks__option--active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  const custom = el.querySelector('[data-sticks-custom]');
+  if (custom) {
+    const isCustom = Number(value) > 4;
+    custom.classList.toggle('cart-sticks__custom--active', isCustom);
+    if (!isCustom) custom.value = '';
+  }
+}
+
+function showSticksError(message) {
+  const el = root()?.querySelector('[data-sticks-error]');
+  if (!el) return;
+  el.textContent = message;
+  el.hidden = false;
+  const box = root()?.querySelector('[data-cf-sticks]');
+  if (box && typeof box.scrollIntoView === 'function') box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+async function setSticks(value) {
+  const state = getState();
+  if (!state || busy) return;
+  const n = parseInt(value, 10);
+  if (!Number.isFinite(n) || n < 1 || n > 99) {
+    showSticksError('Въведете брой между 1 и 99.');
+    return;
+  }
+  busy = true;
+  paintSticks(n);
+  const err = root()?.querySelector('[data-sticks-error]');
+  if (err) err.hidden = true;
+  try {
+    await updateCart({ attributes: { [STICKS_ATTR]: String(n) } }, state.sectionId);
+  } catch (_) {
+    showSticksError('Броят не се записа — опитайте отново.');
+  } finally {
+    busy = false;
+  }
+}
+
 /* ── Google Maps ─────────────────────────────────────── */
 
 function loadMaps(key) {
@@ -466,14 +517,25 @@ document.addEventListener(
       locateMe();
       return;
     }
+    const sticksButton = event.target.closest('[data-sticks-value]');
+    if (sticksButton) {
+      event.preventDefault();
+      setSticks(sticksButton.dataset.sticksValue);
+      return;
+    }
 
-    // Blocked checkout (delivery without address): open the map instead.
+    // Blocked checkout (delivery without address / chopsticks count):
+    // prompt for whatever is missing instead of navigating.
     const blocked = event.target.closest('[data-cf-blocked]');
     if (blocked) {
-      if (!getDialog()) return; // no fulfillment UI on this page — leave checkout alone
+      if (!root()) return; // no fulfillment UI on this page — leave checkout alone
       event.preventDefault();
       event.stopPropagation();
-      openMap();
+      if (blocked.dataset.cfBlockedReason === 'sticks') {
+        showSticksError('Моля, изберете брой клечки/прибори преди поръчка.');
+        return;
+      }
+      if (getDialog()) openMap();
       return;
     }
 
@@ -500,6 +562,12 @@ document.addEventListener(
 
 document.addEventListener('input', (event) => {
   if (event.target?.id === 'cf-map-search') onSearchInput(event.target);
+});
+
+// Custom chopsticks count: save when the user commits a value.
+document.addEventListener('change', (event) => {
+  const target = event.target;
+  if (target?.matches?.('[data-sticks-custom]') && target.value !== '') setSticks(target.value);
 });
 
 // Prevent the search field from submitting anything on Enter.

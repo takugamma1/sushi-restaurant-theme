@@ -53,7 +53,7 @@ await import('../assets/cart-fulfillment.js');
 
 /* ── fixture (mirrors snippets/cart-fulfillment.liquid) ── */
 
-function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', pills = [] } = {}) {
+function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', pills = [], blockedReason = '' } = {}) {
   const activeDelivery = mode !== MODE_PICKUP ? ' cart-fulfillment__option--active' : '';
   const activePickup = mode === MODE_PICKUP ? ' cart-fulfillment__option--active' : '';
   document.body.innerHTML = `
@@ -79,8 +79,15 @@ function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', pills
           </div>
           <div data-cf-body></div>
           <p class="cart-fulfillment__error" data-cf-error hidden></p>
+          <div class="cart-sticks" data-cf-sticks>
+            <div class="cart-sticks__row">
+              ${[1, 2, 3, 4].map((n) => `<button type="button" class="cart-sticks__option" data-sticks-value="${n}" aria-pressed="false">${n}</button>`).join('')}
+              <input class="cart-sticks__custom" type="number" data-sticks-custom value="">
+            </div>
+            <p class="cart-fulfillment__error" data-sticks-error hidden></p>
+          </div>
         </cart-fulfillment>
-        <button type="button" id="fake-checkout" name="checkout" data-cf-blocked>Към плащане</button>
+        <button type="button" id="fake-checkout" name="checkout" data-cf-blocked data-cf-blocked-reason="${blockedReason}">Към плащане</button>
       </div>
       <dialog id="cf-map-dialog" class="cf-map"><div id="cf-map-canvas"><div class="cf-map__loading"></div></div></dialog>
     </div>`;
@@ -214,6 +221,59 @@ test('choosing delivery with no saved address opens the map dialog', async () =>
   assert.equal(opened, 1, 'map dialog opened so the user can drop a pin');
   const body = JSON.parse(fetchCalls[0].config.body);
   assert.equal(body.attributes['Адрес за доставка'], '', 'no address is invented');
+});
+
+test('chopsticks: quick pick saves the count as a cart attribute with instant feedback', async () => {
+  renderFulfillment();
+  click(document.querySelector('[data-sticks-value="3"]'));
+  assert.equal(document.querySelector('[data-sticks-value="3"]').classList.contains('cart-sticks__option--active'), true);
+  assert.equal(document.querySelector('[data-sticks-value="3"]').getAttribute('aria-pressed'), 'true');
+  await flush();
+
+  assert.equal(fetchCalls.length, 1);
+  const body = JSON.parse(fetchCalls[0].config.body);
+  assert.equal(body.attributes['Клечки'], '3');
+  assert.equal(morphCalls[0].mode, 'hydration');
+});
+
+test('chopsticks: typed custom count saves on change and highlights the input', async () => {
+  renderFulfillment();
+  const custom = document.querySelector('[data-sticks-custom]');
+  custom.value = '7';
+  custom.dispatchEvent(new window.Event('change', { bubbles: true }));
+  await flush();
+
+  const body = JSON.parse(fetchCalls[0].config.body);
+  assert.equal(body.attributes['Клечки'], '7');
+  assert.equal(custom.classList.contains('cart-sticks__custom--active'), true);
+  assert.equal(document.querySelector('[data-sticks-value="4"]').classList.contains('cart-sticks__option--active'), false);
+});
+
+test('chopsticks: invalid count is rejected with a message and no request', async () => {
+  renderFulfillment();
+  const custom = document.querySelector('[data-sticks-custom]');
+  custom.value = '250';
+  custom.dispatchEvent(new window.Event('change', { bubbles: true }));
+  await flush();
+
+  assert.equal(fetchCalls.length, 0);
+  assert.equal(document.querySelector('[data-sticks-error]').hidden, false);
+});
+
+test('delivery checkout blocked for missing chopsticks prompts for the count, not the map', async () => {
+  renderFulfillment({ blockedReason: 'sticks' });
+  const dialog = document.querySelector('dialog.cf-map');
+  let opened = 0;
+  dialog.showModal = () => opened++;
+
+  click(document.querySelector('#fake-checkout'));
+  await flush();
+
+  assert.equal(opened, 0, 'map must not open');
+  const error = document.querySelector('[data-sticks-error]');
+  assert.equal(error.hidden, false);
+  assert.ok(error.textContent.includes('клечки'));
+  assert.equal(fetchCalls.length, 0);
 });
 
 test('blocked checkout button opens the map instead of navigating', async () => {
