@@ -24,6 +24,7 @@
         },
         "category_dinner2": {
           "type": "category",
+          "disabled": true,
           "settings": {
             "title": "ВЕЧЕРЯ ЗА ДВАМА",
             "tab_label": "",
@@ -226,7 +227,6 @@
         "category_nLp68D"
       ],
       "settings": {
-        "hero_image": "shopify://shop_images/bundle.png",
         "hero_heading": "НАШЕТО МЕНЮ",
         "hero_subheading": "Най-доброто суши в града",
         "cta_label": "",
