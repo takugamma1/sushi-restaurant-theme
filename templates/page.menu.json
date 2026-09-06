@@ -12,6 +12,16 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_UHmeBA": {
+          "type": "category",
+          "settings": {
+            "title": "Комбо",
+            "tab_label": "",
+            "collection": "вечеря-за-двама",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_7iJDCe": {
           "type": "category",
           "settings": {
@@ -206,6 +216,7 @@
         }
       },
       "block_order": [
+        "category_UHmeBA",
         "category_7iJDCe",
         "category_dinner2",
         "category_mango",
