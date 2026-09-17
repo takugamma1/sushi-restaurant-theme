@@ -77,6 +77,17 @@ test('chopsticks widget is rendered and gates delivery checkout server-side', ()
   assert.ok(summary.includes('data-cf-blocked-reason'), 'blocked button carries the reason for the drawer JS');
 });
 
+test('contact phone is rendered and gates checkout for every order type', () => {
+  const snippet = read('snippets/cart-fulfillment.liquid');
+  assert.ok(snippet.includes('data-cf-phone'), 'fulfillment block renders the phone input');
+  assert.ok(snippet.includes("cart.attributes['Телефон']"), 'input reads the Телефон cart attribute');
+  const summary = read('snippets/cart-summary.liquid');
+  assert.ok(summary.includes("cart.attributes['Телефон'] == blank"), 'checkout is blocked without a phone');
+  const phoneGate = summary.indexOf("cart.attributes['Телефон'] == blank");
+  const deliveryBlockEnd = summary.indexOf('endif', summary.indexOf("assign cf_blocked_reason = 'sticks'"));
+  assert.ok(phoneGate > deliveryBlockEnd, 'phone gate sits outside the delivery-only block so pickup needs it too');
+});
+
 test('cart updates from the fulfillment module use the hydration morph', () => {
   const js = read('assets/cart-fulfillment.js');
   assert.ok(js.includes("morphSection(sectionId, html, 'hydration')"), "a 'full' morph breaks the open drawer dialog");

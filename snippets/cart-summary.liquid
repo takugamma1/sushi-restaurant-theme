@@ -254,8 +254,8 @@
 </div>
 
 {%- liquid
-  # Delivery orders need a pin-drop address AND a chopsticks count before
-  # checkout unlocks. The reason tells the drawer JS what to prompt for.
+  # Delivery orders need a pin-drop address AND a chopsticks count; every order
+  # needs a contact phone before checkout unlocks. The reason tells the drawer JS what to prompt for.
   assign cf_mode = cart.attributes['Получаване'] | default: 'Доставка'
   assign cf_blocked = false
   assign cf_blocked_reason = ''
@@ -267,6 +267,11 @@
       assign cf_blocked = true
       assign cf_blocked_reason = 'sticks'
     endif
+  endif
+  # A contact phone is required for every order (delivery AND pickup).
+  if cf_blocked == false and cart.attributes['Телефон'] == blank
+    assign cf_blocked = true
+    assign cf_blocked_reason = 'phone'
   endif
 -%}
 <div class="cart__ctas">

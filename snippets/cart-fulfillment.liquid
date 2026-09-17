@@ -21,6 +21,7 @@
   data-mode="{{ mode | escape }}"
   data-address="{{ saved_address | escape }}"
   data-zip="{{ saved_zip | escape }}"
+  data-phone="{{ cart.attributes['Телефон'] | escape }}"
   data-maps-key="AIzaSyDQ5_8gH7ejFp3O4yRp9BO-ZLAKa4NGnt0"
   data-discount-code="PICKUP10"
   data-storefront-token="{{ settings.cf_storefront_token | default: 'e15f5d390489194a77a140ea964309f2' }}"
@@ -127,6 +128,34 @@
       <p class="cart-fulfillment__hint">Изберете брой — задължително при доставка.</p>
     {%- endif -%}
     <p class="cart-fulfillment__error" data-sticks-error hidden></p>
+  </div>
+
+  {%- comment -%}
+    Contact phone. Saved as cart attribute „Телефон“ (lands on the order) and
+    pushed to checkout prefill. Required before checkout for BOTH delivery and
+    pickup — the courier / restaurant must be able to reach the customer.
+  {%- endcomment -%}
+  {%- assign phone_value = cart.attributes['Телефон'] -%}
+  <div class="cart-phone" data-cf-phone-box>
+    <label class="cart-fulfillment__label" for="cf-phone">
+      ТЕЛЕФОН ЗА ВРЪЗКА <span class="cart-sticks__required" title="Задължително">*</span>
+    </label>
+    <input
+      id="cf-phone"
+      class="cart-phone__input{% if phone_value != blank %} cart-phone__input--ok{% endif %}"
+      type="tel"
+      inputmode="tel"
+      autocomplete="tel"
+      placeholder="08XX XXX XXX"
+      maxlength="20"
+      value="{{ phone_value | escape }}"
+      data-cf-phone
+      aria-required="true"
+    >
+    {%- if phone_value == blank -%}
+      <p class="cart-fulfillment__hint">Задължително — за връзка при доставка или въпроси по поръчката.</p>
+    {%- endif -%}
+    <p class="cart-fulfillment__error" data-phone-error hidden></p>
   </div>
 </cart-fulfillment>
 
@@ -374,6 +403,35 @@
     margin: 0.5rem 0 0;
     font-size: 0.74rem;
     color: #e66;
+  }
+
+  /* ── Contact phone ─────────────────────────────────── */
+  .cart-phone { margin-top: 0.9rem; }
+
+  .cart-phone__input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--color-foreground);
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .cart-phone__input:focus {
+    outline: none;
+    border-color: #f98760;
+    box-shadow: inset 0 0 0 1px #f98760;
+  }
+
+  .cart-phone__input--ok { border-color: #7fc98b; }
+
+  .cart-phone__input--error {
+    border-color: #e66;
+    box-shadow: inset 0 0 0 1px #e66;
   }
 
   /* ── Map dialog ────────────────────────────────────── */

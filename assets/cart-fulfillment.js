@@ -39,6 +39,7 @@ function getState() {
     mode: el.dataset.mode || MODE_DELIVERY,
     address: el.dataset.address || '',
     zip: el.dataset.zip || '',
+    phone: el.dataset.phone || '',
     mapsKey: el.dataset.mapsKey,
     discountCode: el.dataset.discountCode || 'PICKUP10',
     storefrontToken: el.dataset.storefrontToken || '',
@@ -106,8 +107,10 @@ function cartToken() {
  * Sync the checkout with the drawer choice via the Storefront API:
  * - preselects the delivery method (PICK_UP / DELIVERY)
  * - prefills the shipping address for delivery orders
+ * - prefills the contact phone (dropped and retried if Shopify rejects it, so
+ *   a bad number can never cost the customer their address prefill)
  */
-async function syncBuyerIdentity({ method, address }) {
+async function syncBuyerIdentity({ method, address, phone }) {
   const state = getState();
   if (!state?.storefrontToken) return;
   const token = cartToken();
@@ -130,8 +133,11 @@ async function syncBuyerIdentity({ method, address }) {
     ];
   }
 
-  try {
-    await fetch(`${window.Shopify?.routes?.root || '/'}api/2025-07/graphql.json`, {
+  const e164 = phoneE164(phone ?? state.phone);
+  if (e164) buyerIdentity.phone = e164;
+
+  const send = (identity) =>
+    fetch(`${window.Shopify?.routes?.root || '/'}api/2025-07/graphql.json`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -145,12 +151,23 @@ async function syncBuyerIdentity({ method, address }) {
         }`,
         variables: {
           cartId: `gid://shopify/Cart/${token}`,
-          buyerIdentity,
+          buyerIdentity: identity,
         },
       }),
     });
+
+  try {
+    const response = await send(buyerIdentity);
+    if (buyerIdentity.phone) {
+      const json = await response.json().catch(() => null);
+      const errors = json?.data?.cartBuyerIdentityUpdate?.userErrors || [];
+      if (errors.length > 0) {
+        const { phone: _dropped, ...withoutPhone } = buyerIdentity;
+        await send(withoutPhone);
+      }
+    }
   } catch (_) {
-    /* non-fatal: attributes still carry the address */
+    /* non-fatal: attributes still carry the address and phone */
   }
 }
 
@@ -286,6 +303,94 @@ async function setSticks(value) {
   } finally {
     busy = false;
   }
+}
+
+/* ── contact phone ───────────────────────────────────── */
+
+const PHONE_ATTR = 'Телефон';
+const LS_PHONE = 'mango_contact_phone';
+let pendingPhone = null;
+
+/** Compact form of a plausible phone number, or '' when it is not one. */
+function normalizePhone(raw) {
+  const trimmed = String(raw || '').trim();
+  const international = trimmed.startsWith('+') || trimmed.startsWith('00');
+  let digits = trimmed.replace(/\D/g, '');
+  if (trimmed.startsWith('00')) digits = digits.slice(2);
+  if (digits.length < 8 || digits.length > 15) return '';
+  return international ? `+${digits}` : digits;
+}
+
+/** E.164 for checkout prefill; Bulgarian national numbers (0XXXXXXXXX) get +359. */
+function phoneE164(phone) {
+  if (!phone) return null;
+  if (phone.startsWith('+')) return phone;
+  if (/^0\d{9}$/.test(phone)) return `+359${phone.slice(1)}`;
+  return null;
+}
+
+const phoneInput = () => root()?.querySelector('[data-cf-phone]');
+
+function showPhoneError(message) {
+  const el = root()?.querySelector('[data-phone-error]');
+  if (el) {
+    el.textContent = message;
+    el.hidden = false;
+  }
+  const input = phoneInput();
+  if (input) {
+    input.classList.add('cart-phone__input--error');
+    input.classList.remove('cart-phone__input--ok');
+    if (typeof input.scrollIntoView === 'function') input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    input.focus({ preventScroll: true });
+  }
+}
+
+function clearPhoneError() {
+  const el = root()?.querySelector('[data-phone-error]');
+  if (el) el.hidden = true;
+  phoneInput()?.classList.remove('cart-phone__input--error');
+}
+
+/**
+ * Validate + save the phone as a cart attribute. Resolves true once the phone
+ * is on the cart. Not gated by `busy`: dropping a phone save would strand the
+ * customer on a blocked checkout button.
+ */
+function setPhone(raw) {
+  const state = getState();
+  if (!state) return Promise.resolve(false);
+  const phone = normalizePhone(raw);
+  if (!phone) {
+    showPhoneError('Моля, въведете валиден телефонен номер.');
+    return Promise.resolve(false);
+  }
+  clearPhoneError();
+  phoneInput()?.classList.add('cart-phone__input--ok');
+  if (state.phone === phone) return Promise.resolve(true);
+  if (pendingPhone) return pendingPhone;
+
+  pendingPhone = (async () => {
+    try {
+      await updateCart({ attributes: { [PHONE_ATTR]: phone } }, state.sectionId);
+      try {
+        localStorage.setItem(LS_PHONE, phone);
+      } catch (_) {}
+      return true;
+    } catch (_) {
+      showPhoneError('Телефонът не се записа — опитайте отново.');
+      return false;
+    } finally {
+      pendingPhone = null;
+    }
+  })();
+  return pendingPhone;
+}
+
+/** Make sure whatever is typed in the phone field is saved (or report why not). */
+function commitPhone() {
+  if (pendingPhone) return pendingPhone;
+  return setPhone(phoneInput()?.value || '');
 }
 
 /* ── Google Maps ─────────────────────────────────────── */
@@ -535,6 +640,14 @@ document.addEventListener(
         showSticksError('Моля, изберете брой клечки/прибори преди поръчка.');
         return;
       }
+      if (blocked.dataset.cfBlockedReason === 'phone') {
+        // The phone is the last requirement: if a valid number is already
+        // typed, save it and carry on to checkout in the same click.
+        commitPhone().then((ok) => {
+          if (ok) proceedToCheckout();
+        });
+        return;
+      }
       if (getDialog()) openMap();
       return;
     }
@@ -545,34 +658,48 @@ document.addEventListener(
     if (checkoutButton && root()) {
       event.preventDefault();
       event.stopPropagation();
-      const state = getState();
-      const pickup = state?.mode === MODE_PICKUP;
-      const sync = syncBuyerIdentity({
-        method: pickup ? 'PICK_UP' : 'SHIPPING',
-        address: pickup ? null : savedAddress(),
-      });
-      // Never hang checkout on a slow network: 2.5s cap.
-      Promise.race([sync, new Promise((resolve) => setTimeout(resolve, 2500))]).finally(() => {
-        window.location.assign('/checkout');
-      });
+      proceedToCheckout();
     }
   },
   { capture: true }
 );
 
+/** Sync method + address + phone onto the cart, then go to checkout. */
+function proceedToCheckout() {
+  const state = getState();
+  const pickup = state?.mode === MODE_PICKUP;
+  const sync = syncBuyerIdentity({
+    method: pickup ? 'PICK_UP' : 'SHIPPING',
+    address: pickup ? null : savedAddress(),
+    phone: normalizePhone(phoneInput()?.value || '') || state?.phone,
+  });
+  // Never hang checkout on a slow network: 2.5s cap.
+  Promise.race([sync, new Promise((resolve) => setTimeout(resolve, 2500))]).finally(() => {
+    window.location.assign('/checkout');
+  });
+}
+
 document.addEventListener('input', (event) => {
   if (event.target?.id === 'cf-map-search') onSearchInput(event.target);
+  if (event.target?.matches?.('[data-cf-phone]')) clearPhoneError();
 });
 
 // Custom chopsticks count: save when the user commits a value.
 document.addEventListener('change', (event) => {
   const target = event.target;
   if (target?.matches?.('[data-sticks-custom]') && target.value !== '') setSticks(target.value);
+  // Contact phone: save when the user leaves the field.
+  if (target?.matches?.('[data-cf-phone]') && target.value.trim() !== '') setPhone(target.value);
 });
 
 // Prevent the search field from submitting anything on Enter.
 document.addEventListener('keydown', (event) => {
   if (event.target?.id === 'cf-map-search' && event.key === 'Enter') event.preventDefault();
+  // Enter in the phone field saves it instead of submitting the cart form.
+  if (event.target?.matches?.('[data-cf-phone]') && event.key === 'Enter') {
+    event.preventDefault();
+    commitPhone();
+  }
 });
 
 if (!customElements.get('cart-fulfillment')) {
@@ -591,5 +718,12 @@ getDialog();
       method: pickup ? 'PICK_UP' : 'SHIPPING',
       address: pickup ? null : savedAddress(),
     });
+    // Returning customer: put the remembered phone back on a fresh cart.
+    if (!state.phone) {
+      try {
+        const remembered = localStorage.getItem(LS_PHONE);
+        if (remembered) setPhone(remembered);
+      } catch (_) {}
+    }
   }
 }

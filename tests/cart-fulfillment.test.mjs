@@ -9,7 +9,7 @@
  */
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { JSDOM } from 'jsdom';
+import { JSDOM, VirtualConsole } from 'jsdom';
 import { morphCalls, resetMorphCalls } from './mocks/section-renderer.mjs';
 
 const MODE_DELIVERY = 'Доставка';
@@ -18,7 +18,14 @@ const SECTION_ID = 'sections--test__header';
 
 /* ── environment ─────────────────────────────────────── */
 
-const dom = new JSDOM('<!doctype html><html><body></body></html>', { url: 'https://example.test/' });
+// jsdom cannot navigate; it reports attempts as "not implemented" errors. Collect
+// them so tests can assert "went to checkout" vs "stayed in the drawer".
+let navigationAttempts = 0;
+const virtualConsole = new VirtualConsole();
+virtualConsole.on('jsdomError', (error) => {
+  if (/navigation/i.test(String(error?.message))) navigationAttempts++;
+});
+const dom = new JSDOM('<!doctype html><html><body></body></html>', { url: 'https://example.test/', virtualConsole });
 const { window } = dom;
 
 for (const key of ['document', 'HTMLElement', 'HTMLTemplateElement', 'customElements', 'Node', 'MouseEvent', 'CustomEvent', 'localStorage']) {
@@ -53,7 +60,7 @@ await import('../assets/cart-fulfillment.js');
 
 /* ── fixture (mirrors snippets/cart-fulfillment.liquid) ── */
 
-function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', pills = [], blockedReason = '' } = {}) {
+function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', phone = '', pills = [], blockedReason = '' } = {}) {
   const activeDelivery = mode !== MODE_PICKUP ? ' cart-fulfillment__option--active' : '';
   const activePickup = mode === MODE_PICKUP ? ' cart-fulfillment__option--active' : '';
   document.body.innerHTML = `
@@ -65,6 +72,7 @@ function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', pills
           data-mode="${mode}"
           data-address="${address}"
           data-zip="${zip}"
+          data-phone="${phone}"
           data-maps-key="test-key"
           data-discount-code="PICKUP10"
           data-storefront-token=""
@@ -86,6 +94,10 @@ function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', pills
             </div>
             <p class="cart-fulfillment__error" data-sticks-error hidden></p>
           </div>
+          <div class="cart-phone" data-cf-phone-box>
+            <input id="cf-phone" class="cart-phone__input" type="tel" value="${phone}" data-cf-phone>
+            <p class="cart-fulfillment__error" data-phone-error hidden></p>
+          </div>
         </cart-fulfillment>
         <button type="button" id="fake-checkout" name="checkout" data-cf-blocked data-cf-blocked-reason="${blockedReason}">Към плащане</button>
       </div>
@@ -104,6 +116,7 @@ beforeEach(() => {
   fetchCalls = [];
   fetchResponder = () => Promise.resolve(okCartResponse());
   resetMorphCalls();
+  navigationAttempts = 0;
   window.localStorage.clear();
   document.body.innerHTML = '';
 });
@@ -287,4 +300,82 @@ test('blocked checkout button opens the map instead of navigating', async () => 
 
   assert.equal(opened, 1);
   assert.equal(fetchCalls.length, 0, 'no cart mutation from a blocked checkout click');
+});
+
+/* ── contact phone ───────────────────────────────────── */
+
+function typePhone(value) {
+  const input = document.querySelector('[data-cf-phone]');
+  input.value = value;
+  input.dispatchEvent(new window.Event('change', { bubbles: true }));
+  return input;
+}
+
+test('phone: a valid number is normalized and saved as the Телефон cart attribute', async () => {
+  renderFulfillment();
+  const input = typePhone('0888 123-456');
+  await flush();
+
+  assert.equal(fetchCalls.length, 1);
+  const body = JSON.parse(fetchCalls[0].config.body);
+  assert.equal(body.attributes['Телефон'], '0888123456');
+  assert.equal(input.classList.contains('cart-phone__input--ok'), true);
+  assert.equal(document.querySelector('[data-phone-error]').hidden, true);
+  assert.equal(window.localStorage.getItem('mango_contact_phone'), '0888123456', 'remembered for the next order');
+});
+
+test('phone: international format is kept with its plus prefix', async () => {
+  renderFulfillment();
+  typePhone('+359 88 812 3456');
+  await flush();
+  assert.equal(JSON.parse(fetchCalls[0].config.body).attributes['Телефон'], '+359888123456');
+});
+
+test('phone: an implausible number is rejected with a message and no request', async () => {
+  renderFulfillment();
+  const input = typePhone('12345');
+  await flush();
+
+  assert.equal(fetchCalls.length, 0);
+  assert.equal(document.querySelector('[data-phone-error]').hidden, false);
+  assert.equal(input.classList.contains('cart-phone__input--error'), true);
+});
+
+test('phone: re-committing the already saved number makes no request', async () => {
+  renderFulfillment({ phone: '0888123456' });
+  typePhone('0888 123 456');
+  await flush();
+  assert.equal(fetchCalls.length, 0);
+});
+
+test('checkout blocked for a missing phone asks for it and stays in the drawer', async () => {
+  renderFulfillment({ blockedReason: 'phone' });
+  click(document.querySelector('#fake-checkout'));
+  await flush();
+
+  assert.equal(fetchCalls.length, 0);
+  assert.equal(navigationAttempts, 0, 'must not reach checkout without a phone');
+  assert.equal(document.querySelector('[data-phone-error]').hidden, false);
+});
+
+test('checkout blocked for phone: a typed valid number is saved and checkout continues in one click', async () => {
+  renderFulfillment({ blockedReason: 'phone' });
+  document.querySelector('[data-cf-phone]').value = '0888123456'; // typed, not yet committed
+  click(document.querySelector('#fake-checkout'));
+  await flush();
+
+  assert.equal(fetchCalls.length, 1, 'phone saved exactly once');
+  assert.equal(JSON.parse(fetchCalls[0].config.body).attributes['Телефон'], '0888123456');
+  assert.equal(navigationAttempts, 1, 'continued to checkout');
+});
+
+test('checkout blocked for phone: a failed save keeps the customer in the drawer', async () => {
+  renderFulfillment({ blockedReason: 'phone' });
+  fetchResponder = () => Promise.resolve({ ok: false, json: async () => ({}) });
+  document.querySelector('[data-cf-phone]').value = '0888123456';
+  click(document.querySelector('#fake-checkout'));
+  await flush();
+
+  assert.equal(navigationAttempts, 0);
+  assert.equal(document.querySelector('[data-phone-error]').hidden, false);
 });
