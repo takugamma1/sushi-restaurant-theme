@@ -17,7 +17,7 @@
           "settings": {
             "title": "Комбо",
             "tab_label": "",
-            "collection": "вечеря-за-двама",
+            "collection": "vecherya-za-dvama",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -27,7 +27,7 @@
           "settings": {
             "title": "СЕТОВЕ",
             "tab_label": "",
-            "collection": "сетове",
+            "collection": "setove",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -38,7 +38,7 @@
           "settings": {
             "title": "ВЕЧЕРЯ ЗА ДВАМА",
             "tab_label": "",
-            "collection": "вечеря-за-двама",
+            "collection": "vecherya-za-dvama",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -48,7 +48,7 @@
           "settings": {
             "title": "МАНГО МЕНЮ",
             "tab_label": "",
-            "collection": "манго-меню",
+            "collection": "mango-menyu",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -58,7 +58,7 @@
           "settings": {
             "title": "ХОСОМАКИ",
             "tab_label": "",
-            "collection": "хосомаки",
+            "collection": "hosomaki",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -68,7 +68,7 @@
           "settings": {
             "title": "УРАМАКИ",
             "tab_label": "",
-            "collection": "урамаки",
+            "collection": "uramaki",
             "max_products": 20,
             "sale_badge_text": "Най-продаван"
           }
@@ -78,7 +78,7 @@
           "settings": {
             "title": "КАЛИФОРНИЯ",
             "tab_label": "",
-            "collection": "калифорния",
+            "collection": "kaliforniya",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -88,7 +88,7 @@
           "settings": {
             "title": "ФУТОМАКИ",
             "tab_label": "",
-            "collection": "футомаки",
+            "collection": "futomaki",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -98,7 +98,7 @@
           "settings": {
             "title": "ВУЛКАНИ",
             "tab_label": "",
-            "collection": "футомаки-1",
+            "collection": "vulkani",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -108,7 +108,7 @@
           "settings": {
             "title": "ПЪРЖЕНИ РОЛКИ",
             "tab_label": "",
-            "collection": "пържени-ролки",
+            "collection": "parzheni-rolki",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -118,7 +118,7 @@
           "settings": {
             "title": "НИГИРИ",
             "tab_label": "",
-            "collection": "нигири",
+            "collection": "nigiri",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -128,7 +128,7 @@
           "settings": {
             "title": "САШИМИ",
             "tab_label": "",
-            "collection": "сашими",
+            "collection": "sashimi",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -138,7 +138,7 @@
           "settings": {
             "title": "ТАТАКИ",
             "tab_label": "",
-            "collection": "татаки",
+            "collection": "tataki",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -148,7 +148,7 @@
           "settings": {
             "title": "ПОКЕ",
             "tab_label": "",
-            "collection": "поке",
+            "collection": "poke",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -159,7 +159,7 @@
           "settings": {
             "title": "Топли напитки",
             "tab_label": "",
-            "collection": "топли-напитки",
+            "collection": "topli-napitki",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -169,7 +169,7 @@
           "settings": {
             "title": "Гьози и скариди",
             "tab_label": "",
-            "collection": "топли-предложения",
+            "collection": "topli-predlozheniya",
             "max_products": 20,
             "sale_badge_text": "Най-продаван"
           }
@@ -179,7 +179,7 @@
           "settings": {
             "title": "СОСОВЕ ЗА СУШИ",
             "tab_label": "",
-            "collection": "сосове-за-суши",
+            "collection": "sosove-za-sushi",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -189,7 +189,7 @@
           "settings": {
             "title": "ДОБАВКИ",
             "tab_label": "",
-            "collection": "десерти",
+            "collection": "dobavki",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -199,7 +199,7 @@
           "settings": {
             "title": "БЕЗАЛКОХОЛНИ НАПИТКИ",
             "tab_label": "",
-            "collection": "безалкохолни-напитки",
+            "collection": "bezalkoholni-napitki",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -209,7 +209,7 @@
           "settings": {
             "title": "АЛКОХОЛНИ НАПИТКИ",
             "tab_label": "",
-            "collection": "алкохолни-напитки",
+            "collection": "alkoholni-napitki",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }

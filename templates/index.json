@@ -114,7 +114,7 @@
         "subheading": "Най-доброто суши в града",
         "heading": "СУШИ БАР МАНГО",
         "cta_label": "ПОРЪЧАЙ СЕГА",
-        "cta_link": "shopify://pages/меню-суши-манго",
+        "cta_link": "shopify://pages/menu",
         "heading_size": 60,
         "subheading_size": 16,
         "cta_size": 13,
@@ -133,7 +133,7 @@
         "collection_card_TR6DLz": {
           "type": "collection_card",
           "settings": {
-            "collection": "сетове",
+            "collection": "setove",
             "title": "Сетове",
             "image": "shopify://shop_images/Mango_Salmon.jpg"
           }
@@ -141,7 +141,7 @@
         "collection_card_eFaVYX": {
           "type": "collection_card",
           "settings": {
-            "collection": "нигири",
+            "collection": "nigiri",
             "title": "НИГИРИ",
             "image": "shopify://shop_images/Screenshot_2026-05-16_130748.png"
           }
@@ -149,7 +149,7 @@
         "collection_card_KF63HC": {
           "type": "collection_card",
           "settings": {
-            "collection": "поке",
+            "collection": "poke",
             "title": "ПОКЕ",
             "image": "shopify://shop_images/hf_20260516_102606_32d2421c-a27c-4eb7-9849-127767c54144.png"
           }
@@ -190,7 +190,7 @@
           "settings": {
             "title": "СЕТОВЕ",
             "tab_label": "",
-            "collection": "сетове",
+            "collection": "setove",
             "max_products": 14,
             "sale_badge_text": "Най-продаван"
           }
@@ -200,7 +200,7 @@
           "settings": {
             "title": "МАНГО МЕНЮ",
             "tab_label": "",
-            "collection": "манго-меню",
+            "collection": "mango-menyu",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -216,7 +216,7 @@
         "hero_heading": "НАШЕТО МЕНЮ",
         "hero_subheading": "Най-доброто суши в града",
         "cta_label": "ПОРЪЧАЙ ЗА ВКЪЩИ",
-        "cta_link": "shopify://pages/меню-суши-манго",
+        "cta_link": "shopify://pages/menu",
         "menu_page_url": "",
         "addons_collection": "",
         "addons_title": "Добави към поръчката",
@@ -321,7 +321,7 @@
             "label": "Поръчай",
             "media_type": "image",
             "image": "shopify://shop_images/Screenshot_2026-05-16_133530.png",
-            "link": "shopify://pages/меню-суши-манго",
+            "link": "shopify://pages/menu",
             "open_new_tab": false,
             "label_size": 13
           }
@@ -485,7 +485,7 @@
           "type": "footer_link",
           "settings": {
             "label": "ПОЛИТИКА ЗА ПОВЕРИТЕЛНОСТ",
-            "link": "shopify://pages/политика-за-поверителност"
+            "link": "shopify://pages/privacy-policy"
           }
         }
       },

@@ -86,7 +86,7 @@
         "banner_line_2_em": "уважение.",
         "banner_cta_primary": "ВИЖ МЕНЮТО",
         "banner_cta_secondary": "РЕЗЕРВИРАЙ МАСА",
-        "menu_url": "shopify://pages/меню-суши-манго",
+        "menu_url": "shopify://pages/menu",
         "contact_url": "/pages/contact"
       }
     },
@@ -125,7 +125,7 @@
           "type": "footer_link",
           "settings": {
             "label": "Политика за поверителност",
-            "link": "shopify://pages/политика-за-поверителност"
+            "link": "shopify://pages/privacy-policy"
           }
         }
       },

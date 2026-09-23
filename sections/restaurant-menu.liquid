@@ -222,7 +222,11 @@
   // Deep-link: /pages/...?collection=<handle> opens that category tab
   // (used by the home "Стилове" cards).
   try {
-    const wanted = new URLSearchParams(window.location.search).get('collection');
+    // Old Cyrillic collection slugs (renamed to Latin 2026-09) still arrive via
+    // shared links / bookmarks — map them to the new handle.
+    const legacyHandles = {"алкохолни-напитки": "alkoholni-napitki", "безалкохолни-напитки": "bezalkoholni-napitki", "футомаки-1": "vulkani", "вечеря-за-двама": "vecherya-za-dvama", "десерти": "dobavki", "калифорния": "kaliforniya", "манго-меню": "mango-menyu", "нигири": "nigiri", "поке": "poke", "пържени-ролки": "parzheni-rolki", "сашими": "sashimi", "сетове": "setove", "сосове-за-суши": "sosove-za-sushi", "татаки": "tataki", "топли-напитки": "topli-napitki", "топли-предложения": "topli-predlozheniya", "урамаки": "uramaki", "футомаки": "futomaki", "хосомаки": "hosomaki"};
+    const raw = new URLSearchParams(window.location.search).get('collection');
+    const wanted = raw ? (legacyHandles[raw] || raw) : raw;
     if (wanted) {
       const match = Array.from(tabs).find(t => t.dataset.collection === wanted);
       if (match) activateTab(match);

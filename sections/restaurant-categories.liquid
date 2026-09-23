@@ -22,7 +22,7 @@
     {%- endif -%}
 
     {%- comment -%} Collection Cards Grid {%- endcomment -%}
-    {%- assign menu_url = section.settings.menu_url | default: '/pages/меню-суши-манго' -%}
+    {%- assign menu_url = section.settings.menu_url | default: '/pages/menu' -%}
     <div class="restaurant-categories__grid">
       {%- for block in section.blocks -%}
         {%- if block.type == 'collection_card' -%}
