@@ -114,7 +114,7 @@
         "subheading": "Най-доброто суши в града",
         "heading": "СУШИ БАР МАНГО",
         "cta_label": "ПОРЪЧАЙ СЕГА",
-        "cta_link": "shopify://pages/menu",
+        "cta_link": "shopify://pages/меню-суши-манго",
         "heading_size": 60,
         "subheading_size": 16,
         "cta_size": 13,
@@ -200,7 +200,7 @@
           "settings": {
             "title": "МАНГО МЕНЮ",
             "tab_label": "",
-            "collection": "mango-menyu",
+            "collection": "манго-меню",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -216,7 +216,7 @@
         "hero_heading": "НАШЕТО МЕНЮ",
         "hero_subheading": "Най-доброто суши в града",
         "cta_label": "ПОРЪЧАЙ ЗА ВКЪЩИ",
-        "cta_link": "shopify://pages/menu",
+        "cta_link": "shopify://pages/меню-суши-манго",
         "menu_page_url": "",
         "addons_collection": "",
         "addons_title": "Добави към поръчката",
@@ -321,7 +321,7 @@
             "label": "Поръчай",
             "media_type": "image",
             "image": "shopify://shop_images/Screenshot_2026-05-16_133530.png",
-            "link": "shopify://pages/menu",
+            "link": "shopify://pages/меню-суши-манго",
             "open_new_tab": false,
             "label_size": 13
           }
@@ -485,7 +485,7 @@
           "type": "footer_link",
           "settings": {
             "label": "ПОЛИТИКА ЗА ПОВЕРИТЕЛНОСТ",
-            "link": "shopify://pages/privacy-policy"
+            "link": "shopify://pages/политика-за-поверителност"
           }
         }
       },

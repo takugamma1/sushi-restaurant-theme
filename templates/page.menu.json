@@ -17,7 +17,7 @@
           "settings": {
             "title": "Комбо",
             "tab_label": "",
-            "collection": "vecherya-za-dvama",
+            "collection": "вечеря-за-двама",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -38,7 +38,7 @@
           "settings": {
             "title": "ВЕЧЕРЯ ЗА ДВАМА",
             "tab_label": "",
-            "collection": "vecherya-za-dvama",
+            "collection": "вечеря-за-двама",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -48,7 +48,7 @@
           "settings": {
             "title": "МАНГО МЕНЮ",
             "tab_label": "",
-            "collection": "mango-menyu",
+            "collection": "манго-меню",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -189,7 +189,7 @@
           "settings": {
             "title": "ДОБАВКИ",
             "tab_label": "",
-            "collection": "dobavki",
+            "collection": "десерти",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
