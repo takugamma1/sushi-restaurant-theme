@@ -458,6 +458,7 @@ test('address: typing searches OpenStreetMap inside the delivery area and lists 
   const url = new URL(lookups()[0].url);
   assert.equal(url.origin, 'https://photon.komoot.io');
   assert.equal(url.searchParams.get('bbox'), '27.6,43.05,28.2,43.45');
+  assert.equal(url.searchParams.get('lang'), 'default', 'Bulgarian names even in an English browser');
   const labels = ui.suggestions().map((b) => b.textContent);
   assert.equal(labels[0], 'бул. Цар Освободител 25, Център, Варна');
   assert.equal(labels[1], 'Д-р Николай Коларов, кв. Бриз, Варна', 'two shops at one address collapse into one row');

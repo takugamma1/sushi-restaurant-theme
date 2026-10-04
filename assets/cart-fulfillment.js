@@ -504,6 +504,7 @@ async function searchAddress(query) {
   const params = new URLSearchParams({
     q: query,
     limit: '10',
+    lang: 'default', // local (Bulgarian) names regardless of the browser language
     lat: String(VARNA.lat),
     lon: String(VARNA.lng),
     bbox: `${AREA.west},${AREA.south},${AREA.east},${AREA.north}`,
@@ -660,7 +661,7 @@ async function confirmAddress() {
 /** Coordinates -> street address via Photon, then Nominatim. Null when neither knows the street. */
 async function reverseLookup(lat, lng) {
   try {
-    const data = await fetchJson(`${PHOTON_URL}/reverse?lat=${lat}&lon=${lng}&limit=1`);
+    const data = await fetchJson(`${PHOTON_URL}/reverse?lat=${lat}&lon=${lng}&limit=1&lang=default`);
     const address = fromPhoton(data?.features?.[0]);
     if (address) return address;
   } catch (_) {}
