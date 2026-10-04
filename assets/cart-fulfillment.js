@@ -3,27 +3,33 @@ import { morphSection } from '@theme/section-renderer';
 
 /**
  * Cart fulfillment: Доставка / Вземане от място (−10%),
- * Google Maps pin-drop address capture, checkout gating + prefill.
+ * delivery address capture (OpenStreetMap lookup, no API key), checkout
+ * gating + prefill.
  *
  * State of record = cart attributes (rendered server-side into <cart-fulfillment> data attrs,
  * re-rendered on every section morph). localStorage keeps structured pieces for prefill.
  *
- * The map <dialog> is moved to <body> on first use so section morphs never destroy the map.
+ * The address <dialog> is moved to <body> on first use so section morphs never
+ * wipe what the customer is typing.
  */
 
 const LS_KEY = 'mango_delivery_address';
 const MODE_DELIVERY = 'Доставка';
 const MODE_PICKUP = 'Вземане от място';
 
+// Address lookup: Photon (OpenStreetMap search-as-you-type, no key) with a
+// Nominatim fallback for reverse lookups.
+const PHOTON_URL = 'https://photon.komoot.io';
+const NOMINATIM_URL = 'https://nominatim.openstreetmap.org';
 const VARNA = { lat: 43.2141, lng: 27.9147 };
-// Bias search results to the Varna area
-const VARNA_BOUNDS = { south: 43.1, west: 27.75, north: 43.35, east: 28.1 };
+// Delivery region (Varna and surroundings): search results are limited to it
+// and a "current location" outside it is refused.
+const AREA = { west: 27.6, south: 43.05, east: 28.2, north: 43.45 };
+const DEFAULT_CITY = 'Варна';
 
-let mapsLoading = null;
-let map = null;
-let marker = null;
-let geocoder = null;
-let resolved = null; // { formatted, address1, city, zip, lat, lng }
+let picked = null; // lookup result the customer chose: { street, housenumber, district, city, zip, lat, lng }
+let lookupState = 'idle'; // 'idle' | 'ok' | 'empty' | 'failed' — outcome of the last search
+let searchSeq = 0;
 let searchTimer = null;
 let busy = false;
 
@@ -40,7 +46,6 @@ function getState() {
     address: el.dataset.address || '',
     zip: el.dataset.zip || '',
     phone: el.dataset.phone || '',
-    mapsKey: el.dataset.mapsKey,
     discountCode: el.dataset.discountCode || 'PICKUP10',
     storefrontToken: el.dataset.storefrontToken || '',
   };
@@ -48,7 +53,7 @@ function getState() {
 
 /**
  * The dialog is rendered inside the (morphing) drawer section. Keep exactly one
- * instance, attached to <body>, so morphs never kill the live map.
+ * instance, attached to <body>, so morphs never reset the open address form.
  */
 function getDialog() {
   const all = Array.from(document.querySelectorAll('dialog.cf-map'));
@@ -232,7 +237,7 @@ async function setMode(mode) {
             'Получаване': MODE_DELIVERY,
             'Адрес за доставка': saved ? saved.formatted : '',
             'Пощенски код': saved ? saved.zip : '',
-            'Координати': saved ? `${saved.lat}, ${saved.lng}` : '',
+            'Координати': saved && saved.lat != null && saved.lng != null ? `${saved.lat}, ${saved.lng}` : '',
           },
           discount: codes.join(','),
         },
@@ -242,7 +247,7 @@ async function setMode(mode) {
         syncBuyerIdentity({ method: 'SHIPPING', address: saved });
       } else {
         syncBuyerIdentity({ method: 'SHIPPING' });
-        openMap();
+        openAddressDialog();
       }
     }
   } catch (_) {
@@ -393,173 +398,239 @@ function commitPhone() {
   return setPhone(phoneInput()?.value || '');
 }
 
-/* ── Google Maps ─────────────────────────────────────── */
+/* ── delivery address (OpenStreetMap lookup) ─────────── */
 
-function loadMaps(key) {
-  if (window.google?.maps) return Promise.resolve();
-  if (mapsLoading) return mapsLoading;
-  mapsLoading = new Promise((resolve, reject) => {
-    window.__cfMapsReady = () => resolve();
-    const s = document.createElement('script');
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&language=bg&region=BG&callback=__cfMapsReady`;
-    s.async = true;
-    s.onerror = () => reject(new Error('maps_load_failed'));
-    document.head.appendChild(s);
-  });
-  return mapsLoading;
+const addressField = (selector) => getDialog()?.querySelector(selector) || null;
+const streetInput = () => addressField('#cf-map-search');
+const detailsInput = () => addressField('[data-cf-details]');
+
+function setAddressStatus(message, isError = false) {
+  const el = addressField('[data-cf-addr-status]');
+  if (!el) return;
+  el.textContent = message || '';
+  el.hidden = !message;
+  el.classList.toggle('cf-addr__status--error', Boolean(message) && isError);
 }
 
-async function openMap() {
-  const state = getState();
-  const dlg = getDialog();
-  if (!state || !dlg) return;
-
-  dlg.showModal();
-
+async function fetchJson(url, timeoutMs = 6000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    await loadMaps(state.mapsKey);
-  } catch (_) {
-    const loading = dlg.querySelector('.cf-map__loading');
-    if (loading) loading.textContent = 'Картата не можа да се зареди. Проверете API ключа.';
-    return;
-  }
-
-  const saved = savedAddress();
-  const start = saved ? { lat: saved.lat, lng: saved.lng } : VARNA;
-  const canvas = dlg.querySelector('#cf-map-canvas');
-
-  if (!map || !canvas.contains(map.getDiv())) {
-    canvas.querySelector('.cf-map__loading')?.remove();
-    map = new google.maps.Map(canvas, {
-      center: start,
-      zoom: saved ? 17 : 13,
-      disableDefaultUI: true,
-      zoomControl: true,
-      clickableIcons: false,
-    });
-    geocoder = new google.maps.Geocoder();
-    marker = new google.maps.Marker({ map, position: start, draggable: true, title: 'Вашият адрес' });
-
-    marker.addListener('dragend', () => resolvePosition(marker.getPosition()));
-    map.addListener('click', (e) => {
-      marker.setPosition(e.latLng);
-      resolvePosition(e.latLng);
-    });
-  } else {
-    map.setCenter(start);
-    map.setZoom(saved ? 17 : 13);
-    marker.setPosition(start);
-  }
-
-  if (saved) {
-    resolved = saved;
-    renderResolved();
+    const response = await fetch(url, { signal: controller.signal });
+    if (!response.ok) throw new Error('lookup_failed');
+    return await response.json();
+  } finally {
+    clearTimeout(timer);
   }
 }
 
-/* ── address search (Geocoding API — exact street results) ── */
+const inArea = (lat, lng) => lat >= AREA.south && lat <= AREA.north && lng >= AREA.west && lng <= AREA.east;
 
-function onSearchInput(input) {
-  clearTimeout(searchTimer);
-  const query = input.value.trim();
-  if (query.length < 3) {
-    renderSuggestions([]);
-    return;
-  }
-  searchTimer = setTimeout(() => {
-    if (!geocoder) return;
-    geocoder.geocode(
-      {
-        address: query,
-        region: 'bg',
-        componentRestrictions: { country: 'BG' },
-        bounds: VARNA_BOUNDS,
-      },
-      (results, status) => {
-        if (status !== 'OK' || !results) {
-          renderSuggestions([]);
-          return;
-        }
-        renderSuggestions(results.slice(0, 5));
-      }
-    );
-  }, 350);
-}
+// OpenStreetMap postcodes are patchy; only trust ones in the Varna region (9xxx).
+const cleanZip = (zip) => (/^9\d{3}$/.test(String(zip || '')) ? String(zip) : '');
 
-function renderSuggestions(results) {
-  const list = getDialog()?.querySelector('[data-cf-suggestions]');
-  if (!list) return;
-  list.innerHTML = '';
-  list.hidden = results.length === 0;
-  results.forEach((result) => {
-    const li = document.createElement('li');
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'cf-map__suggestion';
-    btn.textContent = result.formatted_address;
-    btn.addEventListener('click', () => {
-      list.hidden = true;
-      const location = result.geometry.location;
-      map.panTo(location);
-      map.setZoom(17);
-      marker.setPosition(location);
-      applyGeocode(result, location);
-    });
-    li.appendChild(btn);
-    list.appendChild(li);
-  });
-}
-
-function resolvePosition(latLng) {
-  if (!geocoder) return;
-  geocoder.geocode({ location: latLng }, (results, status) => {
-    if (status !== 'OK' || !results?.[0]) return;
-    applyGeocode(results[0], latLng);
-  });
-}
-
-function applyGeocode(result, latLng) {
-  const parts = {};
-  (result.address_components || []).forEach((component) => {
-    component.types.forEach((type) => (parts[type] = component.long_name));
-  });
-
-  const street = [parts.route, parts.street_number].filter(Boolean).join(' ');
-  const lat = typeof latLng.lat === 'function' ? latLng.lat() : latLng.lat;
-  const lng = typeof latLng.lng === 'function' ? latLng.lng() : latLng.lng;
-
-  resolved = {
-    formatted: result.formatted_address || street,
-    address1: street || result.formatted_address || '',
-    city: parts.locality || parts.postal_town || parts.administrative_area_level_1 || '',
-    zip: parts.postal_code || '',
+/** Photon feature -> address parts, or null when it is not usable as a street address. */
+function fromPhoton(feature) {
+  const p = feature?.properties || {};
+  const [lng, lat] = feature?.geometry?.coordinates || [];
+  const namedPlace = p.type === 'street' || p.type === 'district' || p.type === 'locality';
+  const street = p.street || (namedPlace ? p.name : '') || '';
+  if (!street || !Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  return {
+    street,
+    housenumber: p.housenumber || '',
+    district: p.district && p.district !== street ? p.district : '',
+    city: p.city || p.town || p.village || DEFAULT_CITY,
+    zip: cleanZip(p.postcode),
     lat: +lat.toFixed(6),
     lng: +lng.toFixed(6),
   };
-  renderResolved();
 }
 
-function renderResolved() {
-  const dlg = getDialog();
-  const box = dlg?.querySelector('[data-cf-resolved]');
-  const text = dlg?.querySelector('[data-cf-resolved-text]');
-  const confirm = dlg?.querySelector('[data-cf-confirm]');
-  if (!box || !text || !confirm || !resolved) return;
+function addressLabel(a) {
+  const line = [a.street, a.housenumber].filter(Boolean).join(' ');
+  return [line, a.district, a.city].filter(Boolean).join(', ');
+}
 
-  box.hidden = false;
-  text.textContent = resolved.zip
-    ? `${resolved.formatted} · п.к. ${resolved.zip}`
-    : `${resolved.formatted} (без пощенски код — преместете пина по-точно)`;
-  confirm.disabled = false;
+function openAddressDialog() {
+  const dlg = getDialog();
+  if (!getState() || !dlg) return;
+
+  const street = streetInput();
+  const details = detailsInput();
+  const saved = savedAddress();
+  // Returning customer: start from the address they used last time.
+  if (saved && street && !street.value) {
+    street.value = saved.street || saved.address1 || '';
+    if (details) details.value = saved.details || '';
+    picked = street.value
+      ? {
+          street: street.value,
+          housenumber: '',
+          district: saved.district || '',
+          city: saved.city || DEFAULT_CITY,
+          zip: cleanZip(saved.zip),
+          lat: saved.lat ?? null,
+          lng: saved.lng ?? null,
+        }
+      : null;
+  }
+  renderSuggestions([]);
+  setAddressStatus('');
+
+  if (!dlg.open) dlg.showModal();
+  const first = street?.value ? details : street;
+  if (first && typeof first.focus === 'function') first.focus();
+}
+
+/* ── address search (suggestions as the customer types) ── */
+
+function onSearchInput(input) {
+  clearTimeout(searchTimer);
+  picked = null; // editing the street invalidates the previous choice (and its coordinates)
+  setAddressStatus('');
+  const query = input.value.trim();
+  if (query.length < 3) {
+    searchSeq++;
+    lookupState = 'idle';
+    renderSuggestions([]);
+    return;
+  }
+  searchTimer = setTimeout(() => searchAddress(query), 300);
+}
+
+async function searchAddress(query) {
+  const seq = ++searchSeq;
+  const params = new URLSearchParams({
+    q: query,
+    limit: '10',
+    lat: String(VARNA.lat),
+    lon: String(VARNA.lng),
+    bbox: `${AREA.west},${AREA.south},${AREA.east},${AREA.north}`,
+  });
+  ['house', 'street', 'district', 'locality'].forEach((layer) => params.append('layer', layer));
+
+  let results = [];
+  let state = 'failed';
+  try {
+    const data = await fetchJson(`${PHOTON_URL}/api/?${params}`);
+    const seen = new Set();
+    for (const feature of data?.features || []) {
+      const address = fromPhoton(feature);
+      if (!address) continue;
+      const label = addressLabel(address);
+      if (seen.has(label)) continue; // several shops at one address -> one row
+      seen.add(label);
+      results.push(address);
+      if (results.length === 6) break;
+    }
+    state = results.length > 0 ? 'ok' : 'empty';
+  } catch (_) {
+    results = [];
+  }
+  if (seq !== searchSeq) return; // a newer keystroke superseded this lookup
+
+  lookupState = state;
+  renderSuggestions(results, query);
+  if (state === 'empty') {
+    setAddressStatus('Не намерихме тази улица — ще запишем адреса така, както сте го въвели.');
+  } else if (state === 'failed') {
+    setAddressStatus('Търсенето на адреси не работи в момента — въведете адреса ръчно и ще го запишем.');
+  }
+}
+
+function renderSuggestions(results, typed = '') {
+  const list = addressField('[data-cf-suggestions]');
+  if (!list) return;
+  list.innerHTML = '';
+  list.hidden = results.length === 0;
+  const addRow = (text, onClick, extraClass = '') => {
+    const li = document.createElement('li');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `cf-map__suggestion${extraClass}`;
+    btn.textContent = text;
+    btn.addEventListener('click', onClick);
+    li.appendChild(btn);
+    list.appendChild(li);
+  };
+  results.forEach((address) => addRow(addressLabel(address), () => pickAddress(address)));
+  // Never a dead end: the customer can keep exactly what they typed.
+  if (results.length > 0 && typed) {
+    addRow(
+      `Адресът ми не е в списъка — използвай „${typed}“`,
+      () =>
+        pickAddress({ street: typed, housenumber: '', district: '', city: DEFAULT_CITY, zip: '', lat: null, lng: null }),
+      ' cf-map__suggestion--manual'
+    );
+  }
+}
+
+/** Put a looked-up address into the form; the customer completes entrance/floor/apartment. */
+function pickAddress(address, statusMessage = '') {
+  picked = address;
+  lookupState = 'ok';
+  clearTimeout(searchTimer);
+  searchSeq++;
+  renderSuggestions([]);
+  const street = streetInput();
+  const details = detailsInput();
+  if (street) street.value = address.street;
+  if (details) {
+    if (address.housenumber) details.value = address.housenumber;
+    if (typeof details.focus === 'function') details.focus();
+  }
+  setAddressStatus(statusMessage);
+}
+
+/** Validate the form and build the address that goes on the order. */
+function addressDraft() {
+  const streetText = (streetInput()?.value || '').trim();
+  const details = (detailsInput()?.value || '').trim();
+
+  if (streetText.length < 3) return { error: 'Въведете улица или квартал.', focus: streetInput() };
+  // A typed street must come from the suggestions — unless the lookup found
+  // nothing or is down, in which case the order must still be possible.
+  const manualAllowed = lookupState === 'empty' || lookupState === 'failed';
+  if (!picked && !manualAllowed) {
+    return { error: 'Изберете адреса от предложенията под полето.', focus: streetInput() };
+  }
+  if (!details && !/\d/.test(streetText)) {
+    return { error: 'Добавете номер или блок, вход, етаж и апартамент.', focus: detailsInput() };
+  }
+
+  const source = picked || { district: '', city: DEFAULT_CITY, zip: '', lat: null, lng: null };
+  const address1 = [streetText, details].filter(Boolean).join(' ');
+  return {
+    address: {
+      formatted: [address1, source.district, source.city].filter(Boolean).join(', '),
+      address1,
+      street: streetText,
+      details,
+      district: source.district || '',
+      city: source.city || DEFAULT_CITY,
+      zip: source.zip || '',
+      lat: source.lat ?? null,
+      lng: source.lng ?? null,
+    },
+  };
 }
 
 async function confirmAddress() {
   const state = getState();
-  if (!state || !resolved || busy) return;
+  if (!state || busy) return;
+  const draft = addressDraft();
+  if (draft.error) {
+    setAddressStatus(draft.error, true);
+    if (draft.focus && typeof draft.focus.focus === 'function') draft.focus.focus();
+    return;
+  }
+  const address = draft.address;
+  const hasCoords = address.lat !== null && address.lng !== null;
   busy = true;
 
   try {
-    localStorage.setItem(LS_KEY, JSON.stringify(resolved));
+    localStorage.setItem(LS_KEY, JSON.stringify(address));
   } catch (_) {}
 
   try {
@@ -567,31 +638,87 @@ async function confirmAddress() {
       {
         attributes: {
           'Получаване': MODE_DELIVERY,
-          'Адрес за доставка': resolved.formatted,
-          'Пощенски код': resolved.zip,
-          'Координати': `${resolved.lat}, ${resolved.lng}`,
+          'Адрес за доставка': address.formatted,
+          'Пощенски код': address.zip,
+          'Координати': hasCoords ? `${address.lat}, ${address.lng}` : '',
         },
       },
       state.sectionId
     );
-    syncBuyerIdentity({ method: 'SHIPPING', address: resolved });
-    getDialog()?.close();
+    syncBuyerIdentity({ method: 'SHIPPING', address });
+    const dlg = getDialog();
+    if (dlg && typeof dlg.close === 'function') dlg.close();
   } catch (_) {
-    showError('Адресът не се записа — опитайте отново.');
+    setAddressStatus('Адресът не се записа — опитайте отново.', true);
   } finally {
     busy = false;
   }
 }
 
+/* ── current location ────────────────────────────────── */
+
+/** Coordinates -> street address via Photon, then Nominatim. Null when neither knows the street. */
+async function reverseLookup(lat, lng) {
+  try {
+    const data = await fetchJson(`${PHOTON_URL}/reverse?lat=${lat}&lon=${lng}&limit=1`);
+    const address = fromPhoton(data?.features?.[0]);
+    if (address) return address;
+  } catch (_) {}
+  try {
+    const data = await fetchJson(
+      `${NOMINATIM_URL}/reverse?format=jsonv2&addressdetails=1&zoom=18&accept-language=bg&lat=${lat}&lon=${lng}`
+    );
+    const a = data?.address || {};
+    const street = a.road || a.pedestrian || a.residential || a.neighbourhood || a.suburb || '';
+    if (street) {
+      return {
+        street,
+        housenumber: a.house_number || '',
+        district: a.suburb && a.suburb !== street ? a.suburb : '',
+        city: a.city || a.town || a.village || DEFAULT_CITY,
+        zip: cleanZip(a.postcode),
+        lat,
+        lng,
+      };
+    }
+  } catch (_) {}
+  return null;
+}
+
 function locateMe() {
-  if (!navigator.geolocation || !map || !marker) return;
-  navigator.geolocation.getCurrentPosition((position) => {
-    const location = { lat: position.coords.latitude, lng: position.coords.longitude };
-    map.panTo(location);
-    map.setZoom(17);
-    marker.setPosition(location);
-    resolvePosition(new google.maps.LatLng(location));
-  });
+  if (typeof navigator === 'undefined' || !navigator.geolocation) {
+    setAddressStatus('Браузърът не поддържа местоположение — въведете адреса ръчно.', true);
+    return;
+  }
+  setAddressStatus('Определяме местоположението ви…');
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const lat = +position.coords.latitude.toFixed(6);
+      const lng = +position.coords.longitude.toFixed(6);
+      if (!inArea(lat, lng)) {
+        setAddressStatus('Изглежда сте извън зоната ни за доставка (Варна и околността). Въведете адреса за доставка ръчно.', true);
+        return;
+      }
+      const address = await reverseLookup(lat, lng);
+      if (!address) {
+        setAddressStatus('Не успяхме да разпознаем улицата — въведете я в полето по-долу.', true);
+        const street = streetInput();
+        if (street && typeof street.focus === 'function') street.focus();
+        return;
+      }
+      // Keep the exact GPS position: it is more precise than the matched building.
+      pickAddress({ ...address, lat, lng }, 'Проверете адреса и допълнете вход, етаж и апартамент.');
+    },
+    (error) => {
+      setAddressStatus(
+        error?.code === 1
+          ? 'Разрешете достъп до местоположението или въведете адреса ръчно.'
+          : 'Не успяхме да определим местоположението — въведете адреса ръчно.',
+        true
+      );
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+  );
 }
 
 /* ── wiring (delegation survives morphs) ─────────────── */
@@ -607,7 +734,7 @@ document.addEventListener(
     }
     if (event.target.closest('[data-cf-open-map]')) {
       event.preventDefault();
-      openMap();
+      openAddressDialog();
       return;
     }
     if (event.target.closest('[data-cf-map-close]')) {
@@ -629,7 +756,7 @@ document.addEventListener(
       return;
     }
 
-    // Blocked checkout (delivery without address / chopsticks count):
+    // Blocked checkout (delivery without address / chopsticks count / phone):
     // prompt for whatever is missing instead of navigating.
     const blocked = event.target.closest('[data-cf-blocked]');
     if (blocked) {
@@ -648,7 +775,7 @@ document.addEventListener(
         });
         return;
       }
-      if (getDialog()) openMap();
+      if (getDialog()) openAddressDialog();
       return;
     }
 
@@ -682,6 +809,7 @@ function proceedToCheckout() {
 document.addEventListener('input', (event) => {
   if (event.target?.id === 'cf-map-search') onSearchInput(event.target);
   if (event.target?.matches?.('[data-cf-phone]')) clearPhoneError();
+  if (event.target?.matches?.('[data-cf-details]')) setAddressStatus('');
 });
 
 // Custom chopsticks count: save when the user commits a value.
@@ -695,6 +823,11 @@ document.addEventListener('change', (event) => {
 // Prevent the search field from submitting anything on Enter.
 document.addEventListener('keydown', (event) => {
   if (event.target?.id === 'cf-map-search' && event.key === 'Enter') event.preventDefault();
+  // Enter in the entrance/floor field confirms the address.
+  if (event.target?.matches?.('[data-cf-details]') && event.key === 'Enter') {
+    event.preventDefault();
+    confirmAddress();
+  }
   // Enter in the phone field saves it instead of submitting the cart form.
   if (event.target?.matches?.('[data-cf-phone]') && event.key === 'Enter') {
     event.preventDefault();

@@ -88,6 +88,17 @@ test('contact phone is rendered and gates checkout for every order type', () => 
   assert.ok(phoneGate > deliveryBlockEnd, 'phone gate sits outside the delivery-only block so pickup needs it too');
 });
 
+test('address capture has no Google Maps dependency (no API key, no billing)', () => {
+  const snippet = read('snippets/cart-fulfillment.liquid');
+  const js = read('assets/cart-fulfillment.js');
+  for (const [name, source] of [['snippet', snippet], ['module', js]]) {
+    assert.ok(!/googleapis|google\.maps|maps-key|AIza/.test(source), `${name} must not reference Google Maps`);
+  }
+  assert.ok(snippet.includes('data-cf-details'), 'dialog has the number / entrance / floor field');
+  assert.ok(snippet.includes('data-cf-locate'), 'dialog has the current-location button');
+  assert.ok(snippet.includes('OpenStreetMap'), 'OpenStreetMap attribution is shown');
+});
+
 test('cart updates from the fulfillment module use the hydration morph', () => {
   const js = read('assets/cart-fulfillment.js');
   assert.ok(js.includes("morphSection(sectionId, html, 'hydration')"), "a 'full' morph breaks the open drawer dialog");

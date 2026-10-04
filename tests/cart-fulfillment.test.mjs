@@ -101,7 +101,14 @@ function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', phone
         </cart-fulfillment>
         <button type="button" id="fake-checkout" name="checkout" data-cf-blocked data-cf-blocked-reason="${blockedReason}">Към плащане</button>
       </div>
-      <dialog id="cf-map-dialog" class="cf-map"><div id="cf-map-canvas"><div class="cf-map__loading"></div></div></dialog>
+      <dialog id="cf-map-dialog" class="cf-map">
+        <button type="button" data-cf-locate>Използвай моето местоположение</button>
+        <input id="cf-map-search" type="text">
+        <ul data-cf-suggestions hidden></ul>
+        <input id="cf-addr-details" type="text" data-cf-details>
+        <p data-cf-addr-status hidden></p>
+        <button type="button" data-cf-confirm>Потвърди адреса</button>
+      </dialog>
     </div>`;
 }
 
@@ -119,6 +126,7 @@ beforeEach(() => {
   navigationAttempts = 0;
   window.localStorage.clear();
   document.body.innerHTML = '';
+  delete globalThis.navigator.geolocation;
 });
 
 /* ── tests ───────────────────────────────────────────── */
@@ -378,4 +386,241 @@ test('checkout blocked for phone: a failed save keeps the customer in the drawer
 
   assert.equal(navigationAttempts, 0);
   assert.equal(document.querySelector('[data-phone-error]').hidden, false);
+});
+
+/* ── delivery address dialog (OpenStreetMap lookup, no Google) ── */
+
+const photonFeature = (props, lng, lat) => ({
+  type: 'Feature',
+  properties: props,
+  geometry: { type: 'Point', coordinates: [lng, lat] },
+});
+
+const TSAR = photonFeature(
+  { type: 'house', name: 'Орбита', street: 'бул. Цар Освободител', housenumber: '25', district: 'Център', city: 'Варна', postcode: '9000' },
+  27.92112,
+  43.20932
+);
+const TSAR_SHOP = photonFeature(
+  { type: 'house', name: 'Carrefour', street: 'бул. Цар Освободител', housenumber: '25', district: 'Център', city: 'Варна', postcode: '9000' },
+  27.92091,
+  43.20947
+);
+const KOLAROV = photonFeature({ type: 'street', name: 'Д-р Николай Коларов', district: 'кв. Бриз', postcode: '4010' }, 27.947056, 43.220108);
+
+/** Route the fetch mock: address lookups get `lookup`, cart updates succeed. */
+function routeFetch({ search, reverse, nominatim } = {}) {
+  fetchResponder = (url) => {
+    const u = String(url);
+    const reply = (value) =>
+      value instanceof Error ? Promise.reject(value) : Promise.resolve({ ok: true, json: async () => value });
+    if (u.startsWith('https://photon.komoot.io/api/')) return reply(search ?? { features: [] });
+    if (u.startsWith('https://photon.komoot.io/reverse')) return reply(reverse ?? { features: [] });
+    if (u.startsWith('https://nominatim.openstreetmap.org/')) return reply(nominatim ?? {});
+    return Promise.resolve(okCartResponse());
+  };
+}
+
+/** Open the dialog (moved to <body> by the module) and return its controls. */
+function openAddress() {
+  const dialog = document.querySelector('dialog.cf-map');
+  dialog.showModal = () => {};
+  dialog.close = () => dialog.setAttribute('data-closed', '');
+  click(button(MODE_DELIVERY)); // no-op when already delivery; keeps focus on the dialog path
+  click(document.querySelector('#fake-checkout')); // blocked w/o address -> opens the dialog
+  return {
+    dialog,
+    street: dialog.querySelector('#cf-map-search'),
+    details: dialog.querySelector('[data-cf-details]'),
+    status: dialog.querySelector('[data-cf-addr-status]'),
+    suggestions: () => Array.from(dialog.querySelectorAll('[data-cf-suggestions] button')),
+    confirm: () => click(dialog.querySelector('[data-cf-confirm]')),
+  };
+}
+
+async function typeStreet(input, value) {
+  input.value = value;
+  input.dispatchEvent(new window.Event('input', { bubbles: true }));
+  await new Promise((resolve) => setTimeout(resolve, 360)); // past the 300ms debounce
+  await flush();
+}
+
+const cartUpdates = () => fetchCalls.filter((c) => c.url === '/cart/update.js').map((c) => JSON.parse(c.config.body));
+const lookups = () => fetchCalls.filter((c) => c.url.startsWith('https://'));
+
+test('address: typing searches OpenStreetMap inside the delivery area and lists deduplicated suggestions', async () => {
+  renderFulfillment();
+  routeFetch({ search: { features: [TSAR, TSAR_SHOP, KOLAROV] } });
+  const ui = openAddress();
+  await typeStreet(ui.street, 'Цар Освободител 25');
+
+  assert.equal(lookups().length, 1);
+  const url = new URL(lookups()[0].url);
+  assert.equal(url.origin, 'https://photon.komoot.io');
+  assert.equal(url.searchParams.get('bbox'), '27.6,43.05,28.2,43.45');
+  const labels = ui.suggestions().map((b) => b.textContent);
+  assert.equal(labels[0], 'бул. Цар Освободител 25, Център, Варна');
+  assert.equal(labels[1], 'Д-р Николай Коларов, кв. Бриз, Варна', 'two shops at one address collapse into one row');
+  assert.ok(labels[2].includes('Адресът ми не е в списъка'), 'manual escape row is always offered');
+  assert.equal(labels.length, 3);
+});
+
+test('address: picking a suggestion + details saves address, postcode and coordinates on the cart', async () => {
+  renderFulfillment();
+  routeFetch({ search: { features: [TSAR] } });
+  const ui = openAddress();
+  await typeStreet(ui.street, 'Цар Освободител');
+  click(ui.suggestions()[0]);
+
+  assert.equal(ui.street.value, 'бул. Цар Освободител');
+  assert.equal(ui.details.value, '25', 'house number is prefilled into the details field');
+  ui.details.value = '25, вх. Б, ап. 4';
+  ui.confirm();
+  await flush();
+
+  const [update] = cartUpdates();
+  assert.equal(update.attributes['Получаване'], MODE_DELIVERY);
+  assert.equal(update.attributes['Адрес за доставка'], 'бул. Цар Освободител 25, вх. Б, ап. 4, Център, Варна');
+  assert.equal(update.attributes['Пощенски код'], '9000');
+  assert.equal(update.attributes['Координати'], '43.20932, 27.92112');
+  assert.equal(ui.dialog.hasAttribute('data-closed'), true);
+  const saved = JSON.parse(window.localStorage.getItem('mango_delivery_address'));
+  assert.equal(saved.address1, 'бул. Цар Освободител 25, вх. Б, ап. 4');
+  assert.equal(saved.city, 'Варна');
+});
+
+test('address: an implausible OpenStreetMap postcode is dropped', async () => {
+  renderFulfillment();
+  routeFetch({ search: { features: [KOLAROV] } });
+  const ui = openAddress();
+  await typeStreet(ui.street, 'Николай Коларов');
+  click(ui.suggestions()[0]);
+  ui.details.value = '1';
+  ui.confirm();
+  await flush();
+
+  const [update] = cartUpdates();
+  assert.equal(update.attributes['Адрес за доставка'], 'Д-р Николай Коларов 1, кв. Бриз, Варна');
+  assert.equal(update.attributes['Пощенски код'], '', '4010 is not a Varna postcode');
+});
+
+test('address: a typed street that was not chosen from the suggestions is rejected', async () => {
+  renderFulfillment();
+  routeFetch({ search: { features: [TSAR] } });
+  const ui = openAddress();
+  await typeStreet(ui.street, 'Цар Освободител');
+  ui.details.value = '25';
+  ui.confirm();
+  await flush();
+
+  assert.equal(cartUpdates().length, 0);
+  assert.equal(ui.status.hidden, false);
+  assert.ok(ui.status.textContent.includes('предложенията'));
+});
+
+test('address: number / entrance details are required', async () => {
+  renderFulfillment();
+  routeFetch({ search: { features: [KOLAROV] } });
+  const ui = openAddress();
+  await typeStreet(ui.street, 'Николай Коларов');
+  click(ui.suggestions()[0]);
+  ui.confirm();
+  await flush();
+
+  assert.equal(cartUpdates().length, 0);
+  assert.ok(ui.status.textContent.includes('номер'));
+});
+
+test('address: "not in the list" row keeps exactly what the customer typed (no coordinates)', async () => {
+  renderFulfillment();
+  routeFetch({ search: { features: [TSAR] } });
+  const ui = openAddress();
+  await typeStreet(ui.street, 'ул. Нова 7');
+  click(ui.suggestions().at(-1));
+  ui.confirm();
+  await flush();
+
+  const [update] = cartUpdates();
+  assert.equal(update.attributes['Адрес за доставка'], 'ул. Нова 7, Варна');
+  assert.equal(update.attributes['Координати'], '');
+});
+
+test('address: when the lookup service is down the order is still possible with a typed address', async () => {
+  renderFulfillment();
+  routeFetch({ search: new Error('network down') });
+  const ui = openAddress();
+  await typeStreet(ui.street, 'ул. Битоля');
+  assert.equal(ui.status.hidden, false, 'customer is told the search is unavailable');
+  ui.details.value = '12, ет. 2';
+  ui.confirm();
+  await flush();
+
+  const [update] = cartUpdates();
+  assert.equal(update.attributes['Адрес за доставка'], 'ул. Битоля 12, ет. 2, Варна');
+  assert.equal(update.attributes['Координати'], '');
+});
+
+function mockGeolocation(result) {
+  Object.defineProperty(globalThis.navigator, 'geolocation', {
+    configurable: true,
+    value: {
+      getCurrentPosition: (ok, fail) =>
+        result.error ? fail(result.error) : ok({ coords: { latitude: result.lat, longitude: result.lng } }),
+    },
+  });
+}
+
+test('current location: fills the street from reverse lookup and keeps the exact GPS position', async () => {
+  renderFulfillment();
+  routeFetch({ reverse: { features: [TSAR] } });
+  mockGeolocation({ lat: 43.2101234, lng: 27.9209876 });
+  const ui = openAddress();
+  click(ui.dialog.querySelector('[data-cf-locate]'));
+  await flush();
+
+  assert.equal(ui.street.value, 'бул. Цар Освободител');
+  assert.equal(ui.details.value, '25');
+  ui.confirm();
+  await flush();
+  const [update] = cartUpdates();
+  assert.equal(update.attributes['Координати'], '43.210123, 27.920988', 'GPS position, not the matched building');
+});
+
+test('current location: falls back to Nominatim when Photon does not know the street', async () => {
+  renderFulfillment();
+  routeFetch({
+    reverse: { features: [] },
+    nominatim: { address: { road: 'ул. Георги Китов', house_number: '3', city: 'Варна', postcode: '9005' } },
+  });
+  mockGeolocation({ lat: 43.2255, lng: 27.937 });
+  const ui = openAddress();
+  click(ui.dialog.querySelector('[data-cf-locate]'));
+  await flush();
+
+  assert.equal(ui.street.value, 'ул. Георги Китов');
+  assert.equal(ui.details.value, '3');
+});
+
+test('current location: outside the delivery area is refused and nothing is filled', async () => {
+  renderFulfillment();
+  routeFetch();
+  mockGeolocation({ lat: 42.6977, lng: 23.3219 }); // Sofia
+  const ui = openAddress();
+  click(ui.dialog.querySelector('[data-cf-locate]'));
+  await flush();
+
+  assert.equal(lookups().length, 0);
+  assert.equal(ui.street.value, '');
+  assert.ok(ui.status.textContent.includes('извън зоната'));
+});
+
+test('current location: a denied permission explains what to do', async () => {
+  renderFulfillment();
+  routeFetch();
+  mockGeolocation({ error: { code: 1 } });
+  const ui = openAddress();
+  click(ui.dialog.querySelector('[data-cf-locate]'));
+  await flush();
+
+  assert.ok(ui.status.textContent.includes('Разрешете достъп'));
 });
