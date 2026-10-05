@@ -14,6 +14,45 @@
   assign mode = cart.attributes['Получаване'] | default: 'Доставка'
   assign saved_address = cart.attributes['Адрес за доставка']
   assign saved_zip = cart.attributes['Пощенски код']
+
+  # TEMPORARY delivery pause (technical issues): delivery cannot be chosen until
+  # this moment — 2026-10-05 20:15 Europe/Sofia, as a Unix timestamp. It lifts
+  # itself afterwards. Keep in sync with snippets/cart-summary.liquid; set to 0
+  # (in both files) to switch the pause off early.
+  assign delivery_paused_until = 1791220500
+  assign cf_now = 'now' | date: '%s' | plus: 0
+  assign delivery_paused = false
+  if cf_now < delivery_paused_until
+    assign delivery_paused = true
+  endif
+
+  # Pause texts follow the storefront language (bg default, en, ru).
+  case request.locale.iso_code
+    when 'en'
+      assign pause_badge = 'after 8:15 PM'
+      assign pause_title = 'Delivery is temporarily unavailable'
+      assign pause_text = 'Due to technical issues, we can take delivery orders again after 8:15 PM today. You can still order right now and pick it up from the restaurant, with 10% off.'
+      assign pause_cta = 'Order now for pickup (−10%)'
+      assign pause_close = 'Close'
+      assign pause_inline = 'Delivery is unavailable until 8:15 PM today due to technical issues.'
+      assign pause_addr = '1 Doctor Nikolay Kolarov St., Briz, Varna'
+    when 'ru'
+      assign pause_badge = 'после 20:15'
+      assign pause_title = 'Доставка временно недоступна'
+      assign pause_text = 'По техническим причинам заказы с доставкой сегодня принимаются после 20:15. Вы можете заказать прямо сейчас и забрать заказ в ресторане со скидкой 10%.'
+      assign pause_cta = 'Заказать сейчас и забрать самому (−10%)'
+      assign pause_close = 'Закрыть'
+      assign pause_inline = 'Доставка недоступна до 20:15 сегодня по техническим причинам.'
+      assign pause_addr = 'ул. „Д-р Николай Коларов“ 1, кв. Бриз, Варна'
+    else
+      assign pause_badge = 'след 20:15'
+      assign pause_title = 'Доставката е временно недостъпна'
+      assign pause_text = 'Поради технически причини днес приемаме поръчки с доставка след 20:15 ч. Можете да поръчате още сега и да вземете поръчката си от ресторанта с 10% отстъпка.'
+      assign pause_cta = 'Поръчай сега и вземи от място (−10%)'
+      assign pause_close = 'Затвори'
+      assign pause_inline = 'Доставката е недостъпна до 20:15 ч. днес поради технически причини.'
+      assign pause_addr = 'ул. „Д-р Николай Коларов“ 1, кв. Бриз, Варна'
+  endcase
 -%}
 
 <cart-fulfillment
@@ -23,6 +62,7 @@
   data-address="{{ saved_address | escape }}"
   data-zip="{{ saved_zip | escape }}"
   data-phone="{{ cart.attributes['Телефон'] | escape }}"
+  data-delivery-paused-until="{% if delivery_paused %}{{ delivery_paused_until }}{% else %}0{% endif %}"
   data-discount-code="PICKUP10"
   data-storefront-token="{{ settings.cf_storefront_token | default: 'e15f5d390489194a77a140ea964309f2' }}"
 >
@@ -31,13 +71,16 @@
   <div class="cart-fulfillment__toggle" role="radiogroup" aria-label="Начин на получаване">
     <button
       type="button"
-      class="cart-fulfillment__option{% if mode != 'Вземане от място' %} cart-fulfillment__option--active{% endif %}"
+      class="cart-fulfillment__option{% if mode != 'Вземане от място' %} cart-fulfillment__option--active{% endif %}{% if delivery_paused %} cart-fulfillment__option--paused{% endif %}"
       data-cf-mode="Доставка"
       role="radio"
       aria-checked="{% if mode != 'Вземане от място' %}true{% else %}false{% endif %}"
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="18.5" cy="17.5" r="2.5"/><path d="M8 17.5h7M5.5 17.5 8 9h4l3.5 8.5M12 9V6h3"/></svg>
       <span>Доставка</span>
+      {%- if delivery_paused -%}
+        <span class="cart-fulfillment__badge cart-fulfillment__badge--paused">{{ pause_badge }}</span>
+      {%- endif -%}
     </button>
     <button
       type="button"
@@ -60,6 +103,11 @@
       <p class="cart-fulfillment__hint">
         Отстъпката не важи за комбо предложенията „Вечеря за двама“.
       </p>
+    {%- elsif delivery_paused -%}
+      <p class="cart-fulfillment__note cart-fulfillment__note--paused">⚠ {{ pause_inline }}</p>
+      <button type="button" class="cart-fulfillment__pick button" data-cf-pause-pickup>
+        {{ pause_cta }}
+      </button>
     {%- else -%}
       {%- if saved_address != blank -%}
         <div class="cart-fulfillment__address">
@@ -214,6 +262,20 @@
     <p class="cf-map__hint">Данни за адресите: © OpenStreetMap</p>
   </div>
 </dialog>
+
+{%- if delivery_paused -%}
+  {%- comment -%} Shown when delivery is chosen while it is paused (JS moves it to <body>). {%- endcomment -%}
+  <dialog id="cf-pause-dialog" class="cf-pause" aria-labelledby="cf-pause-title">
+    <div class="cf-pause__inner">
+      <div class="cf-pause__icon" aria-hidden="true">🛵</div>
+      <h3 id="cf-pause-title" class="cf-pause__title">{{ pause_title }}</h3>
+      <p class="cf-pause__text">{{ pause_text }}</p>
+      <p class="cf-pause__addr"><span aria-hidden="true">📍</span> {{ pause_addr }}</p>
+      <button type="button" class="cf-pause__cta button" data-cf-pause-pickup>{{ pause_cta }}</button>
+      <button type="button" class="cf-pause__close button-unstyled" data-cf-pause-close>{{ pause_close }}</button>
+    </div>
+  </dialog>
+{%- endif -%}
 
 {%- comment -%}
   NOTE: no <script> tag here on purpose. This snippet only renders when the cart
@@ -448,6 +510,82 @@
     border-color: #e66;
     box-shadow: inset 0 0 0 1px #e66;
   }
+
+  /* ── Temporary delivery pause ──────────────────────── */
+  .cart-fulfillment__option--paused {
+    opacity: 0.55;
+    border-style: dashed;
+  }
+
+  .cart-fulfillment__badge--paused {
+    background: transparent;
+    border: 1px solid #f0b070;
+    color: #f0b070;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .cart-fulfillment__note--paused {
+    color: #f0b070;
+    margin-bottom: 0.6rem;
+  }
+
+  dialog.cf-pause {
+    border: 1px solid var(--color-border, #2a2a2a);
+    border-radius: 16px;
+    padding: 0;
+    width: min(440px, calc(100vw - 2rem));
+    background: var(--color-background, #141414);
+    color: var(--color-foreground, #fff);
+  }
+
+  dialog.cf-pause::backdrop { background: rgb(0 0 0 / 0.65); }
+
+  .cf-pause__inner {
+    padding: 1.6rem 1.3rem 1.1rem;
+    text-align: center;
+  }
+
+  .cf-pause__icon { font-size: 2.2rem; line-height: 1; }
+
+  .cf-pause__title {
+    margin: 0.7rem 0 0.5rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.03em;
+  }
+
+  .cf-pause__text {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: rgb(var(--color-foreground-rgb, 255 255 255) / 0.85);
+  }
+
+  .cf-pause__addr {
+    margin: 0.8rem 0 0;
+    font-size: 0.8rem;
+    color: rgb(var(--color-foreground-rgb, 255 255 255) / 0.7);
+  }
+
+  .cf-pause__cta {
+    display: block;
+    width: 100%;
+    margin-top: 1.1rem;
+    padding-block: 0.95rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .cf-pause__close {
+    margin-top: 0.7rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cf-pause__close:hover { opacity: 1; }
 
   /* ── Address dialog ────────────────────────────────── */
   dialog.cf-map {

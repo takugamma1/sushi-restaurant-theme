@@ -46,6 +46,8 @@ function getState() {
     address: el.dataset.address || '',
     zip: el.dataset.zip || '',
     phone: el.dataset.phone || '',
+    // Unix seconds until which delivery is paused (0 = not paused).
+    pausedUntil: Number(el.dataset.deliveryPausedUntil || 0) * 1000,
     discountCode: el.dataset.discountCode || 'PICKUP10',
     storefrontToken: el.dataset.storefrontToken || '',
   };
@@ -67,6 +69,41 @@ function getDialog() {
     if (d !== bodyDialog) d.remove();
   });
   return bodyDialog;
+}
+
+/* ── temporary delivery pause ────────────────────────── */
+
+/** True while delivery is switched off (the pause lifts itself at `pausedUntil`). */
+function deliveryPaused() {
+  const until = getState()?.pausedUntil || 0;
+  return until > 0 && Date.now() < until;
+}
+
+/** Same body-attached, single-instance handling as the address dialog. */
+function getPauseDialog() {
+  const all = Array.from(document.querySelectorAll('dialog.cf-pause'));
+  if (all.length === 0) return null;
+  let bodyDialog = all.find((d) => d.parentElement === document.body);
+  if (!bodyDialog) {
+    bodyDialog = all[0];
+    document.body.appendChild(bodyDialog);
+  }
+  all.forEach((d) => {
+    if (d !== bodyDialog) d.remove();
+  });
+  return bodyDialog;
+}
+
+function openPauseDialog() {
+  const dlg = getPauseDialog();
+  if (!dlg) return false;
+  if (!dlg.open && typeof dlg.showModal === 'function') dlg.showModal();
+  return true;
+}
+
+function closePauseDialog() {
+  const dlg = getPauseDialog();
+  if (dlg?.open && typeof dlg.close === 'function') dlg.close();
 }
 
 function savedAddress() {
@@ -197,7 +234,12 @@ function paintToggle(mode) {
 
 async function setMode(mode) {
   const state = getState();
-  if (!state || state.mode === mode || busy) return;
+  if (!state || busy) return;
+  if (mode === MODE_DELIVERY && deliveryPaused()) {
+    openPauseDialog();
+    return;
+  }
+  if (state.mode === mode) return;
   busy = true;
   paintToggle(mode);
   root()?.setAttribute('aria-busy', 'true');
@@ -733,8 +775,24 @@ document.addEventListener(
       setMode(modeButton.dataset.cfMode);
       return;
     }
+    // Delivery pause popup: its call to action switches the order to pickup.
+    if (event.target.closest('[data-cf-pause-pickup]')) {
+      event.preventDefault();
+      closePauseDialog();
+      setMode(MODE_PICKUP);
+      return;
+    }
+    if (event.target.closest('[data-cf-pause-close]')) {
+      closePauseDialog();
+      return;
+    }
+
     if (event.target.closest('[data-cf-open-map]')) {
       event.preventDefault();
+      if (deliveryPaused()) {
+        openPauseDialog();
+        return;
+      }
       openAddressDialog();
       return;
     }
@@ -759,11 +817,27 @@ document.addEventListener(
 
     // Blocked checkout (delivery without address / chopsticks count / phone):
     // prompt for whatever is missing instead of navigating.
+    // Delivery is paused and this order is a delivery: no checkout, offer pickup.
+    const anyCheckout = event.target.closest('[data-cf-blocked], button#checkout, button[name="checkout"]');
+    if (anyCheckout && root() && deliveryPaused() && getState()?.mode !== MODE_PICKUP) {
+      event.preventDefault();
+      event.stopPropagation();
+      openPauseDialog();
+      return;
+    }
+
     const blocked = event.target.closest('[data-cf-blocked]');
     if (blocked) {
       if (!root()) return; // no fulfillment UI on this page — leave checkout alone
       event.preventDefault();
       event.stopPropagation();
+      if (blocked.dataset.cfBlockedReason === 'paused') {
+        // The pause just ended but the drawer still shows it: refresh the drawer
+        // so the customer gets the normal delivery flow back.
+        const state = getState();
+        if (state && !busy) updateCart({ attributes: { 'Получаване': state.mode } }, state.sectionId).catch(() => {});
+        return;
+      }
       if (blocked.dataset.cfBlockedReason === 'sticks') {
         showSticksError('Моля, изберете брой клечки/прибори преди поръчка.');
         return;

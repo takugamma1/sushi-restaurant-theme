@@ -60,7 +60,7 @@ await import('../assets/cart-fulfillment.js');
 
 /* ── fixture (mirrors snippets/cart-fulfillment.liquid) ── */
 
-function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', phone = '', pills = [], blockedReason = '' } = {}) {
+function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', phone = '', pills = [], blockedReason = '', pausedUntil = 0 } = {}) {
   const activeDelivery = mode !== MODE_PICKUP ? ' cart-fulfillment__option--active' : '';
   const activePickup = mode === MODE_PICKUP ? ' cart-fulfillment__option--active' : '';
   document.body.innerHTML = `
@@ -73,6 +73,7 @@ function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', phone
           data-address="${address}"
           data-zip="${zip}"
           data-phone="${phone}"
+          data-delivery-paused-until="${pausedUntil}"
           data-maps-key="test-key"
           data-discount-code="PICKUP10"
           data-storefront-token=""
@@ -109,6 +110,10 @@ function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', phone
         <p data-cf-addr-status hidden></p>
         <button type="button" data-cf-confirm>Потвърди адреса</button>
       </dialog>
+      ${pausedUntil ? `<dialog id="cf-pause-dialog" class="cf-pause">
+        <button type="button" data-cf-pause-pickup>Поръчай сега и вземи от място (−10%)</button>
+        <button type="button" data-cf-pause-close>Затвори</button>
+      </dialog>` : ''}
     </div>`;
 }
 
@@ -624,4 +629,76 @@ test('current location: a denied permission explains what to do', async () => {
   await flush();
 
   assert.ok(ui.status.textContent.includes('Разрешете достъп'));
+});
+
+/* ── temporary delivery pause ────────────────────────── */
+
+const IN_ONE_HOUR = Math.floor(Date.now() / 1000) + 3600;
+const ONE_HOUR_AGO = Math.floor(Date.now() / 1000) - 3600;
+
+/** Give the pause popup working open/close in jsdom and return it. */
+function pausePopup() {
+  const dialog = document.querySelector('dialog.cf-pause');
+  dialog.showModal = () => dialog.setAttribute('open', '');
+  dialog.close = () => dialog.removeAttribute('open');
+  return dialog;
+}
+
+test('delivery pause: choosing delivery shows the popup and changes nothing', async () => {
+  renderFulfillment({ mode: MODE_PICKUP, pausedUntil: IN_ONE_HOUR });
+  const popup = pausePopup();
+  click(button(MODE_DELIVERY));
+  await flush();
+
+  assert.equal(popup.hasAttribute('open'), true);
+  assert.equal(fetchCalls.length, 0, 'the order stays on pickup');
+  assert.equal(isActive(MODE_PICKUP), true);
+});
+
+test('delivery pause: a delivery cart cannot reach checkout — the popup offers pickup instead', async () => {
+  renderFulfillment({ pausedUntil: IN_ONE_HOUR, address: 'ул. Тест 1, Варна', phone: '0888123456' });
+  const popup = pausePopup();
+  const checkout = document.querySelector('#fake-checkout');
+  checkout.removeAttribute('data-cf-blocked'); // even a stale, unblocked button must not get through
+  click(checkout);
+  await flush();
+
+  assert.equal(popup.hasAttribute('open'), true);
+  assert.equal(navigationAttempts, 0);
+  assert.equal(fetchCalls.length, 0);
+});
+
+test('delivery pause: the popup call to action switches the order to pickup with the discount', async () => {
+  renderFulfillment({ pausedUntil: IN_ONE_HOUR });
+  const popup = pausePopup();
+  click(button(MODE_DELIVERY));
+  click(popup.querySelector('[data-cf-pause-pickup]'));
+  await flush();
+
+  assert.equal(popup.hasAttribute('open'), false, 'popup closes');
+  const [update] = cartUpdates();
+  assert.equal(update.attributes['Получаване'], MODE_PICKUP);
+  assert.ok(update.discount.split(',').includes('PICKUP10'));
+});
+
+test('delivery pause: pickup orders check out normally during the pause', async () => {
+  renderFulfillment({ mode: MODE_PICKUP, pausedUntil: IN_ONE_HOUR, phone: '0888123456' });
+  const popup = pausePopup();
+  const checkout = document.querySelector('#fake-checkout');
+  checkout.removeAttribute('data-cf-blocked');
+  click(checkout);
+  await flush();
+
+  assert.equal(popup.hasAttribute('open'), false);
+  assert.equal(navigationAttempts, 1, 'went to checkout');
+});
+
+test('delivery pause: once the time has passed delivery works again by itself', async () => {
+  renderFulfillment({ mode: MODE_PICKUP, pausedUntil: ONE_HOUR_AGO });
+  const popup = pausePopup();
+  click(button(MODE_DELIVERY));
+  await flush();
+
+  assert.equal(popup.hasAttribute('open'), false);
+  assert.equal(cartUpdates()[0].attributes['Получаване'], MODE_DELIVERY);
 });

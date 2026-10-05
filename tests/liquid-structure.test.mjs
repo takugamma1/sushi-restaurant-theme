@@ -99,6 +99,19 @@ test('address capture has no Google Maps dependency (no API key, no billing)', (
   assert.ok(snippet.includes('OpenStreetMap'), 'OpenStreetMap attribution is shown');
 });
 
+test('delivery pause: both snippets use the same end time and the popup is trilingual', () => {
+  const snippet = read('snippets/cart-fulfillment.liquid');
+  const summary = read('snippets/cart-summary.liquid');
+  const until = (source) => source.match(/assign delivery_paused_until = (\d+)/)?.[1];
+  assert.ok(until(snippet), 'fulfillment snippet defines the pause end time');
+  assert.equal(until(snippet), until(summary), 'drawer UI and checkout gate must agree on the end time');
+  assert.ok(summary.includes("assign cf_blocked_reason = 'paused'"), 'checkout is gated server-side while paused');
+  assert.ok(snippet.includes('cf-pause-dialog') && snippet.includes('data-cf-pause-pickup'), 'popup with a pickup call to action');
+  for (const text of ['Доставката е временно недостъпна', 'Delivery is temporarily unavailable', 'Доставка временно недоступна']) {
+    assert.ok(snippet.includes(text), `popup text present: ${text}`);
+  }
+});
+
 test('cart updates from the fulfillment module use the hydration morph', () => {
   const js = read('assets/cart-fulfillment.js');
   assert.ok(js.includes("morphSection(sectionId, html, 'hydration')"), "a 'full' morph breaks the open drawer dialog");

@@ -259,7 +259,20 @@
   assign cf_mode = cart.attributes['Получаване'] | default: 'Доставка'
   assign cf_blocked = false
   assign cf_blocked_reason = ''
-  if cf_mode != 'Вземане от място'
+
+  # TEMPORARY delivery pause until 2026-10-05 20:15 Europe/Sofia (Unix time).
+  # Keep in sync with snippets/cart-fulfillment.liquid; 0 switches it off.
+  assign delivery_paused_until = 1791220500
+  assign cf_now = 'now' | date: '%s' | plus: 0
+  assign cf_delivery_paused = false
+  if cf_now < delivery_paused_until and cf_mode != 'Вземане от място'
+    assign cf_delivery_paused = true
+  endif
+
+  if cf_delivery_paused
+    assign cf_blocked = true
+    assign cf_blocked_reason = 'paused'
+  elsif cf_mode != 'Вземане от място'
     if cart.attributes['Адрес за доставка'] == blank
       assign cf_blocked = true
       assign cf_blocked_reason = 'address'
@@ -295,7 +308,8 @@
     </span>
   </button>
 
-  {% if additional_checkout_buttons and settings.show_accelerated_checkout_buttons %}
+  {% comment %} Express buttons skip the drawer checks — hide them while delivery is paused. {% endcomment %}
+  {% if additional_checkout_buttons and settings.show_accelerated_checkout_buttons and cf_delivery_paused == false %}
     <div
       class="
         additional-checkout-buttons
