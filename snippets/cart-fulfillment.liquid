@@ -19,7 +19,7 @@
   # this moment — 2026-10-05 20:15 Europe/Sofia, as a Unix timestamp. It lifts
   # itself afterwards. Keep in sync with snippets/cart-summary.liquid; set to 0
   # (in both files) to switch the pause off early.
-  assign delivery_paused_until = 1791220500
+  assign delivery_paused_until = 0
   assign cf_now = 'now' | date: '%s' | plus: 0
   assign delivery_paused = false
   if cf_now < delivery_paused_until
