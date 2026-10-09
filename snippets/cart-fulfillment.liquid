@@ -15,13 +15,14 @@
   assign saved_address = cart.attributes['Адрес за доставка']
   assign saved_zip = cart.attributes['Пощенски код']
 
-  # Packaging boxes (product handle "opakovka", 0.50 EUR): one box per 8 loose
-  # sushi pieces. Items that come in their own packaging (sets, combos, poke,
-  # hot dishes, drinks, sauces, extras) count 0. Per-product override: the
-  # product metafield custom.pieces. The drawer JS keeps the box line in the
-  # cart equal to the required count.
+  # Packaging boxes (product handle "opakovka", 0.50 EUR): one box per 12 loose
+  # sushi pieces (12 → 1 box, 4+8+6=18 → 2 boxes). Items that come in their own
+  # packaging (sets, combos, poke, hot dishes, drinks, sauces, extras) count 0.
+  # Piece count per product = the product metafield custom.pieces ("Брой хапки"
+  # in Admin); the collection defaults below are only the fallback when it is
+  # empty. The drawer JS keeps the box line in the cart equal to the required count.
   assign box_product = all_products['opakovka']
-  assign box_capacity = 8
+  assign box_capacity = 12
   assign loose_pieces = 0
   assign box_in_cart = 0
   for item in cart.items
@@ -41,15 +42,15 @@
       assign pieces = 2
     elsif handles contains 'sashimi' or handles contains 'tataki'
       assign pieces = 4
-    elsif handles contains 'parzheni-rolki'
+    elsif handles contains 'parzheni-rolki' or handles contains 'hosomaki' or handles contains 'futomaki' or handles contains 'vulkani'
       assign pieces = 6
-    elsif handles contains 'hosomaki' or handles contains 'mango-menyu' or handles contains 'uramaki' or handles contains 'kaliforniya' or handles contains 'futomaki' or handles contains 'vulkani'
+    elsif handles contains 'mango-menyu' or handles contains 'uramaki' or handles contains 'kaliforniya'
       assign pieces = 8
     endif
     assign line_pieces = pieces | times: item.quantity
     assign loose_pieces = loose_pieces | plus: line_pieces
   endfor
-  assign boxes_required = loose_pieces | plus: 7 | divided_by: box_capacity
+  assign boxes_required = loose_pieces | plus: 11 | divided_by: box_capacity
 
   # TEMPORARY delivery pause (technical issues): delivery cannot be chosen until
   # this moment — 2026-10-05 20:15 Europe/Sofia, as a Unix timestamp. It lifts

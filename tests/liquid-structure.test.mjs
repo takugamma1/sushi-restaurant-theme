@@ -115,7 +115,8 @@ test('delivery pause: both snippets use the same end time and the popup is trili
 test('packaging boxes: requirement computed in the drawer, box line locked in the cart list', () => {
   const snippet = read('snippets/cart-fulfillment.liquid');
   assert.ok(snippet.includes("all_products['opakovka']"), 'box product looked up by handle');
-  assert.ok(snippet.includes('assign box_capacity = 8'), 'one box per 8 loose pieces');
+  assert.ok(snippet.includes('assign box_capacity = 12'), 'one box per 12 loose pieces');
+  assert.ok(snippet.includes('loose_pieces | plus: 11 | divided_by: box_capacity'), 'rounds up: 13 pieces → 2 boxes');
   assert.ok(snippet.includes('data-box-required'), 'required count exposed to the JS');
   for (const h of ['setove', 'vecherya-za-dvama', 'poke', 'topli-predlozheniya']) {
     assert.ok(snippet.includes(`handles contains '${h}'`), `${h} counts as own packaging`);
