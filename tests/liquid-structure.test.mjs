@@ -112,6 +112,18 @@ test('delivery pause: both snippets use the same end time and the popup is trili
   }
 });
 
+test('packaging boxes: requirement computed in the drawer, box line locked in the cart list', () => {
+  const snippet = read('snippets/cart-fulfillment.liquid');
+  assert.ok(snippet.includes("all_products['opakovka']"), 'box product looked up by handle');
+  assert.ok(snippet.includes('assign box_capacity = 8'), 'one box per 8 loose pieces');
+  assert.ok(snippet.includes('data-box-required'), 'required count exposed to the JS');
+  for (const h of ['setove', 'vecherya-za-dvama', 'poke', 'topli-predlozheniya']) {
+    assert.ok(snippet.includes(`handles contains '${h}'`), `${h} counts as own packaging`);
+  }
+  const products = read('snippets/cart-products.liquid');
+  assert.ok(products.includes("item.product.handle == 'opakovka'"), 'box line has no quantity/remove controls');
+});
+
 test('cart updates from the fulfillment module use the hydration morph', () => {
   const js = read('assets/cart-fulfillment.js');
   assert.ok(js.includes("morphSection(sectionId, html, 'hydration')"), "a 'full' morph breaks the open drawer dialog");

@@ -15,6 +15,42 @@
   assign saved_address = cart.attributes['Адрес за доставка']
   assign saved_zip = cart.attributes['Пощенски код']
 
+  # Packaging boxes (product handle "opakovka", 0.25 EUR): one box per 8 loose
+  # sushi pieces. Items that come in their own packaging (sets, combos, poke,
+  # hot dishes, drinks, sauces, extras) count 0. Per-product override: the
+  # product metafield custom.pieces. The drawer JS keeps the box line in the
+  # cart equal to the required count.
+  assign box_product = all_products['opakovka']
+  assign box_capacity = 8
+  assign loose_pieces = 0
+  assign box_in_cart = 0
+  for item in cart.items
+    if item.product.handle == 'opakovka'
+      assign box_in_cart = item.quantity
+      continue
+    endif
+    assign pieces = 0
+    assign handles = item.product.collections | map: 'handle'
+    if item.product.metafields.custom.pieces != blank
+      assign pieces = item.product.metafields.custom.pieces | plus: 0
+    elsif handles contains 'setove' or handles contains 'vecherya-za-dvama' or handles contains 'poke' or handles contains 'topli-predlozheniya' or handles contains 'topli-napitki' or handles contains 'bezalkoholni-napitki' or handles contains 'alkoholni-napitki' or handles contains 'sosove-za-sushi' or handles contains 'dobavki'
+      assign pieces = 0
+    elsif item.product.title contains 'бр'
+      assign pieces = item.product.title | split: 'бр' | first | split: '(' | last | split: ' ' | last | plus: 0
+    elsif handles contains 'nigiri'
+      assign pieces = 2
+    elsif handles contains 'sashimi' or handles contains 'tataki'
+      assign pieces = 4
+    elsif handles contains 'parzheni-rolki'
+      assign pieces = 6
+    elsif handles contains 'hosomaki' or handles contains 'mango-menyu' or handles contains 'uramaki' or handles contains 'kaliforniya' or handles contains 'futomaki' or handles contains 'vulkani'
+      assign pieces = 8
+    endif
+    assign line_pieces = pieces | times: item.quantity
+    assign loose_pieces = loose_pieces | plus: line_pieces
+  endfor
+  assign boxes_required = loose_pieces | plus: 7 | divided_by: box_capacity
+
   # TEMPORARY delivery pause (technical issues): delivery cannot be chosen until
   # this moment — 2026-10-05 20:15 Europe/Sofia, as a Unix timestamp. It lifts
   # itself afterwards. Keep in sync with snippets/cart-summary.liquid; set to 0
@@ -63,6 +99,11 @@
   data-zip="{{ saved_zip | escape }}"
   data-phone="{{ cart.attributes['Телефон'] | escape }}"
   data-delivery-paused-until="{% if delivery_paused %}{{ delivery_paused_until }}{% else %}0{% endif %}"
+  {%- if box_product.available -%}
+    data-box-variant="{{ box_product.selected_or_first_available_variant.id }}"
+    data-box-required="{{ boxes_required }}"
+    data-box-in-cart="{{ box_in_cart }}"
+  {%- endif -%}
   data-discount-code="PICKUP10"
   data-storefront-token="{{ settings.cf_storefront_token | default: 'e15f5d390489194a77a140ea964309f2' }}"
 >
@@ -133,6 +174,13 @@
     {%- endif -%}
     <p class="cart-fulfillment__error" data-cf-error hidden></p>
   </div>
+
+  {%- if box_product.available and boxes_required > 0 -%}
+    <p class="cart-fulfillment__hint cart-fulfillment__boxes">
+      📦 Опаковка: {{ boxes_required }} {% if boxes_required == 1 %}кутия{% else %}кутии{% endif %}
+      ({{ loose_pieces }} хапки, по {{ box_capacity }} в кутия) × {{ box_product.price | money }} — добавя се автоматично.
+    </p>
+  {%- endif -%}
 
   {%- liquid
     # Chopsticks / cutlery count. Saved as cart attribute „Клечки“ (lands on the

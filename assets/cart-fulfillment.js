@@ -71,6 +71,37 @@ function getDialog() {
   return bodyDialog;
 }
 
+/* ── packaging boxes ─────────────────────────────────── */
+
+let boxBusy = false;
+
+/**
+ * Keep the packaging line ("opakovka") equal to the number of boxes the cart
+ * needs. The requirement is computed server-side (data-box-*), re-rendered
+ * with every cart morph; this just closes the gap when it differs.
+ */
+async function reconcileBoxes() {
+  const el = root();
+  const variant = el?.dataset.boxVariant;
+  if (!el || !variant || boxBusy) return;
+  const required = Number(el.dataset.boxRequired || 0);
+  const current = Number(el.dataset.boxInCart || 0);
+  if (!Number.isFinite(required) || required === current) return;
+  boxBusy = true;
+  try {
+    await updateCart({ updates: { [variant]: required } }, el.dataset.sectionId);
+  } catch (_) {
+    /* next cart change will retry */
+  } finally {
+    boxBusy = false;
+  }
+}
+
+function scheduleBoxReconcile() {
+  // Runs after the theme has morphed the drawer with fresh data-box-* values.
+  setTimeout(reconcileBoxes, 80);
+}
+
 /* ── temporary delivery pause ────────────────────────── */
 
 /** True while delivery is switched off (the pause lifts itself at `pausedUntil`). */
@@ -121,10 +152,11 @@ function showError(message) {
   el.hidden = false;
 }
 
-async function updateCart({ attributes, discount }, sectionId) {
+async function updateCart({ attributes, discount, updates }, sectionId) {
   const body = { sections: [sectionId] };
   if (attributes) body.attributes = attributes;
   if (discount !== undefined) body.discount = discount;
+  if (updates) body.updates = updates;
 
   const response = await fetch(Theme.routes.cart_update_url, fetchConfig('json', { body: JSON.stringify(body) }));
   if (!response.ok) throw new Error('cart_update_failed');
@@ -910,12 +942,17 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
+// Cart changed anywhere (product forms, quantity selectors, our own updates):
+// make sure the packaging line matches.
+['cart:update', 'cart:add'].forEach((name) => document.addEventListener(name, scheduleBoxReconcile));
+
 if (!customElements.get('cart-fulfillment')) {
   customElements.define('cart-fulfillment', class extends HTMLElement {});
 }
 
 // Move the dialog out of the morphing drawer as soon as the module loads.
 getDialog();
+scheduleBoxReconcile();
 
 // Background sync on load, so even express-pay paths see the drawer state.
 {

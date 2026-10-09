@@ -302,6 +302,13 @@
                   {% assign can_update_quantity = item.instructions.can_update_quantity
                     | default: true, allow_false: true
                   %}
+                  {%- if item.product.handle == 'opakovka' -%}
+                    {%- comment -%} Packaging is calculated from the cart; the customer cannot edit it. {%- endcomment -%}
+                    <div class="cart-items__quantity-controls cart-items__quantity-controls--locked">
+                      <span class="cart-items__locked-qty">{{ item.quantity }} бр.</span>
+                      <small class="cart-items__locked-note">автоматично</small>
+                    </div>
+                  {%- else -%}
                   <div class="cart-items__quantity-controls">
                     {% render 'volume-pricing-info',
                       variant: item.variant,
@@ -332,6 +339,7 @@
                       <span class="visually-hidden">Премахни</span>
                     </button>
                   </div>
+                  {%- endif -%}
                 </td>
                 <td
                   class="cart-items__error hidden"
@@ -577,6 +585,18 @@
     justify-content: flex-start;
     gap: var(--gap-xs);
     width: fit-content;
+  }
+
+  .cart-items__quantity-controls--locked {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+    font-size: 0.85rem;
+  }
+
+  .cart-items__locked-note {
+    font-size: 0.68rem;
+    opacity: 0.6;
   }
 
   .cart-items__quantity-controls {

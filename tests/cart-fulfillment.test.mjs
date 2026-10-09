@@ -60,7 +60,7 @@ await import('../assets/cart-fulfillment.js');
 
 /* ── fixture (mirrors snippets/cart-fulfillment.liquid) ── */
 
-function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', phone = '', pills = [], blockedReason = '', pausedUntil = 0 } = {}) {
+function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', phone = '', pills = [], blockedReason = '', pausedUntil = 0, box = null } = {}) {
   const activeDelivery = mode !== MODE_PICKUP ? ' cart-fulfillment__option--active' : '';
   const activePickup = mode === MODE_PICKUP ? ' cart-fulfillment__option--active' : '';
   document.body.innerHTML = `
@@ -74,6 +74,7 @@ function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', phone
           data-zip="${zip}"
           data-phone="${phone}"
           data-delivery-paused-until="${pausedUntil}"
+          ${box ? `data-box-variant="${box.variant}" data-box-required="${box.required}" data-box-in-cart="${box.inCart}"` : ''}
           data-maps-key="test-key"
           data-discount-code="PICKUP10"
           data-storefront-token=""
@@ -701,4 +702,41 @@ test('delivery pause: once the time has passed delivery works again by itself', 
 
   assert.equal(popup.hasAttribute('open'), false);
   assert.equal(cartUpdates()[0].attributes['Получаване'], MODE_DELIVERY);
+});
+
+/* ── packaging boxes ─────────────────────────────────── */
+
+const cartEvent = (name) => document.dispatchEvent(new window.CustomEvent(name, { bubbles: true }));
+const settle = () => new Promise((resolve) => setTimeout(resolve, 120));
+
+test('boxes: when the cart needs more boxes than it has, the box line is set to the required count', async () => {
+  renderFulfillment({ box: { variant: 777, required: 2, inCart: 0 } });
+  cartEvent('cart:update');
+  await settle();
+  await flush();
+
+  const updates = fetchCalls.filter((c) => c.url === '/cart/update.js').map((c) => JSON.parse(c.config.body));
+  assert.equal(updates.length, 1);
+  assert.deepEqual(updates[0].updates, { 777: 2 });
+  assert.deepEqual(updates[0].sections, [SECTION_ID], 'drawer is re-rendered after the fix');
+});
+
+test('boxes: a removed box line is put back, and extra boxes are taken away', async () => {
+  renderFulfillment({ box: { variant: 777, required: 1, inCart: 3 } });
+  cartEvent('cart:add');
+  await settle();
+  await flush();
+  const [update] = fetchCalls.filter((c) => c.url === '/cart/update.js').map((c) => JSON.parse(c.config.body));
+  assert.deepEqual(update.updates, { 777: 1 });
+});
+
+test('boxes: nothing happens when the count already matches, or when the box product is missing', async () => {
+  renderFulfillment({ box: { variant: 777, required: 2, inCart: 2 } });
+  cartEvent('cart:update');
+  await settle();
+  renderFulfillment(); // no data-box-* at all (product not published)
+  cartEvent('cart:update');
+  await settle();
+  await flush();
+  assert.equal(fetchCalls.length, 0);
 });
