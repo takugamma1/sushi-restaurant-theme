@@ -12,16 +12,6 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
-        "category_XEUhqm": {
-          "type": "category",
-          "settings": {
-            "title": "ДЕСЕРТИ",
-            "tab_label": "",
-            "collection": "десерти",
-            "max_products": 10,
-            "sale_badge_text": "Най-продаван"
-          }
-        },
         "category_UHmeBA": {
           "type": "category",
           "settings": {
@@ -184,6 +174,16 @@
             "sale_badge_text": "Най-продаван"
           }
         },
+        "category_XEUhqm": {
+          "type": "category",
+          "settings": {
+            "title": "ДЕСЕРТИ",
+            "tab_label": "",
+            "collection": "десерти",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_e9xfwh": {
           "type": "category",
           "settings": {
@@ -226,7 +226,6 @@
         }
       },
       "block_order": [
-        "category_XEUhqm",
         "category_UHmeBA",
         "category_7iJDCe",
         "category_dinner2",
@@ -243,6 +242,7 @@
         "category_qBT8XW",
         "category_QhTmdW",
         "category_bTdAxh",
+        "category_XEUhqm",
         "category_e9xfwh",
         "category_m4hGPP",
         "category_afd99j",
