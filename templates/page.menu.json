@@ -12,12 +12,22 @@
     "main": {
       "type": "restaurant-menu",
       "blocks": {
+        "category_XEUhqm": {
+          "type": "category",
+          "settings": {
+            "title": "ДЕСЕРТИ",
+            "tab_label": "",
+            "collection": "десерти",
+            "max_products": 10,
+            "sale_badge_text": "Най-продаван"
+          }
+        },
         "category_UHmeBA": {
           "type": "category",
           "settings": {
             "title": "Комбо",
             "tab_label": "",
-            "collection": "вечеря-за-двама",
+            "collection": "vecherya-za-dvama",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -38,7 +48,7 @@
           "settings": {
             "title": "ВЕЧЕРЯ ЗА ДВАМА",
             "tab_label": "",
-            "collection": "вечеря-за-двама",
+            "collection": "vecherya-za-dvama",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -48,7 +58,7 @@
           "settings": {
             "title": "МАНГО МЕНЮ",
             "tab_label": "",
-            "collection": "манго-меню",
+            "collection": "mango-menyu",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -189,7 +199,7 @@
           "settings": {
             "title": "ДОБАВКИ",
             "tab_label": "",
-            "collection": "десерти",
+            "collection": "dobavki",
             "max_products": 10,
             "sale_badge_text": "Най-продаван"
           }
@@ -216,6 +226,7 @@
         }
       },
       "block_order": [
+        "category_XEUhqm",
         "category_UHmeBA",
         "category_7iJDCe",
         "category_dinner2",
