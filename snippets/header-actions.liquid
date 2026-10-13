@@ -211,6 +211,7 @@
                   class="cart-drawer__items"
                 >
                   {% render 'cart-products', drawer_context: 'drawer' %}
+                  {% render 'cart-upsell', section_id: section.id %}
                 </scroll-hint>
 
                 <div
@@ -232,6 +233,7 @@
         so loading it up front makes the toggle work without a page refresh.
       {%- endcomment -%}
       <script type="module" src="{{ 'cart-fulfillment.js' | asset_url }}"></script>
+      <script type="module" src="{{ 'cart-upsell.js' | asset_url }}"></script>
     </cart-drawer-component>
   {% else %}
     <a

@@ -1,0 +1,198 @@
+{%- doc -%}
+  Cart drawer upsell: „опитайте парче от нашата домашна бисквитена торта“.
+
+  A small card under the cart lines with a one-tap add button. It is rendered
+  server-side with every drawer morph, so it simply disappears as soon as the
+  cake is in the cart (and comes back if the customer removes it). Inert when
+  the product is missing, unpublished or sold out.
+
+  Keep the product handle in sync with snippets/cake-promo-popup.liquid.
+  No script tag in here (scripts injected by a section morph never run) — the
+  behaviour lives in assets/cart-upsell.js, loaded from header-actions.liquid.
+
+  @param {string} section_id - section id used for cart section morphing.
+{%- enddoc -%}
+
+{%- liquid
+  assign cake_handle = 'домашна-бисквитена-торта'
+  assign cake = all_products[cake_handle]
+  if cake == blank
+    # The Sep-2026 slug migration moved handles to Latin; accept that spelling too.
+    assign cake_handle = 'domashna-biskvitena-torta'
+    assign cake = all_products[cake_handle]
+  endif
+
+  assign cake_in_cart = false
+  for item in cart.items
+    if item.product.handle == cake_handle
+      assign cake_in_cart = true
+      break
+    endif
+  endfor
+
+  # Texts follow the storefront language (bg default, en, ru).
+  case request.locale.iso_code
+    when 'en'
+      assign upsell_kicker = 'Limited time only'
+      assign upsell_title = 'Try a piece of our homemade biscuit cake'
+      assign upsell_add = 'Add'
+      assign upsell_error = 'Could not add it — please try again.'
+    when 'ru'
+      assign upsell_kicker = 'Только ограниченное время'
+      assign upsell_title = 'Попробуйте кусочек нашего домашнего бисквитного торта'
+      assign upsell_add = 'Добавить'
+      assign upsell_error = 'Не удалось добавить — попробуйте ещё раз.'
+    else
+      assign upsell_kicker = 'Само за ограничено време'
+      assign upsell_title = 'Опитайте парче от нашата домашна бисквитена торта'
+      assign upsell_add = 'Добави'
+      assign upsell_error = 'Не успяхме да добавим — опитайте отново.'
+  endcase
+-%}
+
+{%- if cake != blank and cake.available and cake_in_cart == false -%}
+  {%- assign cake_variant = cake.selected_or_first_available_variant -%}
+  <div
+    class="cart-upsell"
+    data-cart-upsell
+    data-section-id="{{ section_id }}"
+    data-variant-id="{{ cake_variant.id }}"
+  >
+    <div class="cart-upsell__thumb" aria-hidden="true">
+      {%- if cake.featured_image != blank -%}
+        <img
+          src="{{ cake.featured_image | image_url: width: 160, height: 160, crop: 'center' }}"
+          alt=""
+          width="60"
+          height="60"
+          loading="lazy"
+        >
+      {%- else -%}
+        <span class="cart-upsell__thumb-placeholder">🍰</span>
+      {%- endif -%}
+    </div>
+
+    <div class="cart-upsell__text">
+      <p class="cart-upsell__kicker">{{ upsell_kicker }}</p>
+      <p class="cart-upsell__title">{{ upsell_title }}</p>
+      <p class="cart-upsell__price">{{ cake_variant.price | money }}</p>
+    </div>
+
+    <button
+      type="button"
+      class="cart-upsell__add"
+      data-cart-upsell-add
+      data-order-action
+      aria-label="{{ upsell_add }}: {{ cake.title | escape }}"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span>{{ upsell_add }}</span>
+    </button>
+
+    <p class="cart-upsell__error" data-cart-upsell-error hidden>{{ upsell_error }}</p>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .cart-upsell {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 0.25rem 0 var(--gap-lg, 1rem);
+    padding: 0.75rem;
+    border: 1px solid rgba(249, 135, 96, 0.35);
+    border-radius: 14px;
+    background: rgba(249, 135, 96, 0.07);
+    color: var(--color-foreground);
+    transition: opacity 0.15s ease;
+  }
+
+  .cart-upsell[aria-busy='true'] {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .cart-upsell__thumb {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgb(var(--color-foreground-rgb) / 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cart-upsell__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cart-upsell__thumb-placeholder { font-size: 1.6rem; }
+
+  .cart-upsell__text { min-width: 0; }
+
+  .cart-upsell__text p { margin: 0; }
+
+  .cart-upsell__kicker {
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #f98760;
+  }
+
+  .cart-upsell__title {
+    margin-top: 0.15rem !important;
+    font-size: 0.86rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .cart-upsell__price {
+    margin-top: 0.2rem !important;
+    font-size: 0.8rem;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text, 0.7));
+  }
+
+  .cart-upsell__add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    min-height: 38px;
+    padding: 0.5rem 0.9rem;
+    border: none;
+    border-radius: 999px;
+    background: #f98760;
+    color: #1a0e08;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+
+  .cart-upsell__add:hover { background: #e0764f; transform: translateY(-1px); }
+
+  .cart-upsell__add:disabled { cursor: default; transform: none; }
+
+  .cart-upsell__error {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 0.76rem;
+    color: #f0b070;
+  }
+
+  @media screen and (max-width: 420px) {
+    .cart-upsell { gap: 0.6rem; padding: 0.65rem; }
+    .cart-upsell__thumb { width: 52px; height: 52px; }
+    .cart-upsell__add span { display: none; }
+    .cart-upsell__add { padding: 0.5rem 0.7rem; }
+  }
+{% endstylesheet %}

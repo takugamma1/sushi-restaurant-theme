@@ -187,6 +187,11 @@
   menu_page_url: section.settings.menu_page_url
 %}
 
+{%- comment -%} Limited-time cake promo (menu page only; once per session) {%- endcomment -%}
+{%- if is_menu_page -%}
+  {% render 'cake-promo-popup' %}
+{%- endif -%}
+
 <script>
 (function() {
   function initMenuHover() {

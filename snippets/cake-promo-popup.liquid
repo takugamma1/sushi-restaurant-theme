@@ -1,0 +1,478 @@
+{%- doc -%}
+  Menu page promo popup: homemade biscuit cake, limited time only.
+
+  Opens once per browser session on /pages/menu (sessionStorage flag), never
+  while the cake is already in the cart (checked server-side), and never on top
+  of another open dialog (e.g. the cart drawer auto-opening after a product
+  page add). Two ways out: „Добави в количката“ or the × in the top-right
+  corner (Esc / backdrop click also close it).
+
+  Keep the product handle in sync with snippets/cart-upsell.liquid.
+{%- enddoc -%}
+
+{%- liquid
+  assign cake_handle = 'домашна-бисквитена-торта'
+  assign cake = all_products[cake_handle]
+  if cake == blank
+    # The Sep-2026 slug migration moved handles to Latin; accept that spelling too.
+    assign cake_handle = 'domashna-biskvitena-torta'
+    assign cake = all_products[cake_handle]
+  endif
+
+  assign cake_in_cart = false
+  for item in cart.items
+    if item.product.handle == cake_handle
+      assign cake_in_cart = true
+      break
+    endif
+  endfor
+
+  # Texts follow the storefront language (bg default, en, ru).
+  case request.locale.iso_code
+    when 'en'
+      assign promo_badge = 'Limited time only'
+      assign promo_kicker = 'New on the menu'
+      assign promo_title = 'Homemade biscuit cake'
+      assign promo_text = 'We have homemade biscuit cake for a limited time only. Try it before it is gone!'
+      assign promo_per = 'per piece'
+      assign promo_add = 'Add to cart'
+      assign promo_adding = 'Adding…'
+      assign promo_close = 'Close'
+      assign promo_error = 'Could not add it — please try again.'
+    when 'ru'
+      assign promo_badge = 'Только ограниченное время'
+      assign promo_kicker = 'Новинка в меню'
+      assign promo_title = 'Домашний бисквитный торт'
+      assign promo_text = 'У нас есть домашний бисквитный торт — только ограниченное время. Попробуйте, пока он не закончился!'
+      assign promo_per = 'за кусочек'
+      assign promo_add = 'Добавить в корзину'
+      assign promo_adding = 'Добавляем…'
+      assign promo_close = 'Закрыть'
+      assign promo_error = 'Не удалось добавить — попробуйте ещё раз.'
+    else
+      assign promo_badge = 'Само за ограничено време'
+      assign promo_kicker = 'Ново в менюто'
+      assign promo_title = 'Домашна бисквитена торта'
+      assign promo_text = 'Имаме домашна бисквитена торта — само за ограничено време. Опитайте я, преди да свърши!'
+      assign promo_per = 'за парче'
+      assign promo_add = 'Добави в количката'
+      assign promo_adding = 'Добавяне…'
+      assign promo_close = 'Затвори'
+      assign promo_error = 'Не успяхме да добавим — опитайте отново.'
+  endcase
+-%}
+
+{%- if cake != blank and cake.available and cake_in_cart == false -%}
+  {%- assign cake_variant = cake.selected_or_first_available_variant -%}
+  <dialog
+    id="cake-promo"
+    class="cake-promo"
+    aria-labelledby="cake-promo-title"
+    aria-describedby="cake-promo-text"
+    data-cake-promo
+    data-variant-id="{{ cake_variant.id }}"
+  >
+    <div class="cake-promo__inner">
+      <button
+        type="button"
+        class="cake-promo__close"
+        data-cake-promo-close
+        aria-label="{{ promo_close }}"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="cake-promo__media">
+        {%- if cake.featured_image != blank -%}
+          <img
+            src="{{ cake.featured_image | image_url: width: 800 }}"
+            alt="{{ cake.featured_image.alt | default: cake.title | escape }}"
+            width="{{ cake.featured_image.width }}"
+            height="{{ cake.featured_image.height }}"
+            fetchpriority="low"
+          >
+        {%- endif -%}
+        <span class="cake-promo__badge">{{ promo_badge }}</span>
+      </div>
+
+      <div class="cake-promo__body">
+        <p class="cake-promo__kicker"><span class="cake-promo__diamond">◇</span> {{ promo_kicker }}</p>
+        <h2 class="cake-promo__title" id="cake-promo-title">{{ promo_title }}</h2>
+        <p class="cake-promo__text" id="cake-promo-text">{{ promo_text }}</p>
+
+        <div class="cake-promo__row">
+          <p class="cake-promo__price">
+            {{ cake_variant.price | money }}
+            <span class="cake-promo__per">{{ promo_per }}</span>
+          </p>
+          <button
+            type="button"
+            class="cake-promo__add"
+            data-cake-promo-add
+            data-order-action
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span data-cake-promo-add-label>{{ promo_add }}</span>
+            <span data-cake-promo-adding-label hidden>{{ promo_adding }}</span>
+          </button>
+        </div>
+
+        <p class="cake-promo__error" data-cake-promo-error hidden>{{ promo_error }}</p>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var SEEN_KEY = 'mango_cake_promo_seen';
+      var DRAWER_FLAG = 'mango_open_cart_drawer';
+      var dialog = document.getElementById('cake-promo');
+      if (!dialog) return;
+
+      var busy = false;
+
+      // The product page redirects here and auto-opens the cart drawer (flag read
+      // and cleared by the layout script, which runs after this one). Don't fight
+      // the drawer for the screen — try again on the next page load.
+      var drawerWillOpen = false;
+      try { drawerWillOpen = sessionStorage.getItem(DRAWER_FLAG) === '1'; } catch (e) {}
+
+      function seen() {
+        try { return sessionStorage.getItem(SEEN_KEY) === '1'; } catch (e) { return false; }
+      }
+
+      function markSeen() {
+        try { sessionStorage.setItem(SEEN_KEY, '1'); } catch (e) {}
+      }
+
+      function open() {
+        if (dialog.open || seen() || drawerWillOpen) return;
+        if (document.querySelector('dialog[open]')) return;
+        try {
+          if (typeof dialog.showModal === 'function') dialog.showModal();
+          else dialog.setAttribute('open', '');
+        } catch (e) {}
+      }
+
+      function close() {
+        markSeen();
+        if (!dialog.open) return;
+        try { dialog.close(); } catch (e) { dialog.removeAttribute('open'); }
+      }
+
+      function setBusy(state) {
+        busy = state;
+        var btn = dialog.querySelector('[data-cake-promo-add]');
+        var label = dialog.querySelector('[data-cake-promo-add-label]');
+        var adding = dialog.querySelector('[data-cake-promo-adding-label]');
+        if (btn) btn.disabled = state;
+        if (label) label.hidden = state;
+        if (adding) adding.hidden = !state;
+      }
+
+      function showError(visible) {
+        var el = dialog.querySelector('[data-cake-promo-error]');
+        if (el) el.hidden = !visible;
+      }
+
+      function sectionIds() {
+        var ids = [];
+        var components = document.querySelectorAll('cart-items-component');
+        for (var i = 0; i < components.length; i++) {
+          var id = components[i].getAttribute('data-section-id');
+          if (id && ids.indexOf(id) === -1) ids.push(id);
+        }
+        return ids;
+      }
+
+      function route(name, fallback) {
+        try {
+          var value = window.Theme && window.Theme.routes && window.Theme.routes[name];
+          return value || fallback;
+        } catch (e) { return fallback; }
+      }
+
+      function afterAdded(data, cart) {
+        // Notify the theme: refreshes the cart bubble and morphs the (closed)
+        // drawer from the returned sections — same path as the product modal.
+        document.dispatchEvent(new CustomEvent('cart:update', {
+          bubbles: true,
+          detail: {
+            resource: cart,
+            sourceId: 'cake-promo',
+            data: {
+              source: cart ? 'cake-promo' : 'product-form-component',
+              itemCount: cart ? cart.item_count : 1,
+              sections: data && data.sections
+            }
+          }
+        }));
+        close();
+        var modal = window.restaurantModal;
+        if (modal && typeof modal.showToast === 'function') {
+          modal.showToast();
+        } else {
+          var drawer = document.querySelector('cart-drawer-component');
+          if (drawer && typeof drawer.open === 'function') drawer.open();
+        }
+      }
+
+      function addToCart() {
+        if (busy) return;
+        var variantId = parseInt(dialog.getAttribute('data-variant-id'), 10);
+        if (!variantId) return;
+
+        setBusy(true);
+        showError(false);
+
+        var ids = sectionIds();
+        var body = { items: [{ id: variantId, quantity: 1 }] };
+        if (ids.length) {
+          body.sections = ids.join(',');
+          body.sections_url = window.location.pathname;
+        }
+
+        fetch(route('cart_add_url', '/cart/add.js'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/javascript' },
+          body: JSON.stringify(body)
+        })
+          .then(function (res) {
+            if (!res.ok) throw new Error('cart_add_failed');
+            return res.json();
+          })
+          .then(function (data) {
+            return fetch(route('cart_url', '/cart') + '.js')
+              .then(function (r) { return r.json(); })
+              .catch(function () { return null; })
+              .then(function (cart) { afterAdded(data, cart); });
+          })
+          .catch(function () { showError(true); })
+          .then(function () { setBusy(false); });
+      }
+
+      dialog.addEventListener('click', function (event) {
+        var t = event.target;
+        if (!t || typeof t.closest !== 'function') return;
+        if (t.closest('[data-cake-promo-close]')) { event.preventDefault(); close(); return; }
+        if (t.closest('[data-cake-promo-add]')) { event.preventDefault(); addToCart(); return; }
+        if (t === dialog) close(); // click on the backdrop
+      });
+
+      // Esc (native "cancel" → "close") counts as dismissed too.
+      dialog.addEventListener('close', markSeen);
+
+      function schedule() { setTimeout(open, 900); }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', schedule);
+      else schedule();
+    })();
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  /* `dialog.` prefix beats the theme's bare `dialog` colours in base.css. */
+  dialog.cake-promo {
+    --cake-accent: var(--restaurant-accent, #F98760);
+    --cake-accent-hover: var(--restaurant-accent-hover, #e0764f);
+
+    width: min(92vw, 26rem);
+    max-width: min(92vw, 26rem);
+    max-height: 92dvh;
+    margin: auto;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    background: var(--restaurant-dark-card, #1A1A1A);
+    color: #fff;
+    box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
+    overflow: hidden auto;
+  }
+
+  dialog.cake-promo::backdrop {
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(3px);
+  }
+
+  dialog.cake-promo[open] {
+    animation: cake-promo-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes cake-promo-in {
+    from { opacity: 0; transform: translateY(18px) scale(0.97); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .cake-promo__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cake-promo__close {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    z-index: 3;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 50%;
+    background: rgba(13, 13, 13, 0.6);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.3s ease;
+  }
+
+  .cake-promo__close:hover {
+    background: var(--cake-accent);
+    transform: rotate(90deg);
+  }
+
+  .cake-promo__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #0D0D0D;
+  }
+
+  .cake-promo__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cake-promo__badge {
+    position: absolute;
+    left: 0.85rem;
+    bottom: 0.85rem;
+    z-index: 2;
+    padding: 0.38rem 0.85rem;
+    border-radius: 999px;
+    background: var(--cake-accent);
+    color: #1a0e08;
+    font-family: var(--font-body--family);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .cake-promo__body {
+    padding: 1.2rem 1.35rem 1.35rem;
+  }
+
+  .cake-promo__kicker {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-body--family);
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .cake-promo__diamond { color: var(--cake-accent); }
+
+  .cake-promo__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    font-size: clamp(1.35rem, 4.5vw, 1.7rem);
+    line-height: 1.12;
+    color: #fff;
+  }
+
+  .cake-promo__text {
+    margin: 0.7rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .cake-promo__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.1rem;
+  }
+
+  .cake-promo__price {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    font-size: 1.35rem;
+    color: var(--cake-accent);
+    white-space: nowrap;
+  }
+
+  .cake-promo__per {
+    margin-left: 0.2rem;
+    font-family: var(--font-body--family);
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  .cake-promo__add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 48px;
+    padding: 0.85rem 1.3rem;
+    border: none;
+    border-radius: 12px;
+    background: var(--cake-accent);
+    color: #1a0e08;
+    font-family: var(--font-body--family);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+
+  .cake-promo__add:hover {
+    background: var(--cake-accent-hover);
+    transform: translateY(-2px);
+  }
+
+  .cake-promo__add:disabled {
+    opacity: 0.6;
+    cursor: default;
+    transform: none;
+  }
+
+  .cake-promo__error {
+    margin: 0.7rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.8rem;
+    color: #f0b070;
+  }
+
+  @media screen and (max-width: 420px) {
+    .cake-promo__row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .cake-promo__price { text-align: center; }
+    .cake-promo__add { width: 100%; }
+  }
+{% endstylesheet %}

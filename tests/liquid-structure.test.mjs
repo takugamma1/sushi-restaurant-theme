@@ -129,3 +129,52 @@ test('cart updates from the fulfillment module use the hydration morph', () => {
   const js = read('assets/cart-fulfillment.js');
   assert.ok(js.includes("morphSection(sectionId, html, 'hydration')"), "a 'full' morph breaks the open drawer dialog");
 });
+
+test('cake upsell: card under the cart lines, hidden once the cake is in the cart, module loaded with the drawer', () => {
+  const header = read('snippets/header-actions.liquid');
+  const snippet = read('snippets/cart-upsell.liquid');
+
+  const renderAt = header.indexOf("render 'cart-upsell', section_id: section.id");
+  const itemsStart = header.indexOf('class="cart-drawer__items"');
+  const summaryStart = header.indexOf('class="cart-drawer__summary"');
+  assert.ok(renderAt !== -1, 'drawer renders the upsell card');
+  assert.ok(renderAt > itemsStart && renderAt < summaryStart, 'card sits under the cart lines, above the fulfillment block');
+
+  assert.ok(!/<script/.test(snippet), 'snippet has no script tag (morphed-in scripts never run)');
+  const scriptAt = header.indexOf("'cart-upsell.js' | asset_url");
+  const dialogEnd = header.indexOf('</dialog>');
+  const drawerEnd = header.indexOf('</cart-drawer-component>');
+  assert.ok(scriptAt > dialogEnd && scriptAt < drawerEnd, 'module loads with the drawer even when the cart is empty');
+
+  assert.ok(snippet.includes('item.product.handle == cake_handle'), 'checks the cart for the cake');
+  assert.ok(snippet.includes('cake_in_cart == false'), 'card is not rendered while the cake is in the cart');
+  assert.ok(snippet.includes('cake.available'), 'card is inert when the cake is sold out / unpublished');
+  assert.ok(snippet.includes('data-cart-upsell-add') && snippet.includes('data-order-action'), 'add button obeys the working-hours gate');
+  for (const text of ['Опитайте парче', 'Try a piece', 'Попробуйте кусочек']) {
+    assert.ok(snippet.includes(text), `upsell text present: ${text}`);
+  }
+});
+
+test('cake promo popup: menu page only, × + add to cart, once per session, same product as the upsell', () => {
+  const menu = read('sections/restaurant-menu.liquid');
+  const popup = read('snippets/cake-promo-popup.liquid');
+  const upsell = read('snippets/cart-upsell.liquid');
+
+  const renderAt = menu.indexOf("render 'cake-promo-popup'");
+  assert.ok(renderAt !== -1, 'menu section renders the popup');
+  const guard = menu.lastIndexOf('{%- if is_menu_page -%}', renderAt);
+  assert.ok(guard !== -1 && renderAt - guard < 80, 'popup is rendered only on the menu page (not the home preview)');
+
+  const handle = (source) => source.match(/assign cake_handle = '([^']+)'/)?.[1];
+  assert.ok(handle(popup), 'popup names the cake product');
+  assert.equal(handle(popup), handle(upsell), 'popup and drawer upsell point at the same product');
+
+  assert.ok(popup.includes('<dialog') && popup.includes('data-cake-promo-close'), 'popup has the × close button');
+  assert.ok(popup.includes('data-cake-promo-add') && popup.includes('data-order-action'), 'add button obeys the working-hours gate');
+  assert.ok(popup.includes('cake_in_cart == false'), 'not shown when the cake is already in the cart');
+  assert.ok(popup.includes('mango_cake_promo_seen') && popup.includes('sessionStorage'), 'shown once per browser session');
+  assert.ok(popup.includes("document.querySelector('dialog[open]')"), 'never stacks on another open dialog');
+  for (const text of ['Само за ограничено време', 'Limited time only', 'Только ограниченное время']) {
+    assert.ok(popup.includes(text), `popup text present: ${text}`);
+  }
+});
