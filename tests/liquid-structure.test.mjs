@@ -178,3 +178,29 @@ test('cake promo popup: menu page only, × + add to cart, once per session, same
     assert.ok(popup.includes(text), `popup text present: ${text}`);
   }
 });
+
+test('email promo popup: homepage only, native customer form, consent text, trilingual, remembers dismissal', () => {
+  const layout = read('layout/theme.liquid');
+  const popup = read('sections/email-promo-popup.liquid');
+
+  const renderAt = layout.indexOf("{% section 'email-promo-popup' %}");
+  assert.ok(renderAt !== -1, 'layout renders the popup section statically');
+  const guard = layout.lastIndexOf("template.name == 'index'", renderAt);
+  assert.ok(guard !== -1 && renderAt - guard < 80, 'popup is rendered only on the homepage template');
+
+  assert.ok(popup.includes("form 'customer'"), 'emails go through the native customer form (→ Admin → Customers)');
+  assert.ok(popup.includes('name="contact[email]"'), 'email input posts contact[email]');
+  assert.ok(popup.includes('name="contact[tags]"') && popup.includes('promo-october-2026'), 'signups are tagged for segmentation');
+  assert.ok(popup.includes('form.posted_successfully?'), 'success state after the Shopify redirect');
+  assert.ok(popup.includes('data-email-promo-copy') && popup.includes('data-email-promo-code'), 'success state shows the code with a copy button');
+  assert.ok(popup.includes('<dialog') && popup.includes('data-email-promo-close'), 'popup has the × close button');
+  assert.ok(popup.includes('mango_email_promo_done') && popup.includes('mango_email_promo_until') && popup.includes('localStorage'), 'remembers subscribed / dismissed');
+  assert.ok(popup.includes("document.querySelector('dialog[open]')"), 'never stacks on another open dialog');
+  assert.ok(popup.includes('now_ts <= end_ts'), 'hides itself after the end date');
+  for (const text of ['маркетинг съобщения', 'marketing messages', 'маркетинговые сообщения']) {
+    assert.ok(popup.includes(text), `consent small print present: ${text}`);
+  }
+  for (const text of ['−10% за целия октомври', '−10% all October long', '−10% на весь октябрь']) {
+    assert.ok(popup.includes(text), `popup title present: ${text}`);
+  }
+});

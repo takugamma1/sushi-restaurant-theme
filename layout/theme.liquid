@@ -135,6 +135,11 @@
 
     {% render 'working-hours-gate' %}
 
+    {%- comment -%} Homepage only: email signup → October −10% code (sections/email-promo-popup.liquid) {%- endcomment -%}
+    {%- if template.name == 'index' -%}
+      {% section 'email-promo-popup' %}
+    {%- endif -%}
+
     <script>
       // Opens the cart drawer after a cross-page add-to-cart from the product page.
       (function () {

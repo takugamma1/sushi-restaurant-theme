@@ -1,0 +1,732 @@
+{%- doc -%}
+  Homepage email-capture popup: leave your email, get a 10% discount code for
+  the whole of October (20% in total for pickup orders, which already get −10%).
+
+  Rendered statically from layout/theme.liquid on the index template only
+  (`{% section 'email-promo-popup' %}`), so admin edits to templates/index.json
+  cannot drop it. Settings (image, code, end date, on/off) are editable in the
+  theme editor while on the homepage.
+
+  Emails go through Shopify's native customer form (`form 'customer'`): every
+  signup lands in Admin → Customers as an email-marketing subscriber, tagged
+  "newsletter, promo-october-2026" (filter on the tag to see the list).
+
+  Flow: opens ~1 s after load → dismissed = hidden for N days, subscribed =
+  hidden for good (localStorage) → on submit Shopify redirects back to the
+  homepage with ?customer_posted=true → the popup reopens in its success state
+  and shows the discount code with a copy button.
+
+  The popup only DISPLAYS the code — the discount itself must exist in
+  Admin → Discounts with the same code. Texts follow the storefront language
+  (bg default, en, ru) like snippets/cake-promo-popup.liquid.
+{%- enddoc -%}
+
+{%- liquid
+  assign promo_code = section.settings.discount_code | strip | upcase
+  assign promo_end = section.settings.end_date | strip
+  if promo_end == blank
+    assign promo_end = '2026-10-31'
+  endif
+  assign end_ts = promo_end | append: ' 23:59:59' | date: '%s' | plus: 0
+  assign now_ts = 'now' | date: '%s' | plus: 0
+  assign end_label = promo_end | date: '%d.%m.%Y'
+
+  assign promo_active = false
+  if section.settings.enabled and promo_code != blank and now_ts <= end_ts
+    assign promo_active = true
+  endif
+
+  # Picture: the admin-chosen one, else the Set 5 platter photo from the catalog.
+  assign promo_image = section.settings.image
+  if promo_image == blank
+    assign fallback_product = all_products['set-5-725g-30br']
+    if fallback_product != blank
+      assign promo_image = fallback_product.featured_image
+    endif
+  endif
+
+  assign dismiss_days = section.settings.dismiss_days | default: 3
+
+  if routes.root_url == '/'
+    assign menu_url = '/pages/menu'
+  else
+    assign menu_url = routes.root_url | append: '/pages/menu'
+  endif
+
+  case request.locale.iso_code
+    when 'en'
+      assign t_badge = 'October only'
+      assign t_kicker = 'Special offer'
+      assign t_title = '−10% all October long'
+      assign t_text = 'Leave your email and get a code for 10% off every order until ' | append: end_label | append: '. Pick up from the restaurant and the discount becomes 20% in total.'
+      assign t_label = 'Email'
+      assign t_placeholder = 'Email address'
+      assign t_submit = 'Get −10%'
+      assign t_sending = 'Sending…'
+      assign t_consent = 'By leaving your email you agree to receive promotions and other marketing messages from Sushi Bar Mango.'
+      assign t_skip = 'No, thanks'
+      assign t_close = 'Close'
+      assign t_error = 'Please enter a valid email address.'
+      assign t_done_kicker = 'Done!'
+      assign t_done_title = 'Here is your −10% code'
+      assign t_done_text = 'Enter the code at checkout. Valid for every order until ' | append: end_label | append: '; 20% in total when you pick up from the restaurant.'
+      assign t_copy = 'Copy'
+      assign t_copied = 'Copied'
+      assign t_cta = 'Order now'
+    when 'ru'
+      assign t_badge = 'Только в октябре'
+      assign t_kicker = 'Специальное предложение'
+      assign t_title = '−10% на весь октябрь'
+      assign t_text = 'Оставьте свой email и получите код на скидку 10% на все заказы до ' | append: end_label | append: '. При самовывозе скидка составит 20%.'
+      assign t_label = 'Email'
+      assign t_placeholder = 'Адрес электронной почты'
+      assign t_submit = 'Получить −10%'
+      assign t_sending = 'Отправляем…'
+      assign t_consent = 'Оставляя email, вы соглашаетесь получать промоакции и другие маркетинговые сообщения от Sushi Bar Mango.'
+      assign t_skip = 'Нет, спасибо'
+      assign t_close = 'Закрыть'
+      assign t_error = 'Пожалуйста, введите корректный email.'
+      assign t_done_kicker = 'Готово!'
+      assign t_done_title = 'Ваш код на −10%'
+      assign t_done_text = 'Введите код при оформлении заказа. Действует на все заказы до ' | append: end_label | append: '; при самовывозе скидка составит 20%.'
+      assign t_copy = 'Копировать'
+      assign t_copied = 'Скопировано'
+      assign t_cta = 'Заказать сейчас'
+    else
+      assign t_badge = 'Само през октомври'
+      assign t_kicker = 'Специална оферта'
+      assign t_title = '−10% за целия октомври'
+      assign t_text = 'Остави имейла си и получи код за 10% отстъпка за всички поръчки до ' | append: end_label | append: '. При вземане от място отстъпката става общо 20%.'
+      assign t_label = 'Имейл'
+      assign t_placeholder = 'Имейл адрес'
+      assign t_submit = 'Вземи −10%'
+      assign t_sending = 'Изпращане…'
+      assign t_consent = 'Като оставите имейла си, се съгласявате да получавате промоции и други маркетинг съобщения от Суши Бар Манго.'
+      assign t_skip = 'Не, благодаря'
+      assign t_close = 'Затвори'
+      assign t_error = 'Моля, въведете валиден имейл адрес.'
+      assign t_done_kicker = 'Готово!'
+      assign t_done_title = 'Ето твоя код за −10%'
+      assign t_done_text = 'Въведи кода при плащане. Важи за всички поръчки до ' | append: end_label | append: '; при вземане от място отстъпката е общо 20%.'
+      assign t_copy = 'Копирай'
+      assign t_copied = 'Копирано'
+      assign t_cta = 'Поръчай сега'
+  endcase
+-%}
+
+{%- if promo_active -%}
+  <dialog
+    id="email-promo"
+    class="email-promo"
+    aria-labelledby="email-promo-title"
+    aria-describedby="email-promo-text"
+    data-email-promo
+    data-dismiss-days="{{ dismiss_days }}"
+    data-code="{{ promo_code | escape }}"
+  >
+    <div class="email-promo__inner">
+      <button
+        type="button"
+        class="email-promo__close"
+        data-email-promo-close
+        aria-label="{{ t_close }}"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="email-promo__media">
+        {%- if promo_image != blank -%}
+          <img
+            src="{{ promo_image | image_url: width: 900 }}"
+            srcset="{{ promo_image | image_url: width: 600 }} 600w, {{ promo_image | image_url: width: 900 }} 900w, {{ promo_image | image_url: width: 1200 }} 1200w"
+            sizes="(min-width: 720px) 22rem, 92vw"
+            alt="{{ promo_image.alt | default: 'Sushi Bar Mango' | escape }}"
+            width="{{ promo_image.width }}"
+            height="{{ promo_image.height }}"
+            loading="lazy"
+            fetchpriority="low"
+          >
+        {%- endif -%}
+        <span class="email-promo__badge">{{ t_badge }}</span>
+      </div>
+
+      <div class="email-promo__body">
+        {%- form 'customer', id: 'email-promo-form', class: 'email-promo__form' -%}
+          {%- liquid
+            assign promo_state = 'idle'
+            if form.posted_successfully?
+              assign promo_state = 'success'
+            elsif form.errors
+              assign promo_state = 'error'
+            endif
+          -%}
+          <div class="email-promo__content" data-email-promo-state="{{ promo_state }}">
+            {%- if promo_state == 'success' -%}
+              <p class="email-promo__kicker email-promo__kicker--done">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                {{ t_done_kicker }}
+              </p>
+              <h2 class="email-promo__title" id="email-promo-title">{{ t_done_title }}</h2>
+
+              <div class="email-promo__code">
+                <span class="email-promo__code-value" data-email-promo-code>{{ promo_code }}</span>
+                <button type="button" class="email-promo__copy" data-email-promo-copy>
+                  <span data-email-promo-copy-label>{{ t_copy }}</span>
+                  <span data-email-promo-copied-label hidden>{{ t_copied }}</span>
+                </button>
+              </div>
+
+              <p class="email-promo__text" id="email-promo-text">{{ t_done_text }}</p>
+
+              <a class="email-promo__cta" href="{{ menu_url }}">{{ t_cta }}</a>
+            {%- else -%}
+              <p class="email-promo__kicker"><span class="email-promo__diamond">◇</span> {{ t_kicker }}</p>
+              <h2 class="email-promo__title" id="email-promo-title">{{ t_title }}</h2>
+              <p class="email-promo__text" id="email-promo-text">{{ t_text }}</p>
+
+              <input type="hidden" name="contact[tags]" value="newsletter, promo-october-2026">
+
+              <div class="email-promo__field">
+                <label for="email-promo-input" class="visually-hidden">{{ t_label }}</label>
+                <input
+                  id="email-promo-input"
+                  class="email-promo__input"
+                  type="email"
+                  name="contact[email]"
+                  placeholder="{{ t_placeholder }}"
+                  autocomplete="email"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  required
+                  {% if customer and customer.email != blank %}value="{{ customer.email | escape }}"{% endif %}
+                  {% if promo_state == 'error' %}autofocus aria-invalid="true" aria-describedby="email-promo-error"{% endif %}
+                >
+                <button type="submit" class="email-promo__submit" data-email-promo-submit>
+                  <span data-email-promo-submit-label>{{ t_submit }}</span>
+                  <span data-email-promo-sending-label hidden>{{ t_sending }}</span>
+                </button>
+              </div>
+
+              {%- if promo_state == 'error' -%}
+                <p class="email-promo__error" id="email-promo-error" role="alert">
+                  {%- if form.errors.messages.email != blank -%}
+                    {{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}
+                  {%- else -%}
+                    {{ t_error }}
+                  {%- endif -%}
+                </p>
+              {%- endif -%}
+
+              <p class="email-promo__consent">{{ t_consent }}</p>
+
+              <button type="button" class="email-promo__skip" data-email-promo-close>{{ t_skip }}</button>
+            {%- endif -%}
+          </div>
+        {%- endform -%}
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var DONE_KEY = 'mango_email_promo_done';
+      var UNTIL_KEY = 'mango_email_promo_until';
+      var DRAWER_FLAG = 'mango_open_cart_drawer';
+
+      var dialog = document.getElementById('email-promo');
+      if (!dialog) return;
+
+      var stateEl = dialog.querySelector('[data-email-promo-state]');
+      var state = (stateEl && stateEl.getAttribute('data-email-promo-state')) || 'idle';
+      var days = parseInt(dialog.getAttribute('data-dismiss-days'), 10) || 3;
+
+      function get(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+      function set(key, value) { try { localStorage.setItem(key, value); } catch (e) {} }
+
+      function shouldAutoOpen() {
+        // Just subscribed (or the server rejected the email): always show the result.
+        if (state === 'success' || state === 'error') return true;
+        if (get(DONE_KEY) === '1') return false;
+        var until = parseInt(get(UNTIL_KEY), 10);
+        if (until && Date.now() < until) return false;
+        // The product page redirects home and auto-opens the cart drawer — don't
+        // fight it for the screen; try again on the next visit.
+        try { if (sessionStorage.getItem(DRAWER_FLAG) === '1') return false; } catch (e) {}
+        if (document.querySelector('dialog[open]')) return false;
+        return true;
+      }
+
+      function open() {
+        if (dialog.open) return;
+        try {
+          if (typeof dialog.showModal === 'function') dialog.showModal();
+          else dialog.setAttribute('open', '');
+        } catch (e) {}
+      }
+
+      function remember() {
+        if (state === 'success') set(DONE_KEY, '1');
+        else set(UNTIL_KEY, String(Date.now() + days * 86400000));
+      }
+
+      function close() {
+        remember();
+        if (!dialog.open) return;
+        try { dialog.close(); } catch (e) { dialog.removeAttribute('open'); }
+      }
+
+      function copyCode(button) {
+        var code = dialog.getAttribute('data-code') || '';
+        var label = button.querySelector('[data-email-promo-copy-label]');
+        var copied = button.querySelector('[data-email-promo-copied-label]');
+        function flash() {
+          if (label) label.hidden = true;
+          if (copied) copied.hidden = false;
+          setTimeout(function () {
+            if (label) label.hidden = false;
+            if (copied) copied.hidden = true;
+          }, 2000);
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(flash, function () { selectCode(); });
+        } else {
+          selectCode();
+          try { document.execCommand('copy'); flash(); } catch (e) {}
+        }
+      }
+
+      function selectCode() {
+        var el = dialog.querySelector('[data-email-promo-code]');
+        if (!el || !window.getSelection) return;
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+
+      if (state === 'success') {
+        set(DONE_KEY, '1');
+        // Clean ?customer_posted=true from the address bar so a refresh shows a normal homepage.
+        try {
+          var url = new URL(window.location.href);
+          if (url.searchParams.has('customer_posted')) {
+            url.searchParams.delete('customer_posted');
+            url.hash = '';
+            window.history.replaceState(null, '', url.pathname + url.search);
+          }
+        } catch (e) {}
+      }
+
+      dialog.addEventListener('click', function (event) {
+        var t = event.target;
+        if (!t || typeof t.closest !== 'function') return;
+        if (t.closest('[data-email-promo-close]')) { event.preventDefault(); close(); return; }
+        var copy = t.closest('[data-email-promo-copy]');
+        if (copy) { event.preventDefault(); copyCode(copy); return; }
+        if (t === dialog) close(); // click on the backdrop
+      });
+
+      // Esc (native "cancel" → "close") counts as dismissed too.
+      dialog.addEventListener('close', remember);
+
+      var form = dialog.querySelector('form');
+      if (form) {
+        form.addEventListener('submit', function () {
+          var btn = dialog.querySelector('[data-email-promo-submit]');
+          var label = dialog.querySelector('[data-email-promo-submit-label]');
+          var sending = dialog.querySelector('[data-email-promo-sending-label]');
+          if (btn) btn.disabled = true;
+          if (label) label.hidden = true;
+          if (sending) sending.hidden = false;
+        });
+      }
+
+      function schedule() {
+        setTimeout(function () {
+          if (shouldAutoOpen()) open();
+        }, state === 'idle' ? 1200 : 300);
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', schedule);
+      else schedule();
+    })();
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  /* The static-section wrapper must not take up space on the page. */
+  #shopify-section-email-promo-popup {
+    display: contents;
+  }
+
+  /* `dialog.` prefix beats the theme's bare `dialog` colours in base.css. */
+  dialog.email-promo {
+    --promo-accent: var(--restaurant-accent, #F98760);
+    --promo-accent-hover: var(--restaurant-accent-hover, #e0764f);
+
+    width: min(92vw, 26rem);
+    max-width: min(92vw, 26rem);
+    max-height: 92dvh;
+    margin: auto;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    background: var(--restaurant-dark-card, #1A1A1A);
+    color: #fff;
+    box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
+    overflow: hidden auto;
+  }
+
+  dialog.email-promo::backdrop {
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(3px);
+  }
+
+  dialog.email-promo[open] {
+    animation: email-promo-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes email-promo-in {
+    from { opacity: 0; transform: translateY(18px) scale(0.97); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .email-promo__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .email-promo__close {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    z-index: 3;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 50%;
+    background: rgba(13, 13, 13, 0.6);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.3s ease;
+  }
+
+  .email-promo__close:hover {
+    background: var(--promo-accent);
+    transform: rotate(90deg);
+  }
+
+  .email-promo__media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #0D0D0D;
+  }
+
+  .email-promo__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .email-promo__badge {
+    position: absolute;
+    left: 0.85rem;
+    bottom: 0.85rem;
+    z-index: 2;
+    padding: 0.38rem 0.85rem;
+    border-radius: 999px;
+    background: var(--promo-accent);
+    color: #1a0e08;
+    font-family: var(--font-body--family);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .email-promo__body {
+    padding: 1.2rem 1.35rem 1.25rem;
+  }
+
+  .email-promo__form {
+    margin: 0;
+  }
+
+  .email-promo__kicker {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-body--family);
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .email-promo__kicker--done {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--promo-accent);
+  }
+
+  .email-promo__diamond { color: var(--promo-accent); }
+
+  .email-promo__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    font-size: clamp(1.55rem, 5vw, 2rem);
+    line-height: 1.1;
+    color: #fff;
+  }
+
+  .email-promo__text {
+    margin: 0.7rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .email-promo__field {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.1rem;
+  }
+
+  .email-promo__input {
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0.7rem 0.95rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    font-family: var(--font-body--family);
+    font-size: 1rem;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .email-promo__input::placeholder { color: rgba(255, 255, 255, 0.45); }
+
+  .email-promo__input:focus {
+    outline: none;
+    border-color: var(--promo-accent);
+    background: rgba(255, 255, 255, 0.09);
+  }
+
+  .email-promo__input[aria-invalid="true"] { border-color: #f0b070; }
+
+  .email-promo__submit,
+  .email-promo__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 48px;
+    padding: 0.85rem 1.2rem;
+    border: none;
+    border-radius: 12px;
+    background: var(--promo-accent);
+    color: #1a0e08;
+    font-family: var(--font-body--family);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+
+  .email-promo__submit:hover,
+  .email-promo__cta:hover {
+    background: var(--promo-accent-hover);
+    transform: translateY(-2px);
+  }
+
+  .email-promo__submit:disabled {
+    opacity: 0.6;
+    cursor: default;
+    transform: none;
+  }
+
+  .email-promo__cta {
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 1.1rem;
+  }
+
+  .email-promo__error {
+    margin: 0.6rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.82rem;
+    color: #f0b070;
+  }
+
+  .email-promo__consent {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.68rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .email-promo__skip {
+    display: block;
+    margin: 0.7rem auto 0;
+    padding: 0.3rem 0.5rem;
+    border: none;
+    background: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: var(--font-body--family);
+    font-size: 0.8rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .email-promo__skip:hover { color: #fff; }
+
+  .email-promo__code {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding: 0.7rem 0.7rem 0.7rem 1rem;
+    border: 1.5px dashed var(--promo-accent);
+    border-radius: 14px;
+    background: rgba(249, 135, 96, 0.08);
+  }
+
+  .email-promo__code-value {
+    font-family: var(--font-heading--family);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 5vw, 1.75rem);
+    letter-spacing: 0.12em;
+    color: var(--promo-accent);
+    user-select: all;
+  }
+
+  .email-promo__copy {
+    min-height: 38px;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    font-family: var(--font-body--family);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .email-promo__copy:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  @media screen and (max-width: 420px) {
+    .email-promo__field { flex-direction: column; }
+    .email-promo__submit { width: 100%; }
+  }
+
+  /* Desktop: picture on the left, text on the right. */
+  @media screen and (min-width: 720px) {
+    dialog.email-promo {
+      width: min(92vw, 46rem);
+      max-width: min(92vw, 46rem);
+    }
+
+    .email-promo__inner {
+      flex-direction: row;
+      align-items: stretch;
+    }
+
+    .email-promo__media {
+      flex: 0 0 44%;
+      aspect-ratio: auto;
+      min-height: 100%;
+    }
+
+    .email-promo__media img {
+      position: absolute;
+      inset: 0;
+    }
+
+    .email-promo__body {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 1.9rem 2rem 1.7rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Email promo popup",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shown once on the homepage. Signups land in Customers (tag: promo-october-2026). Create the discount code itself in Discounts — the popup only displays it."
+    },
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Show the popup",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Picture",
+      "info": "Leave empty to use the Set 5 platter photo."
+    },
+    {
+      "type": "text",
+      "id": "discount_code",
+      "label": "Discount code",
+      "default": "MANGO10",
+      "info": "Must match a code in Admin → Discounts."
+    },
+    {
+      "type": "text",
+      "id": "end_date",
+      "label": "Valid until (YYYY-MM-DD)",
+      "default": "2026-10-31",
+      "info": "The popup hides itself automatically after this date."
+    },
+    {
+      "type": "range",
+      "id": "dismiss_days",
+      "label": "Show again after (days)",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "default": 3,
+      "info": "For visitors who closed it without signing up."
+    }
+  ]
+}
+{% endschema %}
