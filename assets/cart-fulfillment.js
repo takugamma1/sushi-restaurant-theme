@@ -2,7 +2,8 @@ import { fetchConfig } from '@theme/utilities';
 import { morphSection } from '@theme/section-renderer';
 
 /**
- * Cart fulfillment: Доставка / Вземане от място (−10%),
+ * Cart fulfillment: Доставка / Вземане от място, each with its own −10% code
+ * (delivery: data-delivery-discount-code, pickup: data-discount-code; never both),
  * delivery address capture (OpenStreetMap lookup, no API key), checkout
  * gating + prefill.
  *
@@ -48,7 +49,9 @@ function getState() {
     phone: el.dataset.phone || '',
     // Unix seconds until which delivery is paused (0 = not paused).
     pausedUntil: Number(el.dataset.deliveryPausedUntil || 0) * 1000,
-    discountCode: el.dataset.discountCode || 'PICKUP10',
+    // One discount code per method; an empty delivery code switches that half off.
+    pickupCode: el.dataset.discountCode || 'PICKUP10',
+    deliveryCode: el.dataset.deliveryDiscountCode || '',
     storefrontToken: el.dataset.storefrontToken || '',
   };
 }
@@ -97,9 +100,15 @@ async function reconcileBoxes() {
   }
 }
 
-function scheduleBoxReconcile() {
-  // Runs after the theme has morphed the drawer with fresh data-box-* values.
-  setTimeout(reconcileBoxes, 80);
+/** Boxes first, then discount codes, so the two never race each other's cart update. */
+async function reconcileCart() {
+  await reconcileBoxes();
+  await reconcileDiscounts();
+}
+
+function scheduleReconcile() {
+  // Runs after the theme has morphed the drawer with fresh data-box-* values and discount pills.
+  setTimeout(reconcileCart, 80);
 }
 
 /* ── temporary delivery pause ────────────────────────── */
@@ -253,6 +262,66 @@ function existingDiscountCodes() {
     .filter(Boolean);
 }
 
+/* ── discount codes: one per method, never both ──────── */
+
+const sameCode = (a, b) => String(a || '').toUpperCase() === String(b || '').toUpperCase();
+
+// Codes Shopify reported as not applicable (expired, customer not eligible…).
+// They are not re-sent on every cart change; an explicit choice tries them again.
+const declinedCodes = new Set();
+
+/** The code `mode` wants on the cart and the one it must not have. */
+function codesForMode(state, mode) {
+  const pickup = mode === MODE_PICKUP;
+  return {
+    wanted: pickup ? state.pickupCode : state.deliveryCode,
+    unwanted: pickup ? state.deliveryCode : state.pickupCode,
+  };
+}
+
+/** The customer's other codes (never one of ours), plus the one `mode` wants. */
+function discountListFor(state, mode, { includeWanted = true } = {}) {
+  const { wanted, unwanted } = codesForMode(state, mode);
+  const codes = existingDiscountCodes().filter((code) => !sameCode(code, wanted) && !sameCode(code, unwanted));
+  if (wanted && includeWanted) codes.push(wanted);
+  return codes;
+}
+
+/** Remember what Shopify said about `code` in a cart update response. */
+function noteDiscountResult(data, code) {
+  if (!code) return null;
+  const entry = (data.discount_codes || []).find((d) => sameCode(d.code, code));
+  if (!entry) return null;
+  if (entry.applicable) declinedCodes.delete(code.toUpperCase());
+  else declinedCodes.add(code.toUpperCase());
+  return entry;
+}
+
+/**
+ * After any cart change, keep the codes in step with the chosen method: a
+ * delivery cart carries the delivery code, a pickup cart the pickup code.
+ */
+async function reconcileDiscounts() {
+  const state = getState();
+  if (!state || busy) return;
+  const { wanted, unwanted } = codesForMode(state, state.mode);
+  const pills = existingDiscountCodes();
+  const hasUnwanted = Boolean(unwanted) && pills.some((code) => sameCode(code, unwanted));
+  const wantedMissing = Boolean(wanted) && !pills.some((code) => sameCode(code, wanted));
+  const addWanted = wantedMissing && !declinedCodes.has(wanted.toUpperCase());
+  if (!hasUnwanted && !addWanted) return;
+  busy = true;
+  try {
+    const codes = discountListFor(state, state.mode, { includeWanted: !wantedMissing || addWanted });
+    const data = await updateCart({ discount: codes.join(',') }, state.sectionId);
+    noteDiscountResult(data, wanted);
+  } catch (_) {
+    /* the next cart change tries again */
+  } finally {
+    busy = false;
+  }
+}
+
 /** Paint the toggle immediately (optimistic) — the morph confirms it from server truth. */
 function paintToggle(mode) {
   const el = root();
@@ -276,7 +345,8 @@ async function setMode(mode) {
   paintToggle(mode);
   root()?.setAttribute('aria-busy', 'true');
 
-  const codes = existingDiscountCodes().filter((code) => code.toUpperCase() !== state.discountCode.toUpperCase());
+  // Swap the codes: the other method's code comes off, this method's goes on.
+  const discount = discountListFor(state, mode).join(',');
 
   try {
     if (mode === MODE_PICKUP) {
@@ -288,13 +358,11 @@ async function setMode(mode) {
             'Пощенски код': '',
             'Координати': '',
           },
-          discount: [...codes, state.discountCode].join(','),
+          discount,
         },
         state.sectionId
       );
-      const entry = (data.discount_codes || []).find(
-        (d) => d.code.toUpperCase() === state.discountCode.toUpperCase()
-      );
+      const entry = noteDiscountResult(data, state.pickupCode);
       if (!entry) {
         showError('Отстъпката не се приложи — опитайте отново.');
       } else if (!entry.applicable) {
@@ -305,7 +373,7 @@ async function setMode(mode) {
       syncBuyerIdentity({ method: 'PICK_UP' });
     } else {
       const saved = savedAddress();
-      await updateCart(
+      const data = await updateCart(
         {
           attributes: {
             'Получаване': MODE_DELIVERY,
@@ -313,10 +381,12 @@ async function setMode(mode) {
             'Пощенски код': saved ? saved.zip : '',
             'Координати': saved && saved.lat != null && saved.lng != null ? `${saved.lat}, ${saved.lng}` : '',
           },
-          discount: codes.join(','),
+          discount,
         },
         state.sectionId
       );
+      // The delivery code is a bonus that may have run out: no message when it does not apply.
+      noteDiscountResult(data, state.deliveryCode);
       if (saved) {
         syncBuyerIdentity({ method: 'SHIPPING', address: saved });
       } else {
@@ -942,9 +1012,9 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-// Cart changed anywhere (product forms, quantity selectors, our own updates):
-// make sure the packaging line matches.
-['cart:update', 'cart:add'].forEach((name) => document.addEventListener(name, scheduleBoxReconcile));
+// Cart changed anywhere (product forms, quantity selectors, the discount box):
+// make sure the packaging line and the discount codes match it.
+['cart:update', 'cart:add', 'discount:update'].forEach((name) => document.addEventListener(name, scheduleReconcile));
 
 if (!customElements.get('cart-fulfillment')) {
   customElements.define('cart-fulfillment', class extends HTMLElement {});
@@ -952,7 +1022,7 @@ if (!customElements.get('cart-fulfillment')) {
 
 // Move the dialog out of the morphing drawer as soon as the module loads.
 getDialog();
-scheduleBoxReconcile();
+scheduleReconcile();
 
 // Background sync on load, so even express-pay paths see the drawer state.
 {

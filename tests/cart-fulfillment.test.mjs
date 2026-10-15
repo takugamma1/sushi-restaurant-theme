@@ -60,7 +60,7 @@ await import('../assets/cart-fulfillment.js');
 
 /* ── fixture (mirrors snippets/cart-fulfillment.liquid) ── */
 
-function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', phone = '', pills = [], blockedReason = '', pausedUntil = 0, box = null } = {}) {
+function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', phone = '', pills = [], blockedReason = '', pausedUntil = 0, box = null, deliveryCode = '' } = {}) {
   const activeDelivery = mode !== MODE_PICKUP ? ' cart-fulfillment__option--active' : '';
   const activePickup = mode === MODE_PICKUP ? ' cart-fulfillment__option--active' : '';
   document.body.innerHTML = `
@@ -77,6 +77,7 @@ function renderFulfillment({ mode = MODE_DELIVERY, address = '', zip = '', phone
           ${box ? `data-box-variant="${box.variant}" data-box-required="${box.required}" data-box-in-cart="${box.inCart}"` : ''}
           data-maps-key="test-key"
           data-discount-code="PICKUP10"
+          ${deliveryCode ? `data-delivery-discount-code="${deliveryCode}"` : ''}
           data-storefront-token=""
         >
           <div class="cart-fulfillment__toggle" role="radiogroup">
@@ -739,4 +740,103 @@ test('boxes: nothing happens when the count already matches, or when the box pro
   await settle();
   await flush();
   assert.equal(fetchCalls.length, 0);
+});
+
+/* ── discount codes: MANGO10 on delivery carts, PICKUP10 on pickup carts ── */
+
+const DELIVERY_CODE = 'MANGO10';
+const SAVED_ADDRESS = { formatted: 'ул. Тест 1, Варна', address1: 'ул. Тест 1', city: 'Варна', zip: '9000', lat: 43.2, lng: 27.9 };
+
+test('codes: choosing pickup takes MANGO10 off and puts PICKUP10 on (other codes kept)', async () => {
+  renderFulfillment({ pills: ['WELCOME', DELIVERY_CODE], deliveryCode: DELIVERY_CODE });
+  click(button(MODE_PICKUP));
+  await flush();
+
+  const [update] = cartUpdates();
+  assert.equal(update.attributes['Получаване'], MODE_PICKUP);
+  assert.equal(update.discount, 'WELCOME,PICKUP10');
+});
+
+test('codes: choosing delivery takes PICKUP10 off and puts MANGO10 on', async () => {
+  renderFulfillment({ mode: MODE_PICKUP, pills: ['WELCOME', 'PICKUP10'], deliveryCode: DELIVERY_CODE });
+  window.localStorage.setItem('mango_delivery_address', JSON.stringify(SAVED_ADDRESS));
+  click(button(MODE_DELIVERY));
+  await flush();
+
+  const [update] = cartUpdates();
+  assert.equal(update.attributes['Получаване'], MODE_DELIVERY);
+  assert.equal(update.discount, 'WELCOME,MANGO10');
+});
+
+test('codes: a delivery cart gets MANGO10 by itself when the cart changes (default mode, no click)', async () => {
+  renderFulfillment({ deliveryCode: DELIVERY_CODE });
+  cartEvent('cart:add');
+  await settle();
+  await flush();
+
+  const updates = cartUpdates();
+  assert.equal(updates.length, 1);
+  assert.equal(updates[0].discount, DELIVERY_CODE);
+  assert.equal(updates[0].attributes, undefined, 'only the codes change');
+  assert.deepEqual(updates[0].sections, [SECTION_ID], 'drawer is re-rendered with the pill');
+});
+
+test('codes: nothing is sent when the cart already carries the right code', async () => {
+  renderFulfillment({ pills: [DELIVERY_CODE], deliveryCode: DELIVERY_CODE });
+  cartEvent('cart:update');
+  await settle();
+  renderFulfillment({ mode: MODE_PICKUP, pills: ['PICKUP10'], deliveryCode: DELIVERY_CODE });
+  cartEvent('cart:update');
+  await settle();
+  await flush();
+  assert.equal(fetchCalls.length, 0);
+});
+
+test('codes: the other method\'s code never stays on the cart, whichever way it got there', async () => {
+  // Typed into the discount box on a delivery cart: PICKUP10 goes, MANGO10 stays.
+  renderFulfillment({ pills: ['PICKUP10', DELIVERY_CODE], deliveryCode: DELIVERY_CODE });
+  cartEvent('discount:update');
+  await settle();
+  await flush();
+  assert.equal(cartUpdates()[0].discount, DELIVERY_CODE);
+
+  // A pickup cart that still has MANGO10 (stale state): swapped for PICKUP10.
+  fetchCalls = [];
+  renderFulfillment({ mode: MODE_PICKUP, pills: [DELIVERY_CODE], deliveryCode: DELIVERY_CODE });
+  cartEvent('cart:update');
+  await settle();
+  await flush();
+  assert.equal(cartUpdates()[0].discount, 'PICKUP10');
+});
+
+test('codes: with no delivery code configured, delivery carts are left alone', async () => {
+  renderFulfillment({ pills: ['WELCOME'] });
+  cartEvent('cart:update');
+  await settle();
+  await flush();
+  assert.equal(fetchCalls.length, 0);
+});
+
+// Keep this one last: a declined code is remembered for the rest of the page visit.
+test('codes: a MANGO10 Shopify rejects is silent and not retried on every cart change', async () => {
+  renderFulfillment({ deliveryCode: DELIVERY_CODE });
+  fetchResponder = () => Promise.resolve(okCartResponse({ discount_codes: [{ code: DELIVERY_CODE, applicable: false }] }));
+  cartEvent('cart:update');
+  await settle();
+  await flush();
+  assert.equal(cartUpdates().length, 1);
+  assert.equal(document.querySelector('[data-cf-error]').hidden, true, 'no message: the code is a bonus');
+
+  cartEvent('cart:update');
+  await settle();
+  await flush();
+  assert.equal(cartUpdates().length, 1, 'not retried');
+
+  // An explicit choice always tries again.
+  renderFulfillment({ mode: MODE_PICKUP, pills: ['PICKUP10'], deliveryCode: DELIVERY_CODE });
+  window.localStorage.setItem('mango_delivery_address', JSON.stringify(SAVED_ADDRESS));
+  click(button(MODE_DELIVERY));
+  await flush();
+  assert.equal(cartUpdates()[1].discount, DELIVERY_CODE);
+  assert.equal(document.querySelector('[data-cf-error]').hidden, true);
 });

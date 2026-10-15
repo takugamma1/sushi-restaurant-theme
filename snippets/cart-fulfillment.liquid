@@ -1,7 +1,12 @@
 {%- doc -%}
-  Cart fulfillment chooser: Доставка (delivery) vs Вземане от място (pickup, −10%).
+  Cart fulfillment chooser: Доставка (delivery, −10% with MANGO10) vs Вземане от място
+  (pickup, −10% with PICKUP10).
 
-  - Pickup: applies the PICKUP10 discount code (must exist in Admin → Discounts).
+  - One discount code per method, never both: a pickup cart carries PICKUP10
+    (data-discount-code), a delivery cart MANGO10 (data-delivery-discount-code);
+    both must exist in Admin → Discounts. The JS swaps them when the method
+    changes and keeps them in step after every cart change. An empty
+    data-delivery-discount-code switches the delivery half off.
   - Delivery: requires an address entered in the address dialog (street picked from
     OpenStreetMap suggestions or filled from the customer's current location, plus
     number / entrance / floor / apartment); saves address + postcode + coordinates
@@ -106,6 +111,7 @@
     data-box-in-cart="{{ box_in_cart }}"
   {%- endif -%}
   data-discount-code="PICKUP10"
+  data-delivery-discount-code="MANGO10"
   data-storefront-token="{{ settings.cf_storefront_token | default: 'e15f5d390489194a77a140ea964309f2' }}"
 >
   <p class="cart-fulfillment__label">НАЧИН НА ПОЛУЧАВАНЕ</p>
