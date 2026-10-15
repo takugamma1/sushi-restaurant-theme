@@ -1,6 +1,6 @@
 {%- doc -%}
   Homepage email-capture popup: leave your email, get a 10% discount code for
-  the whole of October (20% in total for pickup orders, which already get −10%).
+  delivery orders for the whole of October (pickup orders already get their own −10%).
 
   Rendered statically from layout/theme.liquid on the index template only
   (`{% section 'email-promo-popup' %}`), so admin edits to templates/index.json
@@ -60,7 +60,7 @@
       assign t_badge = 'October only'
       assign t_kicker = 'Special offer'
       assign t_title = '−10% all October long'
-      assign t_text = 'Leave your email and get a code for 10% off every order until ' | append: end_label | append: '. Pick up from the restaurant and the discount becomes 20% in total.'
+      assign t_text = 'Leave your email and get a code for 10% off delivery orders until ' | append: end_label | append: '.'
       assign t_label = 'Email'
       assign t_placeholder = 'Email address'
       assign t_submit = 'Get −10%'
@@ -71,7 +71,7 @@
       assign t_error = 'Please enter a valid email address.'
       assign t_done_kicker = 'Done!'
       assign t_done_title = 'Here is your −10% code'
-      assign t_done_text = 'Enter the code at checkout. Valid for every order until ' | append: end_label | append: '; 20% in total when you pick up from the restaurant.'
+      assign t_done_text = 'Enter the code at checkout. Valid for delivery orders until ' | append: end_label | append: '.'
       assign t_copy = 'Copy'
       assign t_copied = 'Copied'
       assign t_cta = 'Order now'
@@ -79,7 +79,7 @@
       assign t_badge = 'Только в октябре'
       assign t_kicker = 'Специальное предложение'
       assign t_title = '−10% на весь октябрь'
-      assign t_text = 'Оставьте свой email и получите код на скидку 10% на все заказы до ' | append: end_label | append: '. При самовывозе скидка составит 20%.'
+      assign t_text = 'Оставьте свой email и получите код на скидку 10% на заказы с доставкой до ' | append: end_label | append: '.'
       assign t_label = 'Email'
       assign t_placeholder = 'Адрес электронной почты'
       assign t_submit = 'Получить −10%'
@@ -90,7 +90,7 @@
       assign t_error = 'Пожалуйста, введите корректный email.'
       assign t_done_kicker = 'Готово!'
       assign t_done_title = 'Ваш код на −10%'
-      assign t_done_text = 'Введите код при оформлении заказа. Действует на все заказы до ' | append: end_label | append: '; при самовывозе скидка составит 20%.'
+      assign t_done_text = 'Введите код при оформлении заказа. Действует на заказы с доставкой до ' | append: end_label | append: '.'
       assign t_copy = 'Копировать'
       assign t_copied = 'Скопировано'
       assign t_cta = 'Заказать сейчас'
@@ -98,7 +98,7 @@
       assign t_badge = 'Само през октомври'
       assign t_kicker = 'Специална оферта'
       assign t_title = '−10% за целия октомври'
-      assign t_text = 'Остави имейла си и получи код за 10% отстъпка за всички поръчки до ' | append: end_label | append: '. При вземане от място отстъпката става общо 20%.'
+      assign t_text = 'Остави имейла си и получи код за 10% отстъпка за поръчки с доставка до ' | append: end_label | append: '.'
       assign t_label = 'Имейл'
       assign t_placeholder = 'Имейл адрес'
       assign t_submit = 'Вземи −10%'
@@ -109,7 +109,7 @@
       assign t_error = 'Моля, въведете валиден имейл адрес.'
       assign t_done_kicker = 'Готово!'
       assign t_done_title = 'Ето твоя код за −10%'
-      assign t_done_text = 'Въведи кода при плащане. Важи за всички поръчки до ' | append: end_label | append: '; при вземане от място отстъпката е общо 20%.'
+      assign t_done_text = 'Въведи кода при плащане. Важи за поръчки с доставка до ' | append: end_label | append: '.'
       assign t_copy = 'Копирай'
       assign t_copied = 'Копирано'
       assign t_cta = 'Поръчай сега'
