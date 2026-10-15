@@ -11,10 +11,11 @@
   signup lands in Admin → Customers as an email-marketing subscriber, tagged
   "newsletter, promo-october-2026" (filter on the tag to see the list).
 
-  Flow: opens ~1 s after load → dismissed = hidden for N days, subscribed =
-  hidden for good (localStorage) → on submit Shopify redirects back to the
-  homepage with ?customer_posted=true → the popup reopens in its success state
-  and shows the discount code with a copy button.
+  Flow: opens ~1 s after every homepage load (owner's choice; the
+  "Show again after" setting can instead hide it for N days after closing /
+  for good after subscribing, via localStorage) → on submit Shopify redirects
+  back to the homepage with ?customer_posted=true → the popup reopens in its
+  success state and shows the discount code with a copy button.
 
   The popup only DISPLAYS the code — the discount itself must exist in
   Admin → Discounts with the same code. Texts follow the storefront language
@@ -45,7 +46,7 @@
     endif
   endif
 
-  assign dismiss_days = section.settings.dismiss_days | default: 3
+  assign dismiss_days = section.settings.dismiss_days | default: 0
 
   if routes.root_url == '/'
     assign menu_url = '/pages/menu'
@@ -244,7 +245,9 @@
 
       var stateEl = dialog.querySelector('[data-email-promo-state]');
       var state = (stateEl && stateEl.getAttribute('data-email-promo-state')) || 'idle';
-      var days = parseInt(dialog.getAttribute('data-dismiss-days'), 10) || 3;
+      // 0 = open on every homepage visit (nothing is remembered).
+      var days = parseInt(dialog.getAttribute('data-dismiss-days'), 10);
+      if (isNaN(days) || days < 0) days = 0;
 
       function get(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
       function set(key, value) { try { localStorage.setItem(key, value); } catch (e) {} }
@@ -252,9 +255,11 @@
       function shouldAutoOpen() {
         // Just subscribed (or the server rejected the email): always show the result.
         if (state === 'success' || state === 'error') return true;
-        if (get(DONE_KEY) === '1') return false;
-        var until = parseInt(get(UNTIL_KEY), 10);
-        if (until && Date.now() < until) return false;
+        if (days > 0) {
+          if (get(DONE_KEY) === '1') return false;
+          var until = parseInt(get(UNTIL_KEY), 10);
+          if (until && Date.now() < until) return false;
+        }
         // The product page redirects home and auto-opens the cart drawer — don't
         // fight it for the screen; try again on the next visit.
         try { if (sessionStorage.getItem(DRAWER_FLAG) === '1') return false; } catch (e) {}
@@ -271,6 +276,7 @@
       }
 
       function remember() {
+        if (days <= 0) return;
         if (state === 'success') set(DONE_KEY, '1');
         else set(UNTIL_KEY, String(Date.now() + days * 86400000));
       }
@@ -312,7 +318,7 @@
       }
 
       if (state === 'success') {
-        set(DONE_KEY, '1');
+        if (days > 0) set(DONE_KEY, '1');
         // Clean ?customer_posted=true from the address bar so a refresh shows a normal homepage.
         try {
           var url = new URL(window.location.href);
@@ -721,11 +727,11 @@
       "type": "range",
       "id": "dismiss_days",
       "label": "Show again after (days)",
-      "min": 1,
+      "min": 0,
       "max": 30,
       "step": 1,
-      "default": 3,
-      "info": "For visitors who closed it without signing up."
+      "default": 0,
+      "info": "0 = opens on every homepage visit. Otherwise it stays hidden for that many days after being closed (and for good after signing up)."
     }
   ]
 }
